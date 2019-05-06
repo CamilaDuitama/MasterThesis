@@ -1,10 +1,10 @@
-# MasterThesis
+# Master Thesis
 External Validation and characterization of Cancer subtypes using SBC
 
 ## Objectives
-1.Perform an external validation of the SBC based clusters on the Verhaak study ensuring distinct survival curves for the predicted (as well as the training) clusters, using external datasets from patients diagnosed with Glioblastoma.
+1. Perform an external validation of the SBC based clusters on the Verhaak study ensuring distinct survival curves for the predicted (as well as the training) clusters, using external datasets from patients diagnosed with Glioblastoma.
 
-2.Characterise the obtained clusters and the corresponding signature looking at other data modalities for consistent patterns (e.g. Somatic Mutation Data, Copy Number, Pathway Enrichment, etc.)
+2. Characterise the obtained clusters and the corresponding signature looking at other data modalities for consistent patterns (e.g. Somatic Mutation Data, Copy Number, Pathway Enrichment, etc.)
 
 ## Preliminary results
 ### Data preprocessing
