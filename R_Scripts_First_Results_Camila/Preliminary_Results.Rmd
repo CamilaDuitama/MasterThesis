@@ -4,6 +4,17 @@ title: "SBC on the GBM dataset from the Training set from Firebrowse Database(TC
 author: "Camila Duitama (Based on Ashar Ahmad's code for the SBC model)"
 date: "May 2019"
 output:
+  html_notebook:
+    highlight: tango
+    toc: yes
+    toc_depth: '2'
+    toc_float: true
+    number_sections: true
+    df_print: kable
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 10
+    code_folding: show
   html_document:
     highlight: tango
     toc: yes
@@ -16,6 +27,7 @@ output:
     fig_width: 10
     code_folding: show
   always_allow_html: yes
+  
   pdf_document:
     
     highlight: tango
@@ -281,7 +293,9 @@ p3
 ######## Verhaak Signature ###############
 Verhaak_gene_signature <-read_csv("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/Verhaak_Data/Verhaak_GS_according_to_Training_Set_Split1.csv", 
                                   col_names = FALSE, col_types = cols(X1 = col_skip()))
-signature.vk<-Verhaak_gene_signature$X2
+signature.vk<-read_delim("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/Verhaak_Data/Verhaak_gene_signature.csv", 
+    ";", escape_double = FALSE, col_types = cols_only(`Gene Symbol` = col_guess()), 
+    trim_ws = TRUE)
 ######## Verhaak Labels #################
 labels.vk<-Clinical_TrainingSet$Subtype
 
