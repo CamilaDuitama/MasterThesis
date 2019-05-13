@@ -21,7 +21,7 @@ predictCLASS = function(Y.input){
 
   ctemp.new <- c(0)
   modelweights <- c(0)
-  
+  matrix.posteriorweights<-c()
   
   for (count in 1:Nps){
     
@@ -89,27 +89,29 @@ predictCLASS = function(Y.input){
         posteriorweight[kminus+2,l] <-  log(alpha/ (N-1+alpha))  +  dMVN(as.vector(t(Y.new[l,1:D])), mean = mu[active[kminus+2],1:D], Q= S[active[kminus+2],1:D,1:D], log = TRUE)      
       }
       
-       weights[,l] <- exp(posteriorweight[,l])/sum(exp(posteriorweight[,l]))
+       weights[,l] <- exp(posteriorweight[,l]-max(posteriorweight[,l]))/sum(exp(posteriorweight[,l]-max(posteriorweight[,l])))
     
       
-      if (sum(exp(posteriorweight[,l])) < 1e-200){
-        ctemp.new[l] <- sample(active, 1, prob = rep(1,length(active)), replace = TRUE)
-      } else {  
+     # if (sum(exp(posteriorweight[,l])) < 1e-200){
+      #  ctemp.new[l] <- sample(active, 1, prob = rep(1,length(active)), replace = TRUE)
+      #} else {  
         ctemp.new[l] <- sample(active, 1, prob= weights[,l], replace = TRUE)
         
-      }
+      #}
       
-     weights.final[l] <- dMVN(as.vector(t(Y.new[l,1:D])), mean = mu[ctemp.new[l],1:D], Q = S[ctemp.new[l],1:D,1:D], log =TRUE) 
+     #weights.final[l] <- dMVN(as.vector(t(Y.new[l,1:D])), mean = mu[ctemp.new[l],1:D], Q = S[ctemp.new[l],1:D,1:D], log =TRUE) 
        
      }
     
+    ##Attention! here i change weights.final for weights
+    weights.final<-weights
     
     modelweights[count] <- sum(weights.final)
       
     c.new.list[[count]] <- ctemp.new
     Sys.sleep(0.1)
     setTxtProgressBar(pb, count)
-    
+    matrix.posteriorweights[[count]]<-posteriorweight
     }
   
   

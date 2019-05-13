@@ -42,9 +42,9 @@ o =1
 #################### BURNIN PHASE ###################################################
 o.iter = o
 print("BURNIN...PHASE.. LOGLIKELIHOOD")
-
 pb <- txtProgressBar(min = o.iter, max = iter.burnin , style = 3)
 for (o in o.iter:iter.burnin) {
+  start_time <- Sys.time()
   
   
   ################## PARAMETERS OF THE DP Mixture Model ######################################################
@@ -123,8 +123,11 @@ for (o in o.iter:iter.burnin) {
  ####### If At all the W get's NA
   if (sum(is.na(diag(W))+ 0) > 0){
     W <- diag(diag(cov(Y)))
-    }
-} 
+  }
+  end_time <- Sys.time()
+  print(paste("Time needed to run 1 iteration of the burning phase: ",toString(round(end_time-start_time,4))))
+}
+
 
 assign("alpha", alpha, envir = .GlobalEnv)
 assign("ro", ro, envir = .GlobalEnv)
