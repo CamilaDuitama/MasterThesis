@@ -21,7 +21,7 @@ loglike<- rep(0, iter)
 timeparam <- NA
 time.predicted <- c(0)
 cindex <- c(0)
-
+burnintime<<-c()
 
 likli <- c(0)
 gmm.likli <- c(0)
@@ -125,7 +125,7 @@ for (o in o.iter:iter.burnin) {
     W <- diag(diag(cov(Y)))
   }
   end_time <- Sys.time()
-  print(paste("Time needed to run 1 iteration of the burning phase: ",toString(round(end_time-start_time,4))))
+  burnintime[[o]]<<-end_time-start_time
 }
 
 

@@ -9,7 +9,6 @@ params:
   iter.thin: 5
   pval.sbc : 0.6
 output:
-  always_allow_html: yes
   html_notebook:
     highlight: tango
     toc: yes
@@ -21,6 +20,7 @@ output:
     fig_height: 6
     fig_width: 10
     code_folding: show
+  always_allow_html: yes
   html_document:
     highlight: tango
     toc: yes
@@ -33,6 +33,7 @@ output:
     fig_width: 10
     code_folding: show
   pdf_document:
+    
     highlight: tango
     toc: yes
     toc_depth: '2'
@@ -43,14 +44,14 @@ output:
     fig_height: 6
     fig_width: 10
     code_folding: show
-    
 ---
 
 # Loading of libraries
 
 Libraries needed to run the code must be loaded first
 
-```{r LibrariesLoading, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+```{r LibrariesLoading, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+library(sva)
 library(readr)
 library(ggplot2)
 library(matrixcalc)
@@ -116,18 +117,13 @@ library(rmarkdown)
 
 Data is separated into training and testing
 
-```{r Loading files, eval=FALSE, message=TRUE, warning=FALSE, include=FALSE, paged.print=FALSE, echo=TRUE}
+```{r Loading files, echo=TRUE, warning=FALSE, paged.print=FALSE}
 ######## Input ###############
 
 Clinical_TrainingSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/First_data_split/TrainingSet/Clinical_TrainingSet.csv")
 mRNAArray_TrainingSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/First_data_split/TrainingSet/mRNAArray_TrainingSet.csv")
 Clinical_TestSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/First_data_split/TestSet/Clinical_TestSet.csv")
 mRNAArray_TestSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/First_data_split/TestSet/mRNAArray_TestSet.csv")
-
-#Code to remove the indexes where both the time and censoring info is NaN
-to_remove<-which(is.na(Clinical_TestSet$days_to_death) & is.na(Clinical_TestSet$days_to_last_followup), arr.ind=TRUE)
-Clinical_TestSet<-Clinical_TestSet[-(to_remove),]
-mRNAArray_TestSet<-mRNAArray_TestSet[-(to_remove),]
 
 indexes.train<-which(is.na(Clinical_TrainingSet$days_to_death), arr.ind=TRUE)
 indexes.test<-which(is.na(Clinical_TestSet$days_to_death), arr.ind=TRUE)
@@ -151,6 +147,7 @@ time<-log(time)
 ########### Event or Not Vector (N * 1) ####
 censoring<-Clinical_TrainingSet$vital_status
 ######### mRNA (or miRNA expression values) (N*D) ###
+mRNAArray_TrainingSet$X1<-NULL
 Y.pre.train<-mRNAArray_TrainingSet
 
 #### Overall Survival Time Vector (N*1)
@@ -164,7 +161,7 @@ Y.pre.test<-mRNAArray_TestSet
 
 ```
 
-```{r Number of samples, message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r Number of samples, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 print(paste0("Number of patients in training set: ",as.character(n)))
 print(paste0("Number of patients in test set: ",as.character(n.new)))
 ```
@@ -172,7 +169,7 @@ print(paste0("Number of patients in test set: ",as.character(n.new)))
 ##Data visualization
 
 Initial visualization of censoring, survival times and mRNAArray Data of the training and testing set
-```{r Table for censoring information of the training set, message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r Table for censoring information of the training set, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 
 table(censoring) %>%  
   kable(caption = "Censoring frequency for the training set") %>%
@@ -180,7 +177,7 @@ table(censoring) %>%
 
 ```
 
-```{r Table for censoring information of the testing set, message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r Table for censoring information of the testing set, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 table(censoring.new) %>%
   kable(caption = "Censoring frequency for the testing set") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
@@ -188,20 +185,20 @@ table(censoring.new) %>%
 ```
 
 
-```{r Header of mRNA matrix of the training set, message=TRUE, warning=TRUE, paged.print=TRUE}
+```{r Header of mRNA matrix of the training set, echo=TRUE, message=TRUE, warning=TRUE, paged.print=TRUE}
   Y.pre.train[1:5,1:5] %>%
   kable(caption = "mRNA MicroArray data for the Training set " ) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 ```
 
-```{r Header of mRNA matrix of the testing set, message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r Header of mRNA matrix of the testing set, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
   Y.pre.test[1:5,1:5] %>%
   kable(caption = "mRNA MicroArray data for the Testing set " ) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")
 ```
 
-```{r PCA of the whole mRNA dataset, message=FALSE, warning=FALSE, paged.print=FALSE}
-totalmRNA<-bind_rows(mRNAArray_TrainingSet,mRNAArray_TestSet)
+```{r PCA of the whole mRNA dataset, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+totalmRNA<-rbind(mRNAArray_TrainingSet,mRNAArray_TestSet)
 mRNA.pca<-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
 classes<-c()
 for (i in 1:length(Clinical_TrainingSet$days_to_death)){
@@ -236,7 +233,7 @@ It's based on the idea of Univariate testing of Survival Data features
 **NOTE:** For now the rows where there is no censoring and time data will be removed from ALL datasets, until we find an imputation method.
 
 
-```{r SBC Signature, eval=FALSE, message=TRUE, warning=TRUE, include=FALSE, paged.print=FALSE,echo=TRUE}
+```{r SBC Signature, echo=TRUE, message=TRUE, warning=TRUE, paged.print=FALSE}
 ######## Prefiltering of the Genes ############################### ###########################
 ######## Using Univariate Cox's Model for Ranking of the Survival Power of the Genes ########
   
@@ -279,7 +276,7 @@ It's based on the idea of Univariate testing of Survival Data features
 
 The SBC signature on the dataset looks like this
 
-```{r Table for the SBC signature, message=TRUE, warning=TRUE}
+```{r Table for the SBC signature, echo=TRUE, message=TRUE, warning=TRUE}
   to_plot<-data.frame(Genes=signature.sbc)
    to_plot%>%
      kable(caption = "SBC Signature") %>%
@@ -289,7 +286,7 @@ The SBC signature on the dataset looks like this
 
 ## PCA of the signature genes
 
-```{r PCA of the signature}
+```{r PCA of the signature, echo=TRUE}
 mRNA.signature<-rbind(Y.pre.train[,signature.sbc],Y.pre.test[,signature.sbc])
 mRNA.signature.pca<-as.data.frame(prcomp(mRNA.signature,scale=TRUE, center= TRUE)$x[,1:2])
 mRNA.signature.pca$Classes<-classes
@@ -299,7 +296,7 @@ p6
 
 ## Survival curves for both training and testing set
 
-```{r Survival curves for both training and testing set, message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r Survival curves for both training and testing set, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 surv.fit <- survfit(Surv(total_time,append(Clinical_TrainingSet$vital_status,Clinical_TestSet$vital_status))~ classes)
 p3 <- ggsurv(surv.fit, plot.cens=FALSE,main = " DPMM \n Kaplan Meier curves for training and test set")+ ggplot2::guides(linetype = FALSE)
 p3
@@ -309,7 +306,7 @@ p3
 #Training
 
 ##Preparation of the data needed for the training of the model
-```{r Preparation of Data Structures to train the SBC}
+```{r Preparation of Data Structures to train the SBC, echo=TRUE}
 ########################################################################
 ###### We prepare the Data Structures Needed for the Running of the SBC ####
 #############################################################################
@@ -332,7 +329,7 @@ Y.new <- Y.pre.test[,as.character(signature.sbc)]
 
 ## Training results
 
-```{r Training of SBC, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE,paged.print=FALSE, echo=TRUE}
+```{r Training of SBC, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 ##############################################################################
 ############ This file takes in training data for Glioblastoma #################
 ################################################################################
@@ -392,7 +389,7 @@ MCMCanalyze()
 
 ## Plots of results from training
 
-```{r Survival curves from training}
+```{r Survival curves from training, echo=TRUE}
 
 ###############################
 ### Some plots and analysis ####
@@ -406,7 +403,7 @@ p4
 
 ```
 
-```{r PCA from training}
+```{r PCA from training, echo=TRUE}
 ############ Generating some Plots ##########################
 pc <- prcomp(Y)
 pc.pred <- predict(pc,newdata = Y)
@@ -422,38 +419,66 @@ p7
 
 # Testing
 
-```{r Testing, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r PCA Unscaled Y and Y.new, echo=TRUE}
+#Defining again Y and Y.new
+Y <- Y.pre.train[,as.character(signature.sbc)]
+Y.new <- Y.pre.test[,as.character(signature.sbc)]
 
-####################################################################################################
-################ This file prepares for testing the data on external validation data set #########
-###################################################################################################
-######## Input #########################
-######## TRained Model ##################
+Y<-scale(Y, scale=TRUE,center= TRUE)
+Y.new<-scale(Y.new,scale=TRUE,center=TRUE)
 
-################# Scale the data ##################
-Y <- scale(Y, center = TRUE, scale = TRUE)
-obj <- scale(Y, center = TRUE, scale = TRUE)
-Y.new <- scale(Y.new, center = attr(obj,"scaled:center"), scale = (attr(obj,"scaled:scale")))
-
-Y.big<-rbind(Y,Y.new)
-pc <- prcomp(Y.big, scale=TRUE, center= TRUE)
+#PCA
+Y.big.unscaled<-rbind(Y,Y.new)
+pc.unscaled <- prcomp(Y.big.unscaled,center=TRUE,scale = TRUE)
 labels<-c.sbc
 for (i in 1:dim(Y.new)[1]){labels<-append(labels,5)}
-p8 <- ggplot(as.data.frame(pc$x), aes(x=pc$x[,1], y= pc$x[,2], colour= as.factor(labels))) + ggtitle(" SBC Clustering \n VerhaakCancer Data Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p8 <- ggplot(as.data.frame(pc.unscaled$x), aes(x=pc.unscaled$x[,1], y= pc.unscaled$x[,2], colour= as.factor(labels))) + ggtitle("Unscaled data") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
 p8
+```
+```{r Momentum matching}
+##Y.new<- Y.new + (Miu-Miu.new)##
+###Attention!: THis line should be removed!!! Because we only scale once
+# Y <- scale(Y, center = TRUE, scale = TRUE)
+# #Y.new<- scale(Y.new, center=TRUE,scale=TRUE)
+# 
+# momentmatching<-function(x.new,x){
+# if (ncol(x)!=ncol(x.new)){
+#   return (print("The matrixes don't have the same number of columns"))
+# }else{
+#   delta<-colMeans(x)-colMeans(x.new)
+#   for (i in 1:ncol(x.new)){
+#     x.new[,i]<-x.new[,i]+delta[i]
+#   }
+#   return(x.new)
+# }
+# }
+# ##Momentum matching##
+# Y.new.prime<-momentmatching(Y.new,Y)
+# obj <- scale(Y, center = TRUE, scale = TRUE)
+# Y.new.prime.scaled<-  scale(Y.new.prime,center = attr(obj,"scaled:center"), scale = (attr(obj,"scaled:scale")))
 
+##Scaling##
+
+####object created to scale the test set afterwards####
+#Y.momentum.scaled <- scale(Y.new.prime, center = TRUE, scale = TRUE)
 ```
 
-```{r}
-Y.big.unscaled<-rbind(Y,Y.new)
-pc.unscaled <- prcomp(Y.big.unscaled, scale=TRUE, center= TRUE)
-p9 <- ggplot(as.data.frame(pc.unscaled$x), aes(x=pc.unscaled$x[,1], y= pc.unscaled$x[,2], colour= as.factor(labels))) + ggtitle(" SBC Clustering \n VerhaakCancer Data Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
-p9
+```{r Batch effect correction ComBat}
+# Y.new.corrected<-t(ComBat(dat=t(Y.new), batch=c.sbc.new))
+# Y.new.corrected<-scale(Y.new.corrected,scale= TRUE, center= TRUE)
+# Y.big.corrected<-rbind(Y,Y.new.corrected)
+# pc <- prcomp(Y.big.corrected,center=TRUE,scale = TRUE)
+# labels<-c.sbc
+# for (i in 1:dim(Y.new.prime.scaled)[1]){labels<-append(labels,5)}
+# p12 <- ggplot(as.data.frame(pc$x), aes(x=pc$x[,1], y= pc$x[,2], colour= as.factor(labels))) + ggtitle(" Scaled data") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+# p12
 ```
 
 
-```{r Testin2, eval=FALSE, include=FALSE}
+
+```{r Testing 2, echo=TRUE}
 ######## Predict on New Data Set  BASED ON JUST THE MOLECULAR DATA #####################################
+smod.new <- Surv(time.new, censoring.new)
 source('predictCLASS.R')
 #What does this function do?: Outputs a matrix that has dimension number of test samples * number of MCMC samples
 #The output matrix is c.matrix.new
@@ -465,8 +490,18 @@ lr <- c(0)
 for (j in 1:Nps){
   lr[j] <-  1 - pchisq(unlist(survdiff(smod.new ~ c.matrix.new[,j]))$chisq,df=length(table(c.matrix.new[,j]))-1)
 }
+
+
+for (i in 1:Nps){
+  if (length(table(c.matrix.new[,i]))==4 & lr[i]<0.05){
+    c.sbc.new<-c.matrix.new[,i]
+  }
+}
+
+if (length(c.sbc.new)==0){
+  print("There was no MCMC iteration that found 4 clusters and was statistically significant (p_value=0.05)")
 c.sbc.new <- c.matrix.new[,which.min(lr)]
-c.sbc.new <-c.matrix.new[,7]
+}
 
 ###############################################################################
 ################################# Other ways of obtaining predictions #########
@@ -494,11 +529,13 @@ source('predictADHOCverhaak.R')
 source('predictTIME.R')
 predictchineseAFTtime(Y.new)
 
+
+
 ```
 
 ## Plot results from testing
 
-```{r Survival curves from testing}
+```{r Survival curves from testing, echo=TRUE}
 logrank.new <- survdiff(smod.new ~ c.sbc.new)
 #df= Degrees of freedom should be number of clusters-1
 pval.new<-1 - pchisq(unlist(logrank.new)$chisq,df =length(logrank.new$n)-1)
@@ -507,26 +544,26 @@ p5.new <- ggsurv(surv.fit, plot.cens=FALSE,main = " DPMM \n Kaplan Meier Estimat
 p5.new
 ```
 
-```{r PCA from testing}
-pc <- prcomp(Y.new)
+```{r PCA from testing, echo=TRUE}
+pc <- prcomp(Y.new,center=TRUE,scale = TRUE)
 pc.pred <- predict(pc,newdata = Y.new)
 p4.new <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(" SBC Clustering \n GBM Cancer Test Data Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
 p4.new
 ```
 
 
-```{r Consolidated clustering results}
+```{r Consolidated clustering results, echo=TRUE}
 table(c.sbc) %>%
   kable(caption = "Clusters for the training set") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 ```
 
-```{r}
+```{r echo=TRUE}
 table(c.sbc.new) %>%
   kable(caption = "Clusters for the testing set") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 ```
-```{r FInal table of SBC vs others}
+```{r FInal table of SBC vs others, echo=TRUE}
 Methods<-c("Flexmix","Flexmix + AFT","K-Means + Penalized AFT","K-Means + Penalized Cox","AFT","Cox","SBC + AFT","SBC")
 recovCIndex<-round(c(recovCIndex.flx,recovCIndex.flx.aft,recovCIndex.km.paft,recovCIndex.km.pcox,recovCIndex.na.aft,recovCIndex.na.cox,max(recovCIndex.sbc.paft),max(recovCIndex.sbc)),digits = 5)
 predCIndex<-c(predCIndex.flx,"NA","NA",predCIndex.kk.pcox,predCIndex.na.aft,predCIndex.na.cox,predCIndex.sbc.aft,max(predCIndex.sbc))

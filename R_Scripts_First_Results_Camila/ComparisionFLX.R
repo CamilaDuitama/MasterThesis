@@ -5,6 +5,8 @@
 
 ComparisionFLX = function(){
   
+  smod <-  Surv(exp(time), censoring)
+  smod.new <-  Surv(exp(time.new), censoring.new)
   
   gr.km <- kmeans(Y, F, nstart =10)
   gr.km.rand <- adjustedRandIndex(c.true,as.factor(gr.km$cluster))

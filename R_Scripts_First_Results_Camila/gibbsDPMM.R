@@ -30,7 +30,9 @@ source('posteriorbeta.R')
 print("GIBB'S SAMPLING")
 pb <- txtProgressBar(min = 1, max = iter , style = 3)
 count = 1
+gibbstime<<-c()
 for (o in 1:iter) {
+  start_time<-Sys.time()
   ################## PARAMETERS OF THE DP Mixture Model ######################################################
   ## Updating the parameters based on the observations 
   param <- posteriorGMMparametrs(c,Y,mu,S, alpha,K, epsilon, W, beta, ro,N,D )
@@ -103,6 +105,9 @@ for (o in 1:iter) {
   #   print(cindex)
   Sys.sleep(0.1)
   setTxtProgressBar(pb, o)
+  end_time<-Sys.time()
+  gibbstime[[o]]<<-end_time-start_time
+  
 } 
 
 
