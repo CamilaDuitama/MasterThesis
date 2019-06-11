@@ -3,20 +3,6 @@ library(RTCGA)
 library(TCGAbiolinks)
 library(SummarizedExperiment)
 
-#With TCGABiolinks with reference genome hg38
-GBM_clinical <- GDCquery_clinic(project = "TCGA-GBM", type = "clinical")
-patient_barcodes<-GBM_clinical$submitter_id
-
-query<- GDCquery(project = "TCGA-GBM", 
-                             data.category = "Transcriptome Profiling", 
-                             data.type = "Gene Expression Quantification", 
-                             workflow.type = "HTSeq - FPKM")
-GDCdownload(query)
-expdat <- GDCprepare(query = query,
-                       save = TRUE, 
-                       save.filename = "GBM_Biolinks.rda")
-GBM_FPKM_TCGA<-assays(expdat)
-
 ####Using RTCGA Toolbox
 stddata <- getFirehoseRunningDates()
 stddata
@@ -24,21 +10,46 @@ stddata
 #mRNAArray,miRNAArray,GISTIC,RNAseqNorm,RNAseq2Norm
 GBMData <- getFirehoseData (dataset="GBM", runDate="20160128",
                             clinic=TRUE,mRNASeq= TRUE, mRNAArray=TRUE,miRNAArray=TRUE,Methylation=TRUE,
-                            GISTIC =TRUE, RNAseqNorm= TRUE, RNAseq2Norm=TRUE,miRNASeqGene=TRUE)
-clinicData <- getData(GBMData,"clinical")
-mRNAArray <- getData(GBMData,"mRNAArray",platform = )
-write.table(GBMData@clinical, file = "Clinical.csv")
-write.table(GBMData@miRNASeqGene,file="miRNASeqGene.csv")
-write.table(GBMData@RNASeqGene,file="RNASeqGene.csv")
-write.table(GBMData@RNASeq2GeneNorm,file="RNASeq2GeneNorm.csv")
-write.csv(GBMData@mRNAArray[[3]]@DataMatrix,file="gdac.broadinstitute.org_GBM.Merge_transcriptome__ht_hg_u133a__broad_mit_edu__Level_3__gene_rma__data.Level_3.2016012800.0.0.csv")
-write.csv(GBMData@miRNAArray[[1]]@DataMatrix,file="gdac.broadinstitute.org_GBM.Merge_mirna__h_mirna_8x15k__unc_edu__Level_3__unc_DWD_Batch_adjusted__data.Level_3.2016012800.0.0.csv")
-write.csv(GBMData@Methylation[[1]]@DataMatrix,file="gdac.broadinstitute.org_GBM.Merge_methylation__humanmethylation27__jhu_usc_edu__Level_3__within_bioassay_data_set_function__data.Level_3.2016012800.0.0.csv")
-write.csv(GBMData@GISTIC@AllByGene,file="GISTIC_AllByGene.csv")
+                            GISTIC =TRUE, RNAseqNorm= TRUE, RNAseq2Norm=TRUE,miRNASeqGene=TRUE,CNASNP=TRUE,
+                            CNASeq= TRUE, CNACGH = TRUE, Mutation = TRUE)
+Clinical <- getData(GBMData,"clinical")
+#mRNA microArray platform: Affymetrix Human Genome U133 Array
+mRNAArray <- getData(GBMData,"mRNAArray",platform = 3)
+CopyNumber<-getData(GBMData,"GISTIC","AllByGene")
+Methylation<-getData(GBMData,"Methylation",platform=1)
+miRNAArray<-getData(GBMData,"miRNAArray",1)
+SomaticMutation <- getData(GBMData,"Mutation")
 
-diffGeneExprs <- getDiffExpressedGenes(dataObject=GBMData,DrawPlots=TRUE,
-                                       adj.method="BH", adj.pval=0.05, raw.pval=0.05, logFC=2, hmTopUpN=100,
-                                       hmTopDownN=100)
+write.table(Clinical, file = "Data/RTCGAToolbox/Clinical.csv")
+write.table(mRNAArray,file="Data/RTCGAToolbox/mRNAArray.csv")
+write.table(CopyNumber,file="Data/RTCGAToolbox/CopyNumber.csv")
+write.table(Methylation,file="Data/RTCGAToolbox/Methylation.csv")
+write.table(miRNAArray,file="Data/RTCGAToolbox/MiRNAArray.csv")
+write.table(SomaticMutation,file="Data/RTCGAToolbox/SomaticMutation.csv")
+
+#With TCGABiolinks 
+#Note: TCGABiolinks has access to 2 sources
+#GDC Legacy Archive : provides access to an unmodified copy of data that was previously
+#stored in CGHub and in the TCGA Data Portal hosted by the TCGA Data Coordinating Center 
+#(DCC), in which uses as references GRCh37 (hg19) and GRCh36 (hg18).
+#GDC harmonized database: data available was harmonized against GRCh38 (hg38) using GDC
+#Bioinformatics Pipelines which provides methods to the standardization of biospecimen 
+#and clinical data.
+### ATTENTION: We only use Legacy data, because there was more mRNA data 
+Clinical.1<-GDCquery_clinic(project="TCGA-GBM",type="Clinical")
+Methylation.query<-GDCquery(project= "TCGA-GBM", 
+                             data.category = "DNA methylation", 
+                             platform = "Illumina Human Methylation 450", legacy =TRUE)
+GDCdownload(Methylation.query)
+Methylation.1 <- GDCprepare(Methylation.query)
+
+write.table(Clinical.1, file = "Data/TCGABiolinks/Clinical.csv")
+write.table(mRNAArray.1,file="Data/TCGABiolinks/mRNAArray.csv")
+write.table(CopyNumber.1,file="Data/TCGABiolinks/CopyNumber.csv")
+write.table(Methylation.1,file="Data/TCGABiolinks/Methylation.csv")
+write.table(miRNAArray.1,file="Data/TCGABiolinks/MiRNAArray.csv")
+write.table(SomaticMutation.1,file="Data/TCGABiolinks/SomaticMutation.csv")
+
 
 #Code to use multiMiR to get the validated targets of a list of miRNA
 library(multiMiR)
