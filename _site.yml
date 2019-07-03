@@ -1,0 +1,26 @@
+name: "Preliminary results"
+output_dir: "docs"
+navbar:
+  title: "Preliminary results of the SBC on the TCGA-GBM Data set"
+  left:
+  - text: "Results on the whole TCGA-GBM Data Set"
+   href: Results.html
+  - text: "Results on the Verhaak samples present in the TCGA-GBM Data Set"
+   href: Preliminary_Results.nb.html
+   - text: "Results on the whole TCGA-GBM Data Set"
+   href: Results.html
+   - text: "Results after Karnofsky Correction"
+   href: Karnofsky_corrected_results.html
+   - text: "Results after Karnofsky correction and Flexmix initialization"
+   href: Karnofsky_correction+Flexmix_initialization.html
+   - text: "Gene Set Enrichment from KEGG Pathways"
+   href: GSVA-KEGG.html
+   - text: "Gene Set Enrichment from Oncogene Sets"
+   href: GSVA-Oncogenic_Signature.html
+   - text: "Autoencoders feature selection for molecular and survival data"
+   href: Autoencoder1_Molecular+Survival.nb.html
+   - text: "Autoencoders feature selection for molecular data"
+   href: Autoencoder1_Molecular.nb.html
+output:
+  html_document:
+ theme: cosmo
