@@ -3,7 +3,7 @@
 
 The background of this master thesis is the SBC, a model that infers clinically relevant cancer subtypes, by jointly clustering molecular data along with survival datain a semi-supervised manner.The original paper and the supplementary material are on pdf version in this repository. A graphical representation of the model is this:
 
-![SBC](MasterThesis/images/Graphical_model_SBC.pdf)
+![SBC](MasterThesis/images/Graphical_model_SBC.png)
 
 SBC's main features are:
 - Fully bayesian approach as omics data contains a lot of noise with p >> n.
