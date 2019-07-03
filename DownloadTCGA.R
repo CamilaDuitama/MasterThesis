@@ -3,7 +3,7 @@ library(RTCGA)
 library(TCGAbiolinks)
 library(SummarizedExperiment)
 
-####Using RTCGA Toolbox
+####Using RTCGAToolbox
 stddata <- getFirehoseRunningDates()
 stddata
 # clinical,miRNASeqGene(0*0), RNASeq2GeneNorm(0*0),Methylation,
