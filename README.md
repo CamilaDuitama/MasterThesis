@@ -3,15 +3,14 @@
 
 The background of this master thesis is the SBC, a model that infers clinically relevant cancer subtypes, by jointly clustering molecular data along with survival datain a semi-supervised manner.The original paper and the supplementary material are on pdf version in this repository. A graphical representation of the model is this:
 
-![SBC](/images/Graphical_model_SBC.pdf)
-Format: ![Alt Text](url)
+![SBC](MasterThesis/images/Graphical_model_SBC.pdf)
 
 SBC's main features are:
-• Fully bayesian approach as omics data contains a lot of noise with p >> n.
-• Dirichlet Process prior to automatically infer the number of clusters.
-• Molecular Data modelled as a Hierarchical Multivariate Gaussian Distribution (Mixture model).
-• Survival time is modelled as Log-linear (Accelerated Failure Time) distribution with molecular covariates (Mixture model).
-• L-1 regularization for the covariates of the Survival Model (Bayesian Lasso).
+- Fully bayesian approach as omics data contains a lot of noise with p >> n.
+- Dirichlet Process prior to automatically infer the number of clusters.
+- Molecular Data modelled as a Hierarchical Multivariate Gaussian Distribution (Mixture model).
+- Survival time is modelled as Log-linear (Accelerated Failure Time) distribution with molecular covariates (Mixture model).
+- L-1 regularization for the covariates of the Survival Model (Bayesian Lasso).
 
 ### Objectives
 1. Perform an external validation of the SBC based clusters on the Verhaak study ensuring distinct survival curves for the predicted (as well as the training) clusters, using external datasets from patients diagnosed with Glioblastoma.
