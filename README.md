@@ -17,7 +17,6 @@ SBC's main features are:
 
 2. Characterise the obtained clusters and the corresponding signature looking at other data modalities for consistent patterns (e.g. Somatic Mutation Data, Copy Number, Pathway Enrichment, etc.)
 
-
 ### Data preprocessing
 - DownloadTCGA.R is the code to download the GBM Data from the TCGA Firehose Database (Using TCGAToolbox) and the GDC Data Portal (Using TCGABiolinks). It also contains the code to get the validated miRNA targets from a list of miRNA.
 - The python notebook Data_preparation-RTCGA.ipynb is contains the preprocessing of the data(where I unify patient identifiers, verify the data is complete and in the right scale and check for the presence of the Verhaak signature and samples in our dataset), initial visualization and selection of training and testing sets*.
