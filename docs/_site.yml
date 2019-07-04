@@ -1,4 +1,4 @@
-name: "Preliminary results"
+name: "Preliminary_results"
 output_dir: "docs"
 navbar:
   title: "Preliminary results of the SBC on the TCGA-GBM Data set"
