@@ -1,0 +1,15 @@
+name: "MasterThesis"
+output_dir: "docs"
+navbar:
+  title: "Preliminary results of the SBC on the TCGA-GBM Data set"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Verhaak"
+      href: Preliminary_Results.html
+    - text: "TCGA-GBM"
+      href: Results.html
+output:
+  html_document:
+    theme: cosmo
+

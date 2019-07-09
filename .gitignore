@@ -35,3 +35,7 @@ vignettes/*.pdf
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
 .Rproj.user
+Bibliography/Registration_Master_Thesis_Camila.pdf
+Bibliography/Registration_Master_Thesis_Camila.pdf
+*.RData
+*.RData

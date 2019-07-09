@@ -1,0 +1,592 @@
+
+---
+title: "SBC on the GBM dataset from the whole Firebrowse Database(TCGA)."
+subtitle: "Karnofsky score corrected results"
+author: "Camila Duitama (Based on Ashar Ahmad's code for the SBC model)"
+date: "May 2019"
+params:
+  iter: 100
+  iter.burnin: 150
+  iter.thin: 5
+  pval.sbc : 0.6
+  output_folder : "Karnofsky_corrected_results_files/"
+output:
+  html_notebook:
+    highlight: tango
+    toc: yes
+    toc_depth: '2'
+    toc_float: true
+    number_sections: true
+    df_print: kable
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 10
+    code_folding: show
+  always_allow_html: yes
+  html_document:
+    highlight: tango
+    toc: yes
+    toc_depth: '2'
+    toc_float: true
+    number_sections: true
+    df_print: kable
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 10
+    code_folding: show
+  pdf_document:
+    
+    highlight: tango
+    toc: yes
+    toc_depth: '2'
+    toc_float: true
+    number_sections: true
+    df_print: kable
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 10
+    code_folding: show
+---
+
+# Loading of libraries
+
+Libraries needed to run the code must be loaded first
+
+```{r LibrariesLoading, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+library(sva)
+library(readr)
+library(ggplot2)
+library(matrixcalc)
+library(stats)
+library(Runuran)
+library(truncnorm)
+library(Matrix)
+library(psych)
+library(VGAM)
+library(MixSim)
+library(statmod)
+library(flexclust)
+library(mixAK)
+library(mclust)
+library(monomvn)
+library(cluster)
+library(flexmix)
+library(survival)
+library(utils)
+library(rms)
+library(pec)
+library(ipred)
+library(verification)
+library(Hmisc)
+library(glmpath)
+library(glmnet)
+library(gplots)
+library(sparcl)
+library(kernlab)
+library(class)
+library(reshape)
+library(GGally)
+library(XML)
+library(RCurl)
+library(MASS)
+library(matrixcalc)
+library(stats)
+library(Runuran)
+library(MCMCpack)
+library(VGAM)
+library(statmod)
+library(survcomp)
+library(gtools)
+library(ggplot2)
+library(GenOrd)
+library(plyr)
+library(dplyr)
+library(iCluster)
+library(CCA)
+library(caret)
+library(mcclust)
+library(Biobase)
+library(mixtools)
+library(knitr)
+library(kableExtra)
+library(devtools)
+library(rmarkdown)
+
+
+```
+
+# Loading/Splitting training and testing sets
+
+Data is separated into training and testing
+
+```{r Loading files, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+######## Input ###############
+
+Clinical_TrainingSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/First_data_split/TrainingSet/Clinical_TrainingSet.csv")
+mRNAArray_TrainingSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/First_data_split/TrainingSet/mRNAArray_TrainingSet.csv")
+Clinical_TestSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/Second_data_split/TestSet/Clinical_TestSet.csv")
+mRNAArray_TestSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/Second_data_split/TestSet/mRNAArray_TestSet.csv")
+
+indexes.train<-which(is.na(Clinical_TrainingSet$days_to_death), arr.ind=TRUE)
+indexes.test<-which(is.na(Clinical_TestSet$days_to_death), arr.ind=TRUE)
+training_time<-Clinical_TrainingSet$days_to_death
+test_time<-Clinical_TestSet$days_to_death
+for (i in indexes.train){
+  training_time[i]<-Clinical_TrainingSet$days_to_last_followup[i]
+}
+for (i in indexes.test){
+  test_time[i]<-Clinical_TestSet$days_to_last_followup[i]
+}
+total_time<-append(training_time,test_time)
+
+n<-length(Clinical_TrainingSet$X1)
+n.new<-length(Clinical_TestSet$X1)
+
+
+#### Overall Survival Time Vector (N*1)
+time<-total_time[1:n]
+time<-log(time)
+########### Event or Not Vector (N * 1) ####
+censoring<-Clinical_TrainingSet$vital_status
+######### mRNA (or miRNA expression values) (N*D) ###
+mRNAArray_TrainingSet$X1<-NULL
+Y.pre.train<-mRNAArray_TrainingSet
+
+#### Overall Survival Time Vector (N*1)
+time.new<-total_time[-(1:n)]
+time.new<-log(time.new)
+########### Event or Not Vector (N * 1) ####
+censoring.new<-Clinical_TestSet$vital_status
+######### mRNA (or miRNA expression values) (N*D) ###
+mRNAArray_TestSet$X1<-NULL
+Y.pre.test<-mRNAArray_TestSet
+
+```
+
+```{r Number of samples, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+print(paste0("Number of patients in training set: ",as.character(n)))
+print(paste0("Number of patients in test set: ",as.character(n.new)))
+```
+
+##Data visualization
+
+Initial visualization of censoring, survival times and mRNAArray Data of the training and testing set
+```{r Table for censoring information of the training set, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+table(censoring) %>%  
+  kable(caption = "Censoring frequency for the training set") %>%
+  kable_styling(bootstrap_options = c("striped", "hover","responsive"),full_width = T, position = "center")
+
+```
+
+```{r Table for censoring information of the testing set, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+table(censoring.new) %>%
+  kable(caption = "Censoring frequency for the testing set") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
+
+```
+
+
+```{r Header of mRNA matrix of the training set, echo=TRUE, message=TRUE, warning=TRUE, paged.print=TRUE}
+  Y.pre.train[1:5,1:5] %>%
+  kable(caption = "mRNA MicroArray data for the Training set " ) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
+```
+
+```{r Header of mRNA matrix of the testing set, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+  Y.pre.test[1:5,1:5] %>%
+  kable(caption = "mRNA MicroArray data for the Testing set " ) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")
+```
+
+```{r PCA of the whole mRNA dataset, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+totalmRNA<-rbind(mRNAArray_TrainingSet,mRNAArray_TestSet)
+mRNA.pca<-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
+classes<-c()
+for (i in 1:length(Clinical_TrainingSet$days_to_death)){
+    classes<-append(classes,"Training")
+  }
+for (i in 1:length(Clinical_TestSet$days_to_death)){
+    classes<-append(classes,"Testing")
+  }
+
+mRNA.pca$Classes<-classes
+p1 <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n mRNAArray Data of GBM") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p1
+
+```
+
+
+
+#Signature calculation
+
+This chunk calculates  SBC gene signature
+It's based on the idea of Univariate testing of Survival Data features
+**NOTE:** For now the rows where there is no censoring and time data will be removed from ALL datasets, until we find an imputation method.
+
+
+```{r SBC Signature, eval=FALSE, message=TRUE, warning=TRUE, include=FALSE, paged.print=FALSE}
+######## Prefiltering of the Genes ############################### ###########################
+######## Using Univariate Cox's Model for Ranking of the Survival Power of the Genes ########
+  
+
+  surv.obj <- Surv(time,censoring)
+  coeff.sig <- c(0)
+  
+  pvalue.sig <- c(0)
+  
+  
+  calcCox = function(x){
+    q1 <- unlist(summary(coxph(surv.obj ~ ., data = as.data.frame(x))))
+    return(q1$logtest.pvalue)
+  }
+  
+  
+  pvalue.sig <- apply(Y.pre.train,2,calcCox)
+  
+  
+  ###### Adjusting p-values for Multiple Test Correction
+  pvalue.sig.adj <- p.adjust(pvalue.sig, method = "fdr")
+  
+  #### As the number of features are quite variable choose first a very loose cut-off 
+  
+  signature.loose <- colnames(Y.pre.train)[(pvalue.sig.adj < params$pval.sbc)] 
+  
+  ### Combined the P-values
+  pvalue.combined <- (pvalue.sig.adj) 
+  names(pvalue.combined) <- colnames(Y.pre.train)
+  ## Sort it
+  pvalue.combined.sort <- sort(pvalue.combined)
+  ## Only select those genes which are loosely in the signature
+  pvalue.combined.adj <- pvalue.combined.sort[names(pvalue.combined.sort) %in% signature.loose]
+  
+  
+  ### Take the top 50 genes ####
+  signature.sbc <- names(pvalue.combined.adj[1:50])
+  
+```
+
+The SBC signature on the dataset looks like this
+
+```{r Table for the SBC signature, echo=TRUE, message=TRUE, warning=TRUE}
+  to_plot<-data.frame(Genes=signature.sbc)
+   to_plot%>%
+     kable(caption = "SBC Signature") %>%
+     kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")%>%
+     scroll_box(width = "500px", height = "200px")
+```
+
+## PCA of the signature genes
+
+```{r PCA of the signature, echo=TRUE}
+mRNA.signature<-rbind(Y.pre.train[,signature.sbc],Y.pre.test[,signature.sbc])
+mRNA.signature.pca<-as.data.frame(prcomp(mRNA.signature,scale=TRUE, center= TRUE)$x[,1:2])
+mRNA.signature.pca$Classes<-classes
+p6 <- ggplot(mRNA.signature.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n SBC Signature mRNAArray Data of GBM") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p6
+```
+
+## Survival curves for both training and testing set
+
+```{r Survival curves for both training and testing set, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+surv.fit <- survfit(Surv(total_time,append(Clinical_TrainingSet$vital_status,Clinical_TestSet$vital_status))~ classes)
+p3 <- ggsurv(surv.fit, plot.cens=FALSE,main = " DPMM \n Kaplan Meier curves for training and test set")+ ggplot2::guides(linetype = FALSE)
+p3
+```
+
+
+#Training
+
+##Preparation of the data needed for the training of the model
+```{r Preparation of Data Structures to train the SBC, eval=FALSE, include=FALSE}
+########################################################################
+###### We prepare the Data Structures Needed for the Running of the SBC ####
+#############################################################################
+
+######## Verhaak Signature ###############
+Verhaak_gene_signature <-read_csv("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/Verhaak_Data/Verhaak_GS_according_to_Training_Set_Split1.csv", 
+                                  col_names = FALSE, col_types = cols(X1 = col_skip()))
+signature.vk<-Verhaak_gene_signature$X2
+######## Verhaak Labels #################
+labels.vk<-Clinical_TrainingSet$Subtype
+
+#######Getting signature matrix on training and testing######
+Y <- Y.pre.train[,as.character(signature.sbc)]
+c.true <- as.factor(labels.vk)
+c.true<-unclass(c.true)
+
+Y.new <- Y.pre.test[,as.character(signature.sbc)]
+```
+
+
+## Training results
+
+```{r Training of SBC, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+##############################################################################
+############ This file takes in training data for Glioblastoma #################
+################################################################################
+
+###### Scaling the data #########
+Y <- scale(Y, center = TRUE, scale = TRUE)
+
+######
+N <- nrow(Y)
+D <- ncol(Y)
+smod <-  Surv(exp(time), censoring)
+
+##### Initial number of clusters
+k =4
+F =k
+
+
+##################### STATE OF THE ART TECHNIQUES #################################
+##################### BASIC METHODS + SOME ADVANCED METHODS ########################
+
+source('Comparisonx.R')
+Comparisonx()
+
+source('ComparisionFLX.R')
+ComparisionFLX()
+
+
+############################# PARAMETERS for GIBB's SAMPLING ####
+iter = params$iter
+iter.burnin = params$iter.burnin
+iter.thin  = params$iter.thin
+Nps = as.integer(iter/ iter.thin)
+
+
+######################### Initialize the Parameters ##############################
+source('initialize.R')
+initialize()
+
+###################### Start with a good configuration ###########################
+#source('startSBC.R')
+#startSBC()
+
+
+########### Train the Model #########################################
+source('burninDPMM.R')
+burninDPMM()
+
+source('gibbsDPMM.R')
+gibbsDPMM()
+
+########## Analyze the fit ##########################################
+### Good feature selection from heatmap plus cindex plus randindex
+source('MCMCanalyze.R')
+MCMCanalyze()
+```
+```{r}
+print(paste0("Time (hours) necessary for burnin :",as.character(round(sum(burnintime)/3600),digits=5)))
+print(paste0("Time (hours) necessary for Gibb's sampling :",as.character(round(sum(gibbstime/3600),digits=5))))
+```
+
+
+## Plots of results from training
+
+```{r Survival curves from training, echo=TRUE}
+
+###############################
+### Some plots and analysis ####
+#################################
+#### Generating some plots and results ON Training data ###
+logrank <- survdiff(smod ~ c.final)
+pval<-1 - pchisq(unlist(logrank)$chisq,df =3)
+surv.fit <- survfit(smod ~ c.final)
+p4 <- ggsurv(surv.fit,surv.col=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"),plot.cens=FALSE,main = " DPMM \n Kaplan Meier Estimators \n Training Set")+ ggplot2::guides(linetype = FALSE)+labs(subtitle = paste("P-value:",toString(round(pval,digits = 10))))
+p4
+
+```
+
+```{r PCA from training, echo=TRUE}
+############ Generating some Plots ##########################
+pc <- prcomp(Y)
+pc.pred <- predict(pc,newdata = Y)
+p5 <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.final))) + ggtitle(" SBC Clustering \n TCGA-GBM Training Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
+p5
+```
+
+```{r Plot likelihood of burning, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+to_plot<-as.data.frame(likli.burnin)
+p7<-qplot(seq_along(to_plot$likli.burnin), to_plot$likli.burnin)
+p7
+```
+
+# Testing
+
+```{r PCA Scaled Y and Y.new, eval=FALSE, include=FALSE}
+#Defining again Y and Y.new
+Y <- Y.pre.train[,as.character(signature.sbc)]
+Y.new <- Y.pre.test[,as.character(signature.sbc)]
+
+Y<-scale(Y, scale=TRUE,center= TRUE)
+Y.new<-scale(Y.new,scale=TRUE,center=TRUE)
+
+#PCA
+Y.big.unscaled<-rbind(Y,Y.new)
+pc.unscaled <- prcomp(Y.big.unscaled,center=TRUE,scale = TRUE)
+labels<-c.sbc
+for (i in 1:dim(Y.new)[1]){labels<-append(labels,5)}
+p8 <- ggplot(as.data.frame(pc.unscaled$x), aes(x=pc.unscaled$x[,1], y= pc.unscaled$x[,2], colour= as.factor(labels))) + ggtitle("Scaled data") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p8
+```
+```{r Momentum matching}
+##Y.new<- Y.new + (Miu-Miu.new)##
+###Attention!: THis line should be removed!!! Because we only scale once
+# Y <- scale(Y, center = TRUE, scale = TRUE)
+# #Y.new<- scale(Y.new, center=TRUE,scale=TRUE)
+# 
+# momentmatching<-function(x.new,x){
+# if (ncol(x)!=ncol(x.new)){
+#   return (print("The matrixes don't have the same number of columns"))
+# }else{
+#   delta<-colMeans(x)-colMeans(x.new)
+#   for (i in 1:ncol(x.new)){
+#     x.new[,i]<-x.new[,i]+delta[i]
+#   }
+#   return(x.new)
+# }
+# }
+# ##Momentum matching##
+# Y.new.prime<-momentmatching(Y.new,Y)
+# obj <- scale(Y, center = TRUE, scale = TRUE)
+# Y.new.prime.scaled<-  scale(Y.new.prime,center = attr(obj,"scaled:center"), scale = (attr(obj,"scaled:scale")))
+
+##Scaling##
+
+####object created to scale the test set afterwards####
+#Y.momentum.scaled <- scale(Y.new.prime, center = TRUE, scale = TRUE)
+```
+
+```{r Batch effect correction ComBat}
+# Y.new.corrected<-t(ComBat(dat=t(Y.new), batch=c.sbc.new))
+# Y.new.corrected<-scale(Y.new.corrected,scale= TRUE, center= TRUE)
+# Y.big.corrected<-rbind(Y,Y.new.corrected)
+# pc <- prcomp(Y.big.corrected,center=TRUE,scale = TRUE)
+# labels<-c.sbc
+# for (i in 1:dim(Y.new.prime.scaled)[1]){labels<-append(labels,5)}
+# p12 <- ggplot(as.data.frame(pc$x), aes(x=pc$x[,1], y= pc$x[,2], colour= as.factor(labels))) + ggtitle(" Scaled data") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+# p12
+```
+
+
+
+```{r Testing 2, eval=FALSE, include=FALSE}
+######## Predict on New Data Set  BASED ON JUST THE MOLECULAR DATA #####################################
+smod.new <- Surv(time.new, censoring.new)
+source('predictCLASS.R')
+#What does this function do?: Outputs a matrix that has dimension number of test samples * number of MCMC samples
+#The output matrix is c.matrix.new
+predictCLASS(Y.new)
+## Check the predicted Rand Index
+
+#### Choose that configuration which has the highest difference in survival curves ####################
+lr <- c(0)
+for (j in 1:Nps){
+  lr[j] <-  1 - pchisq(unlist(survdiff(smod.new ~ c.matrix.new[,j]))$chisq,df=length(table(c.matrix.new[,j]))-1)
+}
+
+significant<-c()
+for (i in 1:Nps){
+  if(lr[i]<0.05 & length(table(c.matrix.new[,i]))==4){
+    significant<-append(significant,i)
+  }
+}
+
+if (length(significant)>0){
+  index<-significant[which.min(lr[significant])]
+  c.sbc.new <- c.matrix.new[,index]
+
+}else{
+ print("There was no MCMC iteration that found 4 clusters and was statistically significant (p_value=0.05)")
+ c.sbc.new <- c.matrix.new[,which.min(lr)]
+}
+
+###############################################################################
+################################# Other ways of obtaining predictions #########
+## If we fit cluster-specific models ###########################################
+
+pre.sbc <- c(0)
+for (q in 1:F){
+  ind <- which(c.sbc == q)
+  ind.new <- which(c.sbc.new == q)
+
+  time.tmp <- time[ind]
+
+  Y.tmp <- Y[ind,]
+  Y.tmp.new <- Y.new[ind.new,]
+
+  reg <- cv.glmnet(x = Y.tmp, y = time.tmp, family = "gaussian")
+  if (class(Y.tmp.new)=="numeric"){ 
+    pre.sbc[ind.new] <- predict(object = reg, newx = t(matrix(Y.tmp.new)), s = "lambda.min")
+  }else{
+    pre.sbc[ind.new] <- predict(object = reg, newx = Y.tmp.new, s = "lambda.min")
+  }
+}
+predCIndex.sbc.aft  <<- as.numeric(concordance(smod.new ~ exp(-pre.sbc))[1])
+
+
+#### Use the adhoc-prediction algorithm ####################
+source('predictADHOCverhaak.R')
+
+source('predictTIME.R')
+predictchineseAFTtime(Y.new)
+
+```
+
+## Plot results from testing
+
+```{r Survival curves from testing, echo=TRUE}
+logrank.new <- survdiff(smod.new ~ c.sbc.new)
+#df= Degrees of freedom should be number of clusters-1
+pval.new<-1 - pchisq(unlist(logrank.new)$chisq,df =length(logrank.new$n)-1)
+surv.fit <- survfit(smod.new ~ c.sbc.new)
+p5.new <- ggsurv(surv.fit,surv.col=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3") ,plot.cens=FALSE,main = " DPMM \n Kaplan Meier Estimators \n Test Set")+ ggplot2::guides(linetype = FALSE)+labs(subtitle = paste("P-value:",toString(round(pval.new,digits = 5))))
+
+par(mfrow=c(2,1))
+p4
+p5.new
+
+```
+
+```{r PCA from testing, echo=TRUE}
+pc <- prcomp(Y.new,center=TRUE,scale = TRUE)
+pc.pred <- predict(pc,newdata = Y.new)
+p4.new <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(" SBC Clustering \n TCGA-GBM Test Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes")+scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
+p4.new
+```
+
+
+```{r Consolidated clustering results, echo=TRUE}
+table(c.sbc) %>%
+  kable(caption = "Clusters for the training set") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
+```
+
+```{r echo=TRUE}
+table(c.sbc.new) %>%
+  kable(caption = "Clusters for the testing set") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
+```
+```{r FInal table of SBC vs others, echo=TRUE}
+Methods<-c("Flexmix","K-Means + Penalized Cox","SBC + AFT","SBC")
+recovCIndex<-round(c(recovCIndex.flx,recovCIndex.km.pcox,max(recovCIndex.sbc.paft),max(recovCIndex.sbc)),digits = 3)
+predCIndex<-round(c(predCIndex.flx,predCIndex.kk.pcox,predCIndex.sbc.aft,max(predCIndex.sbc)),digits=3)
+sbc_and_comparisons<-as.data.frame(Methods)
+sbc_and_comparisons$recovCIndex<-recovCIndex
+sbc_and_comparisons$predCIndex<-predCIndex
+sbc_and_comparisons %>%
+  kable(caption = "SBC vs other methods") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"), position = "center",full_width = FALSE ) %>%
+  save_kable("comparisons.png")
+
+```
+
+```{r Save Results, eval=FALSE, include=FALSE}
+save.image("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/MasterThesis/R_Scripts_First_Results_Camila/Karnofsky_corrected_results.RData")
+write.csv(c.sbc,paste0(params$output_folder,"c_sbc.csv"))
+write.csv(c.sbc.new,paste0(params$output_folder,"c_sbc_new.csv"))
+write.csv(signature.sbc,paste0(params$output_folder,"sbc_signature.csv"))
+```
+
