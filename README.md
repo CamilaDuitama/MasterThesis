@@ -1,7 +1,7 @@
 # Master Thesis
 ## External Validation and characterization of Cancer subtypes using SBC
 
-The background of this master thesis is the SBC, a model that infers clinically relevant cancer subtypes, by jointly clustering molecular data along with survival datain a semi-supervised manner.The original paper and the supplementary material are on pdf version in this repository. A graphical representation of the model is this:
+The background of this master thesis is the SBC, a model that infers clinically relevant cancer subtypes, by jointly clustering molecular data along with survival datain a semi-supervised manner.The original paper and the supplementary material are on pdf version in this repository inside the folder called *papers*. A graphical representation of the model is this:
 
 ![SBC](/images/Graphical_model_SBC.png)
 
