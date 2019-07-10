@@ -11,6 +11,11 @@ params:
   output_folder : "Results_files/"
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = TRUE, echo=TRUE,include=TRUE)
+
+```
+
 # Loading of libraries
 
 Libraries needed to run the code must be loaded first
@@ -504,7 +509,7 @@ sbc_and_comparisons %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 ```
 
-```{r Save Results, echo=FALSE}
+```{r Save Results, eval=FALSE, include=FALSE}
 save.image("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/MasterThesis/R_Scripts_First_Results_Camila/Results.RData")
 write.csv(c.sbc,paste0(params$output_folder,"c_sbc.csv"))
 write.csv(c.sbc.new,paste0(params$output_folder,"c_sbc_new.csv"))

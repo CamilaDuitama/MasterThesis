@@ -1,5 +1,11 @@
 ---
-title: "My Website"
+title: "SBC on the TCGA-GBM Dataset"
 ---
 
-Hello, Website!
+This is the website built with the results of the master thesis project: "External validation and characterization of cancer subtypes using SBC ".
+
+
+1. Results on the Verhaak sample present in the TCGA-GBM Dataset.
+2. Results on the whole TCGA-GBM Dataset.
+3. Results after correcting sample selection to have more homogeneous Karnofsky Indexes between training and testing.
+4. Results after Karnofsky Index Correction and Flexmix Initialization

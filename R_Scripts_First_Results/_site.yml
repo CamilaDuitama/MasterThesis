@@ -1,15 +1,28 @@
-name: "MasterThesis"
-output_dir: "docs"
+name: "Master Thesis"
+output_dir: "../docs"
 navbar:
-  title: "Preliminary results of the SBC on the TCGA-GBM Data set"
+  title: "Master Thesis: External validation and characterization of cancer subtypes using SBC"
   left:
-    - text: "Home"
-      href: index.html
-    - text: "Verhaak"
-      href: Preliminary_Results.html
-    - text: "TCGA-GBM"
-      href: Results.html
+  - text: "Home"
+    href: index.html
+  - text: "1"
+    href: Preliminary_Results.html
+  - text: "2"
+    href: Results.html
+  - text: "3"
+    href: Karnofsky_corrected_results.html 
+  - text: "4"
+    href: Karnofsky_correction+Flexmix_initialization.html 
+  right:
+  - icon: fa-envelope fa-lg
+    href: camiladuitama@gmail.com
+  - icon: fa-github fa-lg
+    href: https://github.com/CamilaDuitama/MasterThesis
+  - icon: fa-twitter fa-lg
+    href: https://twitter.com/camiladuitama1
+  - icon: fa-linkedin fa-lg
+    href: https://www.linkedin.com/in/camiladuitama/
 output:
   html_document:
     theme: cosmo
-
+    highlight: textmate

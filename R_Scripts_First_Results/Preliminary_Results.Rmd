@@ -10,7 +10,10 @@ params:
   pval.sbc : 0.6
   output_folder : "Preliminary_Results_files/"
 ---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = TRUE, echo=TRUE,include=TRUE)
 
+```
 # Loading of libraries
 
 Libraries needed to run the code must be loaded first

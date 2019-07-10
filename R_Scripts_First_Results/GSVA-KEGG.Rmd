@@ -10,44 +10,13 @@ params:
   iter.thin: 5
   pval.sbc : 0.95
   output_folder : "GSVA-KEGG_files/"
-output:
-  html_notebook:
-    highlight: tango
-    toc: yes
-    toc_depth: '2'
-    toc_float: true
-    number_sections: true
-    df_print: kable
-    fig_caption: yes
-    fig_height: 6
-    fig_width: 10
-    code_folding: show
-  always_allow_html: yes
-  html_document:
-    highlight: tango
-    toc: yes
-    toc_depth: '2'
-    toc_float: true
-    number_sections: true
-    df_print: kable
-    fig_caption: yes
-    fig_height: 6
-    fig_width: 10
-    code_folding: show
-  pdf_document:
-    
-    highlight: tango
-    toc: yes
-    toc_depth: '2'
-    toc_float: true
-    number_sections: true
-    df_print: kable
-    fig_caption: yes
-    fig_height: 6
-    fig_width: 10
-    code_folding: show
+
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = TRUE, echo=TRUE,include=TRUE)
+
+```
 # Loading of libraries
 
 Libraries needed to run the code must be loaded first
