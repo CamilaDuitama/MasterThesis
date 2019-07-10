@@ -1,8 +1,6 @@
 ---
 title: "SBC on the TCGA-GBM Dataset"
-subtitle: "Master thesis project"
-author: "Camila Duitama (Based on Ashar Ahmad's code for the SBC model)"
-date: "July 2019"
+
 ---
 
 This is the website built with the results of the master thesis project: "External validation and characterization of cancer subtypes using SBC "

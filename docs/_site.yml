@@ -4,18 +4,16 @@ navbar:
   title: "Preliminary results of the SBC on the TCGA-GBM Data set"
   left:
   - text: "Results on the Verhaak samples present in the TCGA-GBM Data Set"
-   href: index.html
-   - text: "Results on the whole TCGA-GBM Data Set"
-   href: Results.html
-   right:
-    - icon: fa-envelope fa-lg
-      href: camiladuitama@gmail.com
-    - icon: fa-github fa-lg
-      href: https://github.com/CamilaDuitama/MasterThesis
-    - icon: fa-twitter fa-lg
-      href: https://twitter.com/camiladuitama1
-    - icon: fa-linkedin fa-lg
-      href: https://www.linkedin.com/in/camiladuitama/
+    href: index.html
+  - text: "Results on the whole TCGA-GBM Data Set"
+    href: Results.html
+  right:
+  - icon: fa-github fa-lg
+    href: https://github.com/CamilaDuitama/MasterThesis
+  - icon: fa-twitter fa-lg
+    href: https://twitter.com/camiladuitama1
+  - icon: fa-linkedin fa-lg
+    href: https://www.linkedin.com/in/camiladuitama/
 output:
   html_document:
- theme: cosmo
+  #theme: cosmo

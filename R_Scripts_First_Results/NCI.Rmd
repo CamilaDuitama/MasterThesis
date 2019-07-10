@@ -172,11 +172,7 @@ for (i in 1:length(NCIPathways)){
 Y.pre.train.gsva <- t(gsva(t(Y.pre.train),pathwaysets,mx.diff=TRUE,verbose=FALSE,parallel.sz=1))
 Y.pre.test.gsva <- t(gsva(t(Y.pre.test), pathwaysets, mx.diff=TRUE, verbose=FALSE, parallel.sz=1))
 
-#PLAGE
-Y.pre.train.plage <- t(gsva(t(Y.pre.train),pathwaysets,mx.diff=TRUE,verbose=FALSE,parallel.sz=1,method="plage"))
-Y.pre.test.plage <-t(gsva(t(Y.pre.test), pathwaysets, mx.diff=TRUE, verbose=FALSE, parallel.sz=1,method="plage"))
-
-#Zscor
+#Zscore
 Y.pre.train.zscore <-t(gsva(t(Y.pre.train),pathwaysets,mx.diff=TRUE,verbose=FALSE,parallel.sz=1,method="zscore"))
 Y.pre.test.zscore <-t(gsva(t(Y.pre.test), pathwaysets, mx.diff=TRUE, verbose=FALSE, parallel.sz=1,method="zscore"))
 
@@ -186,37 +182,6 @@ Y.pre.test.ssgsea <-t(gsva(t(Y.pre.test), pathwaysets, method="ssgsea", mx.diff=
 
 
 ```
-
-## Test set
-```{r Gene Set Pcox fitting on test set, eval=FALSE, include=FALSE}
-gs<-list()
-reg.paft.new<-list()
-linear.aft.new<-list()
-lost.new<-list()
-db_genesets<-msigdbr(species="Homo sapiens",category = "C6")
-
-for (i in unique(db_genesets$gs_name)){
-  gs[i]<-list(unique(filter(db_genesets,db_genesets$gs_name==i)$gene_symbol))
-  #Select all columns that aren't in the original dataframe Y.pre.train
-  tokeep.new <- gs[[i]][(gs[[i]] %in% colnames(Y.pre.test))]
-  #list with the percentages of ids lost
-  lost.new[[i]]<-(1-(length(tokeep.new)/length(gs[[i]])))*100
-  df.new<-Y.pre.test[,tokeep.new]
-  
-  reg.paft.new[[i]] <- glmnet(x = as.matrix(df.new), y = time.new, family = "gaussian")
-  linear.aft.new[[i]] <- predict(object = reg.paft.new[[i]], newx = as.matrix(df.new), s = min(reg.paft.new[[i]]$lambda)) 
-  
-}
-toplot.new<-as.data.frame(x=unlist(lost.new))
-colnames(toplot.new)<-"Percentage"
-ggplot(toplot, aes(x=" ", y=Percentage)) + 
-    geom_boxplot(fill="slateblue", alpha=0.2) + labs(title = "Percentage of lost ids per gene set", subtitle =" Test Set") 
-
-Y.pre.test<-do.call(cbind,linear.aft.new)
-colnames(Y.pre.test)<-names(linear.aft.new)
-```
-
-
 ## Data visualization
 
 ### Initial visualization of censoring, survival times and mRNAArray Data of the training and testing set
@@ -233,26 +198,10 @@ table(censoring.new) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 
 ```
+#### PCA Zscore
 
-
-```{r Header of mRNA matrix of the training set, echo=TRUE, message=TRUE, warning=TRUE, paged.print=TRUE}
-  Y.pre.train[1:5,1:5] %>%
-  kable(caption = "mRNA MicroArray data for the Training set " ) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
-```
-
-```{r Header of mRNA matrix of the testing set, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-  Y.pre.test[1:5,1:5] %>%
-  kable(caption = "mRNA MicroArray data for the Testing set " ) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")
-```
-
-```{r PCA , echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-
-Y.pre.test<-scale(Y.pre.test,scale=TRUE,center=TRUE)
-Y.pre.train<-scale(Y.pre.train,scale=TRUE,center=TRUE)
-
-totalmRNA<-rbind(Y.pre.train,Y.pre.test)
+```{r PCA Zscore, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+totalmRNA<-rbind(Y.pre.train.zscore,Y.pre.test.zscore)
 mRNA.pca<-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
 classes<-c()
 for (i in 1:length(Clinical_TrainingSet$days_to_death)){
@@ -263,11 +212,49 @@ for (i in 1:length(Clinical_TestSet$days_to_death)){
   }
 
 mRNA.pca$Classes<-classes
-p1 <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n GBM-TCGA Data set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p1 <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n Zscores of the GBM-TCGA Data set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
 p1
 
 ```
 
+
+#### PCA ssGSEA
+
+```{r PCA ssGSEA, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+totalmRNA<-rbind(Y.pre.train.ssgsea,Y.pre.test.ssgsea)
+mRNA.pca<-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
+classes<-c()
+for (i in 1:length(Clinical_TrainingSet$days_to_death)){
+    classes<-append(classes,"Training")
+  }
+for (i in 1:length(Clinical_TestSet$days_to_death)){
+    classes<-append(classes,"Testing")
+  }
+
+mRNA.pca$Classes<-classes
+p1 <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n ssGSEA scores of the GBM-TCGA Data set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p1
+
+```
+
+#### PCA GSVA
+
+```{r PCA GSVA, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+totalmRNA<-rbind(Y.pre.train.gsva,Y.pre.test.gsva)
+mRNA.pca<-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
+classes<-c()
+for (i in 1:length(Clinical_TrainingSet$days_to_death)){
+    classes<-append(classes,"Training")
+  }
+for (i in 1:length(Clinical_TestSet$days_to_death)){
+    classes<-append(classes,"Testing")
+  }
+
+mRNA.pca$Classes<-classes
+p1 <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n GSVA scores of the GBM-TCGA Data set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p1
+
+```
 #Signature calculation
 
 This chunk calculates  SBC gene signature
@@ -278,7 +265,12 @@ It's based on the idea of Univariate testing of Survival Data features
 ```{r SBC Signature, eval=FALSE, message=TRUE, warning=TRUE, include=FALSE, paged.print=FALSE}
 ######## Prefiltering of the Genes ############################### ###########################
 ######## Using Univariate Cox's Model for Ranking of the Survival Power of the Genes ########
+todo<-list(Y.pre.train.zscore,Y.pre.train.ssgsea,Y.pre.train.gsva)
 
+output<-list() 
+ 
+for (i in (1:3)){
+  input<-as.matrix(todo[[i]])
   surv.obj <- Surv(time,censoring)
   coeff.sig <- c(0)
   
@@ -291,7 +283,7 @@ It's based on the idea of Univariate testing of Survival Data features
   }
   
   
-  pvalue.sig <- apply(Y.pre.train,2,calcCox)
+  pvalue.sig <- apply(input,2,calcCox)
   
   
   ###### Adjusting p-values for Multiple Test Correction
@@ -299,19 +291,46 @@ It's based on the idea of Univariate testing of Survival Data features
   
   #### As the number of features are quite variable choose first a very loose cut-off 
   
-  signature.loose <- colnames(Y.pre.train)[(pvalue.sig.adj < params$pval.sbc)] 
+  signature.loose <- colnames(input)[(pvalue.sig.adj < params$pval.sbc)] 
   
   ### Combined the P-values
   pvalue.combined <- (pvalue.sig.adj) 
-  names(pvalue.combined) <- colnames(Y.pre.train)
+  names(pvalue.combined) <- colnames(input)
   ## Sort it
   pvalue.combined.sort <- sort(pvalue.combined)
   ## Only select those genes which are loosely in the signature
   pvalue.combined.adj <- pvalue.combined.sort[names(pvalue.combined.sort) %in% signature.loose]
   
+  output[i]<-list(pvalue.combined.adj)
+}  
+
   
-  ### Take the top 50 genes ####
-  signature.sbc <- names(pvalue.combined.adj[1:50])
+```
+
+```{r Which method should we select?}
+mean<-list()
+sd<-list()
+min<-list()
+max<-list()
+for (i in (1:3)){
+  mean<-c(mean,round(mean(output[[i]][1:25]),4))
+  sd<-c(sd,round(sd((output[[i]][1:25])),4))
+  min<-c(min,round(min((output[[i]][1:25])),4))
+  max<-c(max,round(max(output[[i]][1:25]),4))
+  
+}
+result<-data.frame("Method"=c("Zscore","ssGSEA","GSVA"))
+result$Mean<-mean
+result$SD<-sd
+result$Min<-min
+result$Max<-max
+result%>%
+     kable(caption = "Results of the Univariate Cox Model on the 4 Pathway scoring methods") %>%
+     kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")%>%
+     scroll_box(width = "500px", height = "200px")
+
+  ### Take the top 25 genes ####
+  signature.sbc <- names(output[[3]][1:25])
 
 ```
 
@@ -325,7 +344,6 @@ The SBC signature on the dataset looks like this
      kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")%>%
      scroll_box(width = "500px", height = "200px")
 ```
-
 
 ## Survival curves for both training and testing set
 

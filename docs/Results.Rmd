@@ -78,6 +78,10 @@ library(rmarkdown)
 
 ```
 
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE,eval=FALSE,echo=TRUE,warning=FALSE)
+```
+
 # Loading/Splitting training and testing sets
 
 Data is separated into training and testing
@@ -492,6 +496,7 @@ table(c.sbc.new) %>%
   kable(caption = "Clusters for the testing set") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 ```
+
 ```{r Final table of SBC vs others, echo=FALSE, cache=TRUE}
 Methods<-c("Flexmix","Flexmix + AFT","K-Means + Penalized AFT","K-Means + Penalized Cox","AFT","Cox","SBC + AFT","SBC")
 recovCIndex<-round(c(recovCIndex.flx,recovCIndex.flx.aft,recovCIndex.km.paft,recovCIndex.km.pcox,recovCIndex.na.aft,recovCIndex.na.cox,max(recovCIndex.sbc.paft),max(recovCIndex.sbc)),digits = 5)
