@@ -1,6 +1,5 @@
 ---
 title: "SBC on the TCGA-GBM Dataset"
-
 ---
 
 This is the website built with the results of the master thesis project: "External validation and characterization of cancer subtypes using SBC "

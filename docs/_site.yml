@@ -1,7 +1,6 @@
-name: "MasterThesis"
-output_dir: "docs"
+name: "Master Thesis"
 navbar:
-  title: "Preliminary results of the SBC on the TCGA-GBM Data set"
+  title: "Results"
   left:
   - text: "Results on the Verhaak samples present in the TCGA-GBM Data Set"
     href: index.html
@@ -16,4 +15,5 @@ navbar:
     href: https://www.linkedin.com/in/camiladuitama/
 output:
   html_document:
-  #theme: cosmo
+    theme: cosmo
+    highlight: textmate
