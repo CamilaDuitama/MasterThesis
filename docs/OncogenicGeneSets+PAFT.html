@@ -21,6 +21,7 @@
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -260,6 +261,14 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 
 
@@ -286,21 +295,7 @@ $(document).ready(function () {
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li>
-  <a href="index.html">Home</a>
-</li>
-<li>
-  <a href="Preliminary_Results.html">1</a>
-</li>
-<li>
-  <a href="Results.html">2</a>
-</li>
-<li>
-  <a href="Karnofsky_corrected_results.html">3</a>
-</li>
-<li>
-  <a href="Karnofsky_correction+Flexmix_initialization.html">4</a>
-</li>
+        
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -333,6 +328,14 @@ $(document).ready(function () {
 </div><!--/.navbar -->
 
 <div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
 
 
 
@@ -378,8 +381,55 @@ print(paste0(&quot;Number of patients in test set: &quot;,as.character(n.new)))<
 <pre class="r"><code>  Y.pre.test[1:5,1:5] %&gt;%
   kable(caption = &quot;mRNA MicroArray data for the Testing set &quot; ) %&gt;%
   kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,&quot;responsive&quot;),full_width = F, position = &quot;center&quot;)</code></pre>
-<pre class="r"><code>Y.pre.test&lt;-scale(Y.pre.test,scale=TRUE,center=TRUE)
-Y.pre.train&lt;-scale(Y.pre.train,scale=TRUE,center=TRUE)
+<pre class="r"><code>Y.pre.train&lt;-do.call(cbind,linear.aft)
+colnames(Y.pre.train)&lt;-names(linear.aft)
+
+Y.pre.test&lt;-do.call(cbind,linear.aft.new)
+colnames(Y.pre.test)&lt;-names(linear.aft.new)
+# ##Y.new&lt;- Y.new + (Miu-Miu.new)##
+# Y.pre.train &lt;- scale(Y.pre.train, center = TRUE, scale = TRUE)
+# Y.pre.test&lt;- scale(Y.pre.test, center=TRUE,scale=TRUE)
+# # 
+#  momentmatching&lt;-function(x.new,x){
+#  if (ncol(x)!=ncol(x.new)){
+#    return (print(&quot;The matrixes don&#39;t have the same number of columns&quot;))
+#  }else{
+#    delta&lt;-colMeans(x)-colMeans(x.new)
+#    for (i in 1:ncol(x.new)){
+#      x.new[,i]&lt;-x.new[,i]+delta[i]
+#    }
+#    return(x.new)
+#  }
+#  }
+# # ##Momentum matching##
+#  Y.pre.test.prime&lt;-momentmatching(Y.pre.test,Y.pre.train)
+#  Y.pre.test.prime&lt;-scale(Y.pre.test.prime, center=TRUE,scale=TRUE)
+#  obj &lt;- scale(Y.pre.train, center = TRUE, scale = TRUE)
+#  Y.pre.test.prime.scaled&lt;-  scale(Y.pre.test.prime,center = attr(obj,&quot;scaled:center&quot;), scale = (attr(obj,&quot;scaled:scale&quot;)))
+# 
+# ##Scaling##
+# 
+# ####object created to scale the test set afterwards####
+# #Y.momentum.scaled &lt;- scale(Y.new.prime, center = TRUE, scale = TRUE)
+ 
+Y.big.corrected&lt;-rbind(Y.pre.train,Y.pre.test)
+Y.big.corrected&lt;-scale(Y.big.corrected,scale=TRUE,center=TRUE)
+pc &lt;- prcomp(Y.big.corrected,center=TRUE,scale = TRUE)
+labels&lt;-c.sbc
+for (i in 1:dim(Y.pre.test)[1]){labels&lt;-append(labels,5)}
+p12 &lt;- ggplot(as.data.frame(pc$x), aes(x=pc$x[,1], y= pc$x[,2], colour= as.factor(labels))) + ggtitle(&quot; Scaled data&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
+p12</code></pre>
+<pre class="r"><code>Y.pre.train&lt;-do.call(cbind,linear.aft)
+colnames(Y.pre.train)&lt;-names(linear.aft)
+
+Y.pre.test&lt;-do.call(cbind,linear.aft.new)
+colnames(Y.pre.test)&lt;-names(linear.aft.new)
+
+          
+#Y.pre.train&lt;-scale(Y.pre.train,scale=TRUE,center=TRUE)
+#Y.pre.test&lt;-scale(Y.pre.test,scale=TRUE,center=TRUE)
+#obj &lt;- scale(Y.pre.train, center = TRUE, scale = TRUE)
+#Y.pre.test &lt;- scale(Y.pre.test, center = attr(obj,&quot;scaled:center&quot;), scale = (attr(obj,&quot;scaled:scale&quot;)))
 
 totalmRNA&lt;-rbind(Y.pre.train,Y.pre.test)
 mRNA.pca&lt;-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
@@ -414,6 +464,16 @@ p3</code></pre>
 </div>
 <div id="pca-of-the-signature-genes" class="section level2">
 <h2>PCA of the signature genes</h2>
+<pre class="r"><code>Y &lt;- Y.pre.train[,signature.sbc]
+Y.new &lt;- Y.pre.test[,signature.sbc]
+Y&lt;-scale(Y,scale=TRUE,center=TRUE)
+Y.new&lt;-scale(Y.new,scale=TRUE,center=TRUE)
+
+mRNA.signature&lt;-rbind(Y,Y.new)
+mRNA.signature.pca&lt;-as.data.frame(prcomp(mRNA.signature,scale=TRUE, center= TRUE)$x[,1:2])
+mRNA.signature.pca$Classes&lt;-classes
+p6 &lt;- ggplot(mRNA.signature.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PCA of the training and testing set \n SBC Signature mRNAArray Data of GBM&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
+p6</code></pre>
 </div>
 </div>
 <div id="training" class="section level1">
@@ -467,13 +527,27 @@ p7</code></pre>
 </div>
 <div id="testing" class="section level1">
 <h1>Testing</h1>
+<pre class="r"><code>#Defining again Y and Y.new
+Y &lt;- Y.pre.train[,signature.sbc]
+Y.new &lt;- Y.pre.test[,signature.sbc]
+
+Y&lt;-scale(Y, scale=TRUE,center= TRUE)
+Y.new&lt;-scale(Y.new,scale=TRUE,center=TRUE)
+
+#PCA
+Y.big.unscaled&lt;-rbind(Y,Y.new)
+pc.unscaled &lt;- prcomp(Y.big.unscaled,center=TRUE,scale = TRUE)
+labels&lt;-c.sbc
+for (i in 1:dim(Y.new)[1]){labels&lt;-append(labels,5)}
+p8 &lt;- ggplot(as.data.frame(pc.unscaled$x), aes(x=pc.unscaled$x[,1], y= pc.unscaled$x[,2], colour= as.factor(labels))) + ggtitle(&quot;Scaled data&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;)+scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;,&quot;#D4D4D4&quot;))
+p8</code></pre>
 <div id="plot-results-from-testing" class="section level2">
 <h2>Plot results from testing</h2>
 <pre class="r"><code>logrank.new &lt;- survdiff(smod.new ~ c.sbc.new)
 #df= Degrees of freedom should be number of clusters-1
 pval.new&lt;-1 - pchisq(unlist(logrank.new)$chisq,df =length(logrank.new$n)-1)
 surv.fit &lt;- survfit(smod.new ~ c.sbc.new)
-p5.new &lt;- ggsurv(surv.fit, plot.cens=FALSE,main = &quot; DPMM \n Kaplan Meier Estimators \n Test Set&quot;)+ ggplot2::guides(linetype = FALSE)+labs(subtitle = paste(&quot;P-value:&quot;,toString(round(pval.new,digits = 5))))
+p5.new &lt;- ggsurv(surv.fit, surv.col=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;),plot.cens=FALSE,main = &quot; DPMM \n Kaplan Meier Estimators \n Test Set&quot;)+ ggplot2::guides(linetype = FALSE)+labs(subtitle = paste(&quot;P-value:&quot;,toString(round(pval.new,digits = 5))))
 
 par(mfrow=c(2,1))
 p4

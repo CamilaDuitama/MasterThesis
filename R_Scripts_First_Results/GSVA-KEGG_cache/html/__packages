@@ -80,3 +80,4 @@ kableExtra
 usethis
 devtools
 rmarkdown
+flexdashboard

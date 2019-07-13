@@ -12,7 +12,8 @@ params:
   output_folder : "Autoencoder1_Molecular+Survival_files/"
 ---
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache = TRUE, echo=TRUE,include=TRUE)
+knitr::opts_chunk$set(cache=TRUE,include=TRUE,collapse=TRUE,warning=FALSE,message=FALSE,eval=FALSE)
+rm(list = ls(all.names = TRUE))
 
 ```
 # Loading of libraries
@@ -550,10 +551,4 @@ sbc_and_comparisons %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 ```
 
-```{r Save Results, eval=FALSE, include=FALSE}
-save.image("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/MasterThesis/R_Scripts_First_Results_Camila/Karnofsky_correction+Flexmix_initialization.RData")
-write.csv(c.sbc,paste0(params$output_folder,"c_sbc.csv"))
-write.csv(c.sbc.new,paste0(params$output_folder,"c_sbc_new.csv"))
-write.csv(signature.sbc,paste0(params$output_folder,"sbc_signature.csv"))
-```
 

@@ -1,11 +1,39 @@
 ---
 title: "SBC on the TCGA-GBM Dataset"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
 ---
 
 This is the website built with the results of the master thesis project: "External validation and characterization of cancer subtypes using SBC ".
 
+    
+Row
+-------------------------------------
+    
+### Chart 1
+    
+```{r Verhaak signature in TCGA-GBM}
+valueBox(value = 1,caption = "Verhaak samples on the TCGA-GBM",href="Preliminary_Results.html")
+```
+ 
+### Chart 2
+    
+```{r}
+valueBox(value = 2,caption = "All samples on the TCGA-GBM",href="Results.html")
+``` 
 
-1. Results on the Verhaak sample present in the TCGA-GBM Dataset.
-2. Results on the whole TCGA-GBM Dataset.
-3. Results after correcting sample selection to have more homogeneous Karnofsky Indexes between training and testing.
-4. Results after Karnofsky Index Correction and Flexmix Initialization
+Row
+-------------------------------------
+    
+### Chart 3
+    
+```{r}
+valueBox(value = 3,caption = "Karnofsky corrected samples from the TCGA-GBM",href="Karnofsky_corrected_results.html")
+```
+    
+### Chart 4
+
+```{r}
+valueBox(value = 4,caption = "Gene Set Enrichment scores for KEGG pathways as feature selection",href="GSVA-KEGG.html")
+```

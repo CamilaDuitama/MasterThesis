@@ -21,6 +21,7 @@
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -260,6 +261,14 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 
 
@@ -286,21 +295,7 @@ $(document).ready(function () {
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li>
-  <a href="index.html">Home</a>
-</li>
-<li>
-  <a href="Preliminary_Results.html">1</a>
-</li>
-<li>
-  <a href="Results.html">2</a>
-</li>
-<li>
-  <a href="Karnofsky_corrected_results.html">3</a>
-</li>
-<li>
-  <a href="Karnofsky_correction+Flexmix_initialization.html">4</a>
-</li>
+        
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -334,6 +329,14 @@ $(document).ready(function () {
 
 <div class="fluid-row" id="header">
 
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">SBC on the GBM dataset from the whole Firebrowse Database(TCGA).</h1>
@@ -356,12 +359,15 @@ print(paste0(&quot;Number of patients in test set: &quot;,as.character(n.new)))<
 <div id="data-visualization" class="section level2">
 <h2>Data visualization</h2>
 <p>Initial visualization of censoring, survival times and mRNAArray Data of the training and testing set</p>
-<pre class="r"><code>table(censoring) %&gt;%  
+<pre class="r"><code>
+table(censoring) %&gt;%  
   kable(caption = &quot;Censoring frequency for the training set&quot;) %&gt;%
-  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)</code></pre>
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)
+</code></pre>
 <pre class="r"><code>table(censoring.new) %&gt;%
   kable(caption = &quot;Censoring frequency for the testing set&quot;) %&gt;%
-  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)</code></pre>
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)
+</code></pre>
 <pre class="r"><code>  Y.pre.train[1:5,1:5] %&gt;%
   kable(caption = &quot;mRNA MicroArray data for the Training set &quot; ) %&gt;%
   kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)</code></pre>
@@ -383,7 +389,8 @@ for (i in 1:length(Clinical_TestSet$days_to_death)){
 
 mRNA.pca$Classes&lt;-classes
 p1 &lt;- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PCA of the training and testing set \n mRNAArray Data of GBM&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
-p1</code></pre>
+p1
+</code></pre>
 </div>
 </div>
 <div id="signature-calculation" class="section level1">
@@ -439,7 +446,8 @@ print(paste0(&quot;Time (hours) necessary for Gibb&#39;s sampling :&quot;,as.cha
 </div>
 <div id="plots-of-results-from-training" class="section level2">
 <h2>Plots of results from training</h2>
-<pre class="r"><code>###############################
+<pre class="r"><code>
+###############################
 ### Some plots and analysis ####
 #################################
 #### Generating some plots and results ON Training data ###
@@ -447,7 +455,8 @@ logrank &lt;- survdiff(smod ~ c.final)
 pval&lt;-1 - pchisq(unlist(logrank)$chisq,df =3)
 surv.fit &lt;- survfit(smod ~ c.final)
 p4 &lt;- ggsurv(surv.fit, plot.cens=FALSE,main = &quot; DPMM \n Kaplan Meier Estimators \n Training Set&quot;)+ ggplot2::guides(linetype = FALSE)+labs(subtitle = paste(&quot;P-value:&quot;,toString(round(pval,digits = 10))))
-p4</code></pre>
+p4
+</code></pre>
 <pre class="r"><code>############ Generating some Plots ##########################
 pc &lt;- prcomp(Y)
 pc.pred &lt;- predict(pc,newdata = Y)
@@ -503,7 +512,8 @@ p5.new &lt;- ggsurv(surv.fit, plot.cens=FALSE,main = &quot; DPMM \n Kaplan Meier
 
 par(mfrow=c(2,1))
 p4
-p5.new</code></pre>
+p5.new
+</code></pre>
 <pre class="r"><code>pc &lt;- prcomp(Y.new,center=TRUE,scale = TRUE)
 pc.pred &lt;- predict(pc,newdata = Y.new)
 p4.new &lt;- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(&quot; SBC Clustering \n GBM Cancer Test Data Set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 

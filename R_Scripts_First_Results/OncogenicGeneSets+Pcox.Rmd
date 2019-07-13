@@ -12,7 +12,7 @@ params:
   output_folder : "OcogenicGeneSets+Pcox_files/"
 ---
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache = TRUE, echo=TRUE,include=TRUE)
+knitr::opts_chunk$set(cache = TRUE, echo=TRUE,include=TRUE,eval=FALSE)
 
 ```
 # Loading of libraries

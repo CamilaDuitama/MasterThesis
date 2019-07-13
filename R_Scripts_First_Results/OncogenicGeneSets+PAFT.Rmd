@@ -13,7 +13,7 @@ params:
 
 ---
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache = TRUE, echo=TRUE,include=TRUE)
+knitr::opts_chunk$set(cache = TRUE, echo=TRUE,include=TRUE,eval=FALSE)
 
 ```
 # Loading of libraries
@@ -183,8 +183,7 @@ for (i in unique(db_genesets$gs_name)){
   lost.new[[i]]<-(1-(length(tokeep.new)/length(gs[[i]])))*100
   df.new<-Y.pre.test[,tokeep.new]
   
-  reg.paft.new[[i]] <- glmnet(x = as.matrix(df.new), y = time.new, family = "gaussian")
-  linear.aft.new[[i]] <- predict(object = reg.paft.new[[i]], newx = as.matrix(df.new), s = min(reg.paft.new[[i]]$lambda)) 
+  linear.aft.new[[i]] <- predict(object = reg.paft[[i]], newx = as.matrix(df.new), s = min(reg.paft[[i]]$lambda)) 
   
 }
 toplot.new<-as.data.frame(x=unlist(lost.new))
@@ -227,10 +226,60 @@ table(censoring.new) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")
 ```
 
-```{r PCA , echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r Momentum matching, eval=FALSE}
 
-Y.pre.test<-scale(Y.pre.test,scale=TRUE,center=TRUE)
-Y.pre.train<-scale(Y.pre.train,scale=TRUE,center=TRUE)
+Y.pre.train<-do.call(cbind,linear.aft)
+colnames(Y.pre.train)<-names(linear.aft)
+
+Y.pre.test<-do.call(cbind,linear.aft.new)
+colnames(Y.pre.test)<-names(linear.aft.new)
+# ##Y.new<- Y.new + (Miu-Miu.new)##
+# Y.pre.train <- scale(Y.pre.train, center = TRUE, scale = TRUE)
+# Y.pre.test<- scale(Y.pre.test, center=TRUE,scale=TRUE)
+# # 
+#  momentmatching<-function(x.new,x){
+#  if (ncol(x)!=ncol(x.new)){
+#    return (print("The matrixes don't have the same number of columns"))
+#  }else{
+#    delta<-colMeans(x)-colMeans(x.new)
+#    for (i in 1:ncol(x.new)){
+#      x.new[,i]<-x.new[,i]+delta[i]
+#    }
+#    return(x.new)
+#  }
+#  }
+# # ##Momentum matching##
+#  Y.pre.test.prime<-momentmatching(Y.pre.test,Y.pre.train)
+#  Y.pre.test.prime<-scale(Y.pre.test.prime, center=TRUE,scale=TRUE)
+#  obj <- scale(Y.pre.train, center = TRUE, scale = TRUE)
+#  Y.pre.test.prime.scaled<-  scale(Y.pre.test.prime,center = attr(obj,"scaled:center"), scale = (attr(obj,"scaled:scale")))
+# 
+# ##Scaling##
+# 
+# ####object created to scale the test set afterwards####
+# #Y.momentum.scaled <- scale(Y.new.prime, center = TRUE, scale = TRUE)
+ 
+Y.big.corrected<-rbind(Y.pre.train,Y.pre.test)
+Y.big.corrected<-scale(Y.big.corrected,scale=TRUE,center=TRUE)
+pc <- prcomp(Y.big.corrected,center=TRUE,scale = TRUE)
+labels<-c.sbc
+for (i in 1:dim(Y.pre.test)[1]){labels<-append(labels,5)}
+p12 <- ggplot(as.data.frame(pc$x), aes(x=pc$x[,1], y= pc$x[,2], colour= as.factor(labels))) + ggtitle(" Scaled data") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p12
+```
+
+```{r PCA , echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+Y.pre.train<-do.call(cbind,linear.aft)
+colnames(Y.pre.train)<-names(linear.aft)
+
+Y.pre.test<-do.call(cbind,linear.aft.new)
+colnames(Y.pre.test)<-names(linear.aft.new)
+
+          
+#Y.pre.train<-scale(Y.pre.train,scale=TRUE,center=TRUE)
+#Y.pre.test<-scale(Y.pre.test,scale=TRUE,center=TRUE)
+#obj <- scale(Y.pre.train, center = TRUE, scale = TRUE)
+#Y.pre.test <- scale(Y.pre.test, center = attr(obj,"scaled:center"), scale = (attr(obj,"scaled:scale")))
 
 totalmRNA<-rbind(Y.pre.train,Y.pre.test)
 mRNA.pca<-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
@@ -317,7 +366,7 @@ p3
 
 ## PCA of the signature genes
 
-```{r PCA of the signature, include=FALSE}
+```{r PCA of the signature}
 
 Y <- Y.pre.train[,signature.sbc]
 Y.new <- Y.pre.test[,signature.sbc]
@@ -452,7 +501,7 @@ p7
 
 # Testing
 
-```{r PCA Scaled Y and Y.new, eval=FALSE, include=FALSE}
+```{r PCA Scaled Y and Y.new}
 #Defining again Y and Y.new
 Y <- Y.pre.train[,signature.sbc]
 Y.new <- Y.pre.test[,signature.sbc]
@@ -543,7 +592,7 @@ logrank.new <- survdiff(smod.new ~ c.sbc.new)
 #df= Degrees of freedom should be number of clusters-1
 pval.new<-1 - pchisq(unlist(logrank.new)$chisq,df =length(logrank.new$n)-1)
 surv.fit <- survfit(smod.new ~ c.sbc.new)
-p5.new <- ggsurv(surv.fit, plot.cens=FALSE,main = " DPMM \n Kaplan Meier Estimators \n Test Set")+ ggplot2::guides(linetype = FALSE)+labs(subtitle = paste("P-value:",toString(round(pval.new,digits = 5))))
+p5.new <- ggsurv(surv.fit, surv.col=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"),plot.cens=FALSE,main = " DPMM \n Kaplan Meier Estimators \n Test Set")+ ggplot2::guides(linetype = FALSE)+labs(subtitle = paste("P-value:",toString(round(pval.new,digits = 5))))
 
 par(mfrow=c(2,1))
 p4

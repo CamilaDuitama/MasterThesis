@@ -2,17 +2,7 @@ name: "Master Thesis"
 output_dir: "../docs"
 navbar:
   title: "Master Thesis: External validation and characterization of cancer subtypes using SBC"
-  left:
-  - text: "Home"
-    href: index.html
-  - text: "1"
-    href: Preliminary_Results.html
-  - text: "2"
-    href: Results.html
-  - text: "3"
-    href: Karnofsky_corrected_results.html 
-  - text: "4"
-    href: Karnofsky_correction+Flexmix_initialization.html 
+
   right:
   - icon: fa-envelope fa-lg
     href: camiladuitama@gmail.com
@@ -26,3 +16,4 @@ output:
   html_document:
     theme: cosmo
     highlight: textmate
+    code_folding: hide

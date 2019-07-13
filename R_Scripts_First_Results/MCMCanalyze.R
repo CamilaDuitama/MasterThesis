@@ -30,12 +30,12 @@ surv.aft <- Surv(exp(time),censoring)
 ### Predict Time from the model
 tem.tim <- predicttime(c.list[[h]], Y, That.list[[h]], Time, beta0.list[[h]], betahat.list[[h]], sigma2.list[[h]])$predicttime
 library(Hmisc)
-recovCIndex.sbc[h] <-  concordance(surv.aft ~ exp(-tem.tim))[[1]]
+recovCIndex.sbc[h] <-  concordance(surv.aft ~ exp(tem.tim))[[1]]
 
 ## try to fit a Cluster-specific AFT model on top of it ##
 
-###### penAFT ###################################################################
-######## Penalized AFT with k-means clustering ######################################################
+# ###### penAFT ###################################################################
+# ######## Penalized AFT with k-means clustering ######################################################
 sbc.aft <- c(0)
 for ( q in 1:F){
   ind <- which((c.list[[h]]) == q)
@@ -43,12 +43,12 @@ for ( q in 1:F){
   time.tmp <- time[ind]
   censoring.tmp <- censoring[ind]
   Y.tmp <- Y[ind,]
-  if (L<4){
-    sbc.aft[ind] <- time.tmp
-  }else{
+  #if (L<4){
+  #  sbc.aft[ind] <- time.tmp
+  #}else{
   reg <- cv.glmnet(x = Y.tmp, y = time.tmp, family = "gaussian")
   coeff.pred <- coef(object =reg, newx = Y.tmp, s= "lambda.min")
-  sbc.aft[ind] <- predict(object = reg, newx = Y.tmp, s = "lambda.min") 
+  sbc.aft[ind] <- predict(object = reg, newx = Y.tmp, s = "lambda.min")
   }
 }
 recovCIndex.sbc.paft[[h]] <- as.numeric(concordance(smod ~ exp(sbc.aft))[1])

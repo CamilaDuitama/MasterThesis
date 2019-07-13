@@ -21,8 +21,10 @@
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -260,6 +262,14 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 
 
@@ -286,21 +296,7 @@ $(document).ready(function () {
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li>
-  <a href="index.html">Home</a>
-</li>
-<li>
-  <a href="Preliminary_Results.html">1</a>
-</li>
-<li>
-  <a href="Results.html">2</a>
-</li>
-<li>
-  <a href="Karnofsky_corrected_results.html">3</a>
-</li>
-<li>
-  <a href="Karnofsky_correction+Flexmix_initialization.html">4</a>
-</li>
+        
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -334,6 +330,14 @@ $(document).ready(function () {
 
 <div class="fluid-row" id="header">
 
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">SBC on the GBM dataset from the whole Firebrowse Database(TCGA).</h1>
@@ -347,17 +351,141 @@ $(document).ready(function () {
 <div id="loading-of-libraries" class="section level1">
 <h1>Loading of libraries</h1>
 <p>Libraries needed to run the code must be loaded first</p>
+<pre class="r"><code>library(GSVA)
+library(sva)
+library(readr)
+library(ggplot2)
+library(matrixcalc)
+library(stats)
+library(Runuran)
+library(truncnorm)
+library(Matrix)
+library(psych)
+library(VGAM)
+library(MixSim)
+library(statmod)
+library(flexclust)
+library(mixAK)
+library(mclust)
+library(monomvn)
+library(cluster)
+library(flexmix)
+library(survival)
+library(utils)
+library(rms)
+library(pec)
+library(ipred)
+library(verification)
+library(Hmisc)
+library(glmpath)
+library(glmnet)
+library(gplots)
+library(sparcl)
+library(kernlab)
+library(class)
+library(reshape)
+library(GGally)
+library(XML)
+library(RCurl)
+library(MASS)
+library(matrixcalc)
+library(stats)
+library(Runuran)
+library(MCMCpack)
+library(VGAM)
+library(statmod)
+library(survcomp)
+library(gtools)
+library(ggplot2)
+library(GenOrd)
+library(plyr)
+library(dplyr)
+library(iCluster)
+library(CCA)
+library(caret)
+library(mcclust)
+library(Biobase)
+library(mixtools)
+library(knitr)
+library(kableExtra)
+library(devtools)
+library(rmarkdown)
+library(msigdbr)
+library(graphite)
+</code></pre>
 </div>
 <div id="loadingsplitting-training-and-testing-sets" class="section level1">
 <h1>Loading/Splitting training and testing sets</h1>
 <p>Data is separated into training and testing</p>
+<pre class="r"><code>######## Input ###############
+
+Clinical_TrainingSet &lt;- read_csv(&quot;/Volumes/GoogleDrive/My Drive/Documents/GitHub/Data/Second_data_split/TrainingSet/Clinical_TrainingSet.csv&quot;)
+mRNAArray_TrainingSet &lt;- read_csv(&quot;/Volumes/GoogleDrive/My Drive/Documents/GitHub/Data/Second_data_split/TrainingSet/mRNAArray_TrainingSet.csv&quot;)
+Clinical_TestSet &lt;- read_csv(&quot;/Volumes/GoogleDrive/My Drive/Documents/GitHub/Data/Second_data_split/TestSet/Clinical_TestSet.csv&quot;)
+mRNAArray_TestSet &lt;- read_csv(&quot;/Volumes/GoogleDrive/My Drive/Documents/GitHub/Data/Second_data_split/TestSet/mRNAArray_TestSet.csv&quot;)
+indexes.train&lt;-which(is.na(Clinical_TrainingSet$days_to_death), arr.ind=TRUE)
+indexes.test&lt;-which(is.na(Clinical_TestSet$days_to_death), arr.ind=TRUE)
+training_time&lt;-Clinical_TrainingSet$days_to_death
+test_time&lt;-Clinical_TestSet$days_to_death
+for (i in indexes.train){
+  training_time[i]&lt;-Clinical_TrainingSet$days_to_last_followup[i]
+}
+for (i in indexes.test){
+  test_time[i]&lt;-Clinical_TestSet$days_to_last_followup[i]
+}
+total_time&lt;-append(training_time,test_time)
+
+n&lt;-length(Clinical_TrainingSet$X1)
+n.new&lt;-length(Clinical_TestSet$X1)
+
+
+#### Overall Survival Time Vector (N*1)
+time&lt;-total_time[1:n]
+time&lt;-log(time)
+########### Event or Not Vector (N * 1) ####
+censoring&lt;-Clinical_TrainingSet$vital_status
+######### mRNA (or miRNA expression values) (N*D) ###
+mRNAArray_TrainingSet$X1&lt;-NULL
+Y.pre.train&lt;-mRNAArray_TrainingSet
+
+#### Overall Survival Time Vector (N*1)
+time.new&lt;-total_time[-(1:n)]
+time.new&lt;-log(time.new)
+########### Event or Not Vector (N * 1) ####
+censoring.new&lt;-Clinical_TestSet$vital_status
+######### mRNA (or miRNA expression values) (N*D) ###
+mRNAArray_TestSet$X1&lt;-NULL
+Y.pre.test&lt;-mRNAArray_TestSet
+</code></pre>
 <pre class="r"><code>print(paste0(&quot;Number of patients in training set: &quot;,as.character(n)))
-print(paste0(&quot;Number of patients in test set: &quot;,as.character(n.new)))</code></pre>
+## [1] &quot;Number of patients in training set: 160&quot;
+print(paste0(&quot;Number of patients in test set: &quot;,as.character(n.new)))
+## [1] &quot;Number of patients in test set: 261&quot;</code></pre>
 </div>
 <div id="oncogene-set-paft-fitting-of-model" class="section level1">
 <h1>Oncogene set PAFT fitting of model</h1>
 <div id="training-set" class="section level2">
 <h2>Training set</h2>
+<pre class="r"><code>NCIPathways&lt;-pathways(&quot;hsapiens&quot;,&quot;nci&quot;)
+NCIPathways&lt;-convertIdentifiers(NCIPathways,&quot;symbol&quot;)
+pathwaysets&lt;-list()
+for (i in 1:length(NCIPathways)){
+  nodes&lt;-nodes(NCIPathways[[i]])
+  pathwaysets[[NCIPathways[[i]]@title]]&lt;-gsub(&quot;SYMBOL:&quot;,&quot;&quot;,nodes)
+  }
+
+#GSVA
+Y.pre.train.gsva &lt;- t(gsva(t(Y.pre.train),pathwaysets,mx.diff=TRUE,verbose=FALSE,parallel.sz=1))
+Y.pre.test.gsva &lt;- t(gsva(t(Y.pre.test), pathwaysets, mx.diff=TRUE, verbose=FALSE, parallel.sz=1))
+
+#Zscore
+Y.pre.train.zscore &lt;-t(gsva(t(Y.pre.train),pathwaysets,mx.diff=TRUE,verbose=FALSE,parallel.sz=1,method=&quot;zscore&quot;))
+Y.pre.test.zscore &lt;-t(gsva(t(Y.pre.test), pathwaysets, mx.diff=TRUE, verbose=FALSE, parallel.sz=1,method=&quot;zscore&quot;))
+
+#SSGSEA
+Y.pre.train.ssgsea &lt;- t(gsva(t(Y.pre.train),pathwaysets,method=&quot;ssgsea&quot;,mx.diff=TRUE,verbose=FALSE,parallel.sz=1))
+Y.pre.test.ssgsea &lt;-t(gsva(t(Y.pre.test), pathwaysets, method=&quot;ssgsea&quot;, mx.diff=TRUE, verbose=FALSE, parallel.sz=1))
+</code></pre>
 </div>
 <div id="data-visualization" class="section level2">
 <h2>Data visualization</h2>
@@ -366,9 +494,75 @@ print(paste0(&quot;Number of patients in test set: &quot;,as.character(n.new)))<
 <pre class="r"><code>table(censoring) %&gt;%  
   kable(caption = &quot;Censoring frequency for the training set&quot;) %&gt;%
   kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)</code></pre>
+<table class="table table-striped table-hover table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+Censoring frequency for the training set
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+censoring
+</th>
+<th style="text-align:right;">
+Freq
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:right;">
+6
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+154
+</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>table(censoring.new) %&gt;%
   kable(caption = &quot;Censoring frequency for the testing set&quot;) %&gt;%
   kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+Censoring frequency for the testing set
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+censoring.new
+</th>
+<th style="text-align:right;">
+Freq
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:right;">
+48
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+213
+</td>
+</tr>
+</tbody>
+</table>
 <div id="pca-zscore" class="section level4">
 <h4>PCA Zscore</h4>
 <pre class="r"><code>totalmRNA&lt;-rbind(Y.pre.train.zscore,Y.pre.test.zscore)
@@ -384,6 +578,7 @@ for (i in 1:length(Clinical_TestSet$days_to_death)){
 mRNA.pca$Classes&lt;-classes
 p1 &lt;- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PCA of the training and testing set \n Zscores of the GBM-TCGA Data set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
 p1</code></pre>
+<p><img src="NCI_files/figure-html/PCA%20Zscore-1.png" width="960" /></p>
 </div>
 <div id="pca-ssgsea" class="section level4">
 <h4>PCA ssGSEA</h4>
@@ -400,6 +595,7 @@ for (i in 1:length(Clinical_TestSet$days_to_death)){
 mRNA.pca$Classes&lt;-classes
 p1 &lt;- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PCA of the training and testing set \n ssGSEA scores of the GBM-TCGA Data set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
 p1</code></pre>
+<p><img src="NCI_files/figure-html/PCA%20ssGSEA-1.png" width="960" /></p>
 </div>
 <div id="pca-gsva" class="section level4">
 <h4>PCA GSVA</h4>
@@ -416,13 +612,50 @@ for (i in 1:length(Clinical_TestSet$days_to_death)){
 mRNA.pca$Classes&lt;-classes
 p1 &lt;- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PCA of the training and testing set \n GSVA scores of the GBM-TCGA Data set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
 p1</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div id="signature-calculation" class="section level1">
-<h1>Signature calculation</h1>
-<p>This chunk calculates SBC gene signature It’s based on the idea of Univariate testing of Survival Data features <strong>NOTE:</strong> For now the rows where there is no censoring and time data will be removed from ALL datasets, until we find an imputation method.</p>
+<p><img src="NCI_files/figure-html/PCA%20GSVA-1.png" width="960" /> #Signature calculation</p>
+<p>This chunk calculates SBC gene signature It’s based on the idea of Univariate testing of Survival Data features</p>
+<pre class="r"><code>######## Prefiltering of the Genes ############################### ###########################
+######## Using Univariate Cox&#39;s Model for Ranking of the Survival Power of the Genes ########
+todo&lt;-list(Y.pre.train.zscore,Y.pre.train.ssgsea,Y.pre.train.gsva)
+
+output&lt;-list() 
+ 
+for (i in (1:3)){
+  input&lt;-as.matrix(todo[[i]])
+  surv.obj &lt;- Surv(time,censoring)
+  coeff.sig &lt;- c(0)
+  
+  pvalue.sig &lt;- c(0)
+  
+  
+  calcCox = function(x){
+    q1 &lt;- unlist(summary(coxph(surv.obj ~ ., data = as.data.frame(x))))
+    return(q1$logtest.pvalue)
+  }
+  
+  
+  pvalue.sig &lt;- apply(input,2,calcCox)
+  
+  
+  ###### Adjusting p-values for Multiple Test Correction
+  pvalue.sig.adj &lt;- p.adjust(pvalue.sig, method = &quot;fdr&quot;)
+  
+  #### As the number of features are quite variable choose first a very loose cut-off 
+  
+  signature.loose &lt;- colnames(input)[(pvalue.sig.adj &lt; params$pval.sbc)] 
+  
+  ### Combined the P-values
+  pvalue.combined &lt;- (pvalue.sig.adj) 
+  names(pvalue.combined) &lt;- colnames(input)
+  ## Sort it
+  pvalue.combined.sort &lt;- sort(pvalue.combined)
+  ## Only select those genes which are loosely in the signature
+  pvalue.combined.adj &lt;- pvalue.combined.sort[names(pvalue.combined.sort) %in% signature.loose]
+  
+  output[i]&lt;-list(pvalue.combined.adj)
+}  
+
+  </code></pre>
 <pre class="r"><code>mean&lt;-list()
 sd&lt;-list()
 min&lt;-list()
@@ -440,109 +673,94 @@ result$SD&lt;-sd
 result$Min&lt;-min
 result$Max&lt;-max
 result%&gt;%
-     kable(caption = &quot;Results of the Univariate Cox Model on the 4 Pathway scoring methods&quot;) %&gt;%
-     kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,&quot;responsive&quot;),full_width = F, position = &quot;center&quot;)%&gt;%
-     scroll_box(width = &quot;500px&quot;, height = &quot;200px&quot;)
-
-  ### Take the top 25 genes ####
-  signature.sbc &lt;- names(output[[3]][1:25])</code></pre>
-<p>The SBC signature on the dataset looks like this</p>
-<pre class="r"><code>  to_plot&lt;-data.frame(Genes=signature.sbc)
-   to_plot%&gt;%
-     kable(caption = &quot;SBC Signature&quot;) %&gt;%
+     kable(caption = &quot;Results of the 4 Pathway scoring methods&quot;) %&gt;%
      kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,&quot;responsive&quot;),full_width = F, position = &quot;center&quot;)%&gt;%
      scroll_box(width = &quot;500px&quot;, height = &quot;200px&quot;)</code></pre>
-<div id="survival-curves-for-both-training-and-testing-set" class="section level2">
-<h2>Survival curves for both training and testing set</h2>
-<pre class="r"><code>surv.fit &lt;- survfit(Surv(total_time,append(Clinical_TrainingSet$vital_status,Clinical_TestSet$vital_status))~ classes)
-p3 &lt;- ggsurv(surv.fit, plot.cens=FALSE,main = &quot; DPMM \n Kaplan Meier curves for training and test set&quot;)+ ggplot2::guides(linetype = FALSE)
-p3</code></pre>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:500px; ">
+<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Results of the 4 Pathway scoring methods
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Method
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Mean
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+SD
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Min
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Max
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Zscore
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ssGSEA
+</td>
+<td style="text-align:left;">
+0.1995
+</td>
+<td style="text-align:left;">
+0.0517
+</td>
+<td style="text-align:left;">
+0.1023
+</td>
+<td style="text-align:left;">
+0.3236
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GSVA
+</td>
+<td style="text-align:left;">
+0.6262
+</td>
+<td style="text-align:left;">
+0.1757
+</td>
+<td style="text-align:left;">
+0.3861
+</td>
+<td style="text-align:left;">
+0.8035
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="pca-of-the-signature-genes" class="section level2">
-<h2>PCA of the signature genes</h2>
+<pre class="r"><code>
+  ### Take the top 25 genes ####
+  signature.sbc &lt;- names(output[[3]][1:25])</code></pre>
+<p>Since none of the p values were significant. The model was not trained.</p>
 </div>
 </div>
-<div id="training" class="section level1">
-<h1>Training</h1>
-<div id="preparation-of-the-data-needed-for-the-training-of-the-model" class="section level2">
-<h2>Preparation of the data needed for the training of the model</h2>
-<pre class="r"><code>########################################################################
-###### We prepare the Data Structures Needed for the Running of the SBC ####
-#############################################################################
-
-######## Verhaak Signature ###############
-Verhaak_gene_signature &lt;-read_csv(&quot;/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/Verhaak_Data/Verhaak_GS_according_to_Training_Set_Split1.csv&quot;, 
-                                  col_names = FALSE, col_types = cols(X1 = col_skip()))
-signature.vk&lt;-Verhaak_gene_signature$X2
-######## Verhaak Labels #################
-labels.vk&lt;-Clinical_TrainingSet$Subtype
-
-#######Getting signature matrix on training and testing######
-Y &lt;- Y.pre.train[,signature.sbc]
-c.true &lt;- as.factor(labels.vk)
-c.true&lt;-unclass(c.true)
-
-Y.new &lt;- Y.pre.test[,signature.sbc]</code></pre>
-</div>
-<div id="training-results" class="section level2">
-<h2>Training results</h2>
-<pre class="r"><code>print(paste0(&quot;Time (hours) necessary for burnin :&quot;,as.character(round(sum(burnintime)/3600),digits=5)))
-print(paste0(&quot;Time (hours) necessary for Gibb&#39;s sampling :&quot;,as.character(round(sum(gibbstime/3600),digits=5))))</code></pre>
-</div>
-<div id="plots-of-results-from-training" class="section level2">
-<h2>Plots of results from training</h2>
-<pre class="r"><code>###############################
-### Some plots and analysis ####
-#################################
-#### Generating some plots and results ON Training data ###
-logrank &lt;- survdiff(smod ~ c.final)
-pval&lt;-1 - pchisq(unlist(logrank)$chisq,df =3)
-surv.fit &lt;- survfit(smod ~ c.final)
-p4 &lt;- ggsurv(surv.fit,surv.col=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;),plot.cens=FALSE,main = &quot; DPMM \n Kaplan Meier Estimators \n Training Set&quot;)+ ggplot2::guides(linetype = FALSE)+labs(subtitle = paste(&quot;P-value:&quot;,toString(round(pval,digits = 10))))
-p4</code></pre>
-<pre class="r"><code>############ Generating some Plots ##########################
-Y&lt;-Y.pre.train[,signature.sbc]
-pc &lt;- prcomp(Y)
-pc.pred &lt;- predict(pc,newdata = Y)
-p5 &lt;- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.final))) + ggtitle(&quot; SBC Clustering \n VerhaakCancer Data Set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;)+scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;,&quot;#C70039&quot;))
-p5</code></pre>
-<pre class="r"><code>to_plot&lt;-as.data.frame(likli.burnin)
-p7&lt;-qplot(seq_along(to_plot$likli.burnin), to_plot$likli.burnin)
-p7</code></pre>
-</div>
-</div>
-<div id="testing" class="section level1">
-<h1>Testing</h1>
-<div id="plot-results-from-testing" class="section level2">
-<h2>Plot results from testing</h2>
-<pre class="r"><code>logrank.new &lt;- survdiff(smod.new ~ c.sbc.new)
-#df= Degrees of freedom should be number of clusters-1
-pval.new&lt;-1 - pchisq(unlist(logrank.new)$chisq,df =length(logrank.new$n)-1)
-surv.fit &lt;- survfit(smod.new ~ c.sbc.new)
-p5.new &lt;- ggsurv(surv.fit, plot.cens=FALSE,main = &quot; DPMM \n Kaplan Meier Estimators \n Test Set&quot;)+ ggplot2::guides(linetype = FALSE)+labs(subtitle = paste(&quot;P-value:&quot;,toString(round(pval.new,digits = 5))))
-
-par(mfrow=c(2,1))
-p4
-p5.new</code></pre>
-<pre class="r"><code>pc &lt;- prcomp(Y.new,center=TRUE,scale = TRUE)
-pc.pred &lt;- predict(pc,newdata = Y.new)
-p4.new &lt;- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(&quot; SBC Clustering \n GBM Cancer Test Data Set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) +scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;))
-p4.new</code></pre>
-<pre class="r"><code>table(c.sbc) %&gt;%
-  kable(caption = &quot;Clusters for the training set&quot;) %&gt;%
-  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)</code></pre>
-<pre class="r"><code>table(c.sbc.new) %&gt;%
-  kable(caption = &quot;Clusters for the testing set&quot;) %&gt;%
-  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)</code></pre>
-<pre class="r"><code>Methods&lt;-c(&quot;Flexmix&quot;,&quot;Flexmix + AFT&quot;,&quot;K-Means + Penalized AFT&quot;,&quot;K-Means + Penalized Cox&quot;,&quot;AFT&quot;,&quot;Cox&quot;,&quot;SBC + AFT&quot;,&quot;SBC&quot;)
-recovCIndex&lt;-round(c(recovCIndex.flx,recovCIndex.flx.aft,recovCIndex.km.paft,recovCIndex.km.pcox,recovCIndex.na.aft,recovCIndex.na.cox,max(recovCIndex.sbc.paft),max(recovCIndex.sbc)),digits = 5)
-predCIndex&lt;-c(predCIndex.flx,&quot;NA&quot;,&quot;NA&quot;,predCIndex.kk.pcox,predCIndex.na.aft,predCIndex.na.cox,predCIndex.sbc.aft,max(predCIndex.sbc))
-sbc_and_comparisons&lt;-as.data.frame(Methods)
-sbc_and_comparisons$recovCIndex&lt;-recovCIndex
-sbc_and_comparisons$predCIndex&lt;-predCIndex
-sbc_and_comparisons %&gt;%
-  kable(caption = &quot;SBC vs other methods&quot;) %&gt;%
-  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)</code></pre>
 </div>
 </div>
 
