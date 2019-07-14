@@ -1,12 +1,15 @@
 ---
-title: "SBC on the TCGA-GBM Dataset"
+title: "Master Thesis:External validation and characterization of cancer subtypes using SBC"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
+    navbar:
+      - { icon: fa-envelope fa-lg , href: "mailto:camiladuitama@gmail.com" }
+      - { icon: fa-github fa-lg, href: "https://github.com/CamilaDuitama/MasterThesis" }
+      - { icon: fa-twitter fa-lg, href: "https://twitter.com/camiladuitama1" }
+      - { icon: fa-linkedin fa-lg , href: "https://www.linkedin.com/in/camiladuitama/" }
+ 
 ---
-
-This is the website built with the results of the master thesis project: "External validation and characterization of cancer subtypes using SBC ".
-
     
 Row
 -------------------------------------
@@ -35,5 +38,47 @@ valueBox(value = 3,caption = "Karnofsky corrected samples from the TCGA-GBM",hre
 ### Chart 4
 
 ```{r}
-valueBox(value = 4,caption = "Gene Set Enrichment scores for KEGG pathways as feature selection",href="GSVA-KEGG.html")
+valueBox(value = 4,caption = "Karnofsky corrected samples from the TCGA-GBM and Flexmix Intialization",href="Karnofsky_correction+Flexmix_initialization.html")
+```
+Row
+-------------------------------------
+    
+### Chart 5
+    
+```{r}
+valueBox(value = 5,caption = "GSE methods on KEGG pathways as feature selection ",href="GSVA-KEGG.html")
+```
+    
+### Chart 6
+
+```{r}
+valueBox(value = 6,caption = "GSE methods on Oncogenic gene sets as feature selection",href="GSVA-Oncogenic_Signature.html")
+```
+Row
+-------------------------------------
+    
+### Chart 7
+    
+```{r}
+valueBox(value = 7,caption = "GSE methods on NCI pathway sets as feature selection ",href="NCI.html")
+```
+    
+### Chart 8
+
+```{r}
+valueBox(value = 8,caption = "Latent layer of a simple autoencoder with molecular and survival data  as input for the SBC",href="Autoencoder1_Molecular+Survival.html")
+```
+Row
+-------------------------------------
+    
+### Chart 9
+    
+```{r}
+valueBox(value = 9,caption = "Linear predictor of PCox model on the Oncogenic gene sets",href="OncogenicGeneSets+Pcox.html")
+```
+    
+### Chart 10
+
+```{r}
+valueBox(value = 10,caption = "Linear predictor of AFT model on the Oncogenic gene sets",href="OncogenicGeneSets+PAFT.html")
 ```

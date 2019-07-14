@@ -2,10 +2,9 @@ name: "Master Thesis"
 output_dir: "../docs"
 navbar:
   title: "Master Thesis: External validation and characterization of cancer subtypes using SBC"
-
   right:
   - icon: fa-envelope fa-lg
-    href: camiladuitama@gmail.com
+    href: mailto:camiladuitama@gmail.com
   - icon: fa-github fa-lg
     href: https://github.com/CamilaDuitama/MasterThesis
   - icon: fa-twitter fa-lg
