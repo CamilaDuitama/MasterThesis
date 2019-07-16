@@ -23,8 +23,6 @@ SBC's main features are:
 
 #### Training and testing model (Preliminary results)
 The folder [R_Scripts_First_Results](/R_Scripts_First_Results/) contains all the necessary scripts to train and run the model, and produce an R Notebook with the results.
-- The file Preliminary_Results.Rmd produces the Preliminary_Results.html which is the result run only on the training set of the first split*
-- The file Results.Rmd produces the Results.html which is the result from the SBC model train and tested on the whole dataset using the first split of the data
 
-*First split was 160 samples as training(the ones which were already classified according to the 4 Verhaak labels), 338 samples as testing.
+All the  models trained as a result of different feature selection and pre-processing methods are presented [here](https://camiladuitama.github.io/MasterThesis/)
 
