@@ -544,10 +544,12 @@ Y.pre.test&lt;-mRNAArray_TrainingSet[-(1:n),]
 ## [1] &quot;Number of patients in training set: 80&quot;
 print(paste0(&quot;Number of patients in test set: &quot;,length(time.new)))
 ## [1] &quot;Number of patients in test set: 80&quot;</code></pre>
-<div id="data-visualization" class="section level3">
-<h3>Data visualization</h3>
-<div id="censoring-data" class="section level4">
-<h4>Censoring data</h4>
+</div>
+</div>
+<div id="data-visualization" class="section level1">
+<h1>Data visualization</h1>
+<div id="censoring-data" class="section level2">
+<h2>Censoring data</h2>
 <pre class="r"><code>
 table(censoring) %&gt;%  
   kable(caption = &quot;Censoring frequency for the training set&quot;) %&gt;%
@@ -622,8 +624,8 @@ Freq
 </tbody>
 </table>
 </div>
-<div id="header-of-mrna-matrixes-for-training-and-testing" class="section level4">
-<h4>Header of mRNA matrixes for training and testing</h4>
+<div id="header-of-mrna-matrixes-for-training-and-testing" class="section level2">
+<h2>Header of mRNA matrixes for training and testing</h2>
 <pre class="r"><code>  Y.pre.train[1:5,1:5] %&gt;%
   kable(caption = &quot;mRNA MicroArray data for the Training set &quot; ) %&gt;%
   kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)</code></pre>
@@ -853,8 +855,8 @@ RPS11
 </tbody>
 </table>
 </div>
-<div id="pca-of-training-and-testing" class="section level4">
-<h4>PCA of training and testing</h4>
+<div id="pca-of-training-and-testing" class="section level2">
+<h2>PCA of training and testing</h2>
 <pre class="r"><code>mRNA.pca&lt;-as.data.frame(prcomp(mRNAArray_TrainingSet,scale=TRUE, center= TRUE)$x[,1:2])
 classes&lt;-c()
 for (i in 1:length(Clinical_TrainingSet$days_to_death)){
@@ -868,8 +870,6 @@ mRNA.pca$Classes&lt;-classes
 p1 &lt;- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PCA of the training and testing set \n mRNAArray Data of GBM&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
 p1</code></pre>
 <p><img src="Preliminary_Results_files/figure-html/PCA%20of%20the%20whole%20mRNA%20dataset-1.png" width="960" /></p>
-</div>
-</div>
 </div>
 </div>
 <div id="signature-calculation" class="section level1">
@@ -1590,7 +1590,6 @@ NaN
 </tr>
 </tbody>
 </table>
-<p>f</p>
 </div>
 </div>
 
