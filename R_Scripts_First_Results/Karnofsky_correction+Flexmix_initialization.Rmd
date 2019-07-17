@@ -13,6 +13,10 @@ params:
 
 ---
 
+# Description
+
+After the Karnosfky Index correction, we wanted to try a different initialization method from the standard used in the SBC model. Therefore we tried a Flexmix initialization. This are the results of the SBC model applied to a Karnofsky corrected dataset and with a Flexmix initialization.
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache=TRUE,include=TRUE,collapse=TRUE,warning=FALSE,message=FALSE, fig.width = 10, fig.height = 6)
 rm(list = ls(all.names = TRUE))
@@ -141,7 +145,7 @@ print(paste0("Number of patients in test set: ",as.character(n.new)))
 
 ##Data visualization
 
-Initial visualization of censoring, survival times and mRNAArray Data of the training and testing set
+### Censoring data
 ```{r Table for censoring information of the training set}
 
 table(censoring) %>%  
@@ -157,7 +161,7 @@ table(censoring.new) %>%
 
 ```
 
-
+### Headers of mRNA matrixes
 ```{r Header of mRNA matrix of the training set}
   Y.pre.train[1:5,1:5] %>%
   kable(caption = "mRNA MicroArray data for the Training set " ) %>%
@@ -170,6 +174,7 @@ table(censoring.new) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")
 ```
 
+### PCA of training and test set
 ```{r PCA of the whole mRNA dataset}
 totalmRNA<-rbind(mRNAArray_TrainingSet,mRNAArray_TestSet)
 mRNA.pca<-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
@@ -499,10 +504,10 @@ table(c.sbc.new) %>%
   kable(caption = "Clusters for the testing set") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 ```
-```{r FInal table of SBC vs others, echo=TRUE}
-Methods<-c("Flexmix","Flexmix + AFT","K-Means + Penalized AFT","K-Means + Penalized Cox","AFT","Cox","SBC + AFT","SBC")
-recovCIndex<-round(c(recovCIndex.flx,recovCIndex.flx.aft,recovCIndex.km.paft,recovCIndex.km.pcox,recovCIndex.na.aft,recovCIndex.na.cox,max(recovCIndex.sbc.paft),max(recovCIndex.sbc)),digits = 5)
-predCIndex<-c(predCIndex.flx,"NA","NA",predCIndex.kk.pcox,predCIndex.na.aft,predCIndex.na.cox,predCIndex.sbc.aft,max(predCIndex.sbc))
+```{r Final table of SBC vs others, echo=TRUE}
+Methods<-c("Flexmix","K-Means + Penalized AFT","K-Means + Penalized Cox","AFT","Cox","SBC")
+recovCIndex<-round(c(recovCIndex.flx,recovCIndex.km.paft,recovCIndex.km.pcox,recovCIndex.na.aft,recovCIndex.na.cox,max(recovCIndex.sbc)),digits = 5)
+predCIndex<-c(predCIndex.flx,"NA",predCIndex.kk.pcox,predCIndex.na.aft,predCIndex.na.cox,max(predCIndex.sbc))
 sbc_and_comparisons<-as.data.frame(Methods)
 sbc_and_comparisons$recovCIndex<-recovCIndex
 sbc_and_comparisons$predCIndex<-predCIndex

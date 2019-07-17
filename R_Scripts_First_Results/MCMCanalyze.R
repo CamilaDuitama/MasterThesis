@@ -43,9 +43,9 @@ for ( q in 1:F){
   time.tmp <- time[ind]
   censoring.tmp <- censoring[ind]
   Y.tmp <- Y[ind,]
-  #if (L<4){
-  #  sbc.aft[ind] <- time.tmp
-  #}else{
+  if (L<4){
+    sbc.aft[ind] <- time.tmp
+  }else{
   reg <- cv.glmnet(x = Y.tmp, y = time.tmp, family = "gaussian")
   coeff.pred <- coef(object =reg, newx = Y.tmp, s= "lambda.min")
   sbc.aft[ind] <- predict(object = reg, newx = Y.tmp, s = "lambda.min")

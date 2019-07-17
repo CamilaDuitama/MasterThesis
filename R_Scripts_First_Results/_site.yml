@@ -16,3 +16,8 @@ output:
     theme: cosmo
     highlight: textmate
     code_folding: hide
+    toc: true
+    toc_float: true
+    fig_width: 10
+    fig_height: 6
+    fig_caption: true

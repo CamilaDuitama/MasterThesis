@@ -81,3 +81,7 @@ usethis
 devtools
 rmarkdown
 flexdashboard
+tibble
+msigdbr
+graphite
+GSVA

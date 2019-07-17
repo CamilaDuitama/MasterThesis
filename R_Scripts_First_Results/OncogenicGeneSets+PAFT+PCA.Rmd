@@ -12,12 +12,14 @@ params:
   output_folder : "OcogenicGeneSets+PAFT+PCA_files/"
 
 ---
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache=TRUE,eval=FALSE,include=TRUE,collapse=TRUE,warning=FALSE,message=FALSE, fig.width = 10, fig.height = 6)
 rm(list = ls(all.names = TRUE))
 
-
 ```
+
 # Loading of libraries
 
 Libraries needed to run the code must be loaded first
@@ -552,7 +554,7 @@ p5.new
 
 ```
 
-```{r PCA from testing, echo=TRUE}
+```{r PCA from testing}
 pc <- prcomp(Y.new,center=TRUE,scale = TRUE)
 pc.pred <- predict(pc,newdata = Y.new)
 p4.new <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(" SBC Clustering \n GBM Cancer Test Data Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
@@ -560,21 +562,21 @@ p4.new
 ```
 
 
-```{r Consolidated clustering results, echo=TRUE}
+```{r Consolidated clustering results training}
 table(c.sbc) %>%
   kable(caption = "Clusters for the training set") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 ```
 
-```{r echo=TRUE}
+```{r Consolidated clustering results testing}
 table(c.sbc.new) %>%
   kable(caption = "Clusters for the testing set") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 ```
-```{r FInal table of SBC vs others, echo=TRUE}
-Methods<-c("Flexmix","Flexmix + AFT","K-Means + Penalized AFT","K-Means + Penalized Cox","AFT","Cox","SBC + AFT","SBC")
-recovCIndex<-round(c(recovCIndex.flx,recovCIndex.flx.aft,recovCIndex.km.paft,recovCIndex.km.pcox,recovCIndex.na.aft,recovCIndex.na.cox,max(recovCIndex.sbc.paft),max(recovCIndex.sbc)),digits = 5)
-predCIndex<-c(predCIndex.flx,"NA","NA",predCIndex.kk.pcox,predCIndex.na.aft,predCIndex.na.cox,predCIndex.sbc.aft,max(predCIndex.sbc))
+```{r Final table of SBC vs others, echo=TRUE}
+Methods<-c("Flexmix","K-Means + Penalized AFT","K-Means + Penalized Cox","AFT","Cox","SBC")
+recovCIndex<-round(c(recovCIndex.flx,recovCIndex.km.paft,recovCIndex.km.pcox,recovCIndex.na.aft,recovCIndex.na.cox,max(recovCIndex.sbc)),digits = 5)
+predCIndex<-c(predCIndex.flx,"NA",predCIndex.kk.pcox,predCIndex.na.aft,predCIndex.na.cox,max(predCIndex.sbc))
 sbc_and_comparisons<-as.data.frame(Methods)
 sbc_and_comparisons$recovCIndex<-recovCIndex
 sbc_and_comparisons$predCIndex<-predCIndex

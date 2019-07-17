@@ -18,6 +18,11 @@ knitr::opts_chunk$set(cache=TRUE,include=TRUE,collapse=TRUE,warning=FALSE,messag
 rm(list = ls(all.names = TRUE))
 load("/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/R_Scripts_First_Results/GSVA-KEGG.RData")
 ```
+
+# Description
+
+The KEGG Pathway Gene Sets were downloaded from [MSigDB](http://software.broadinstitute.org/gsea/msigdb/genesets.jsp?collection=CP:KEGG) and a Gene Set Enrichment Score was calculated for each of the methods present in the bioconductor package GSVA : ssGSEA, Zscore, PLAGE and GSVA. The method with the lowest P-values was selected as pathway feature aggregation method to give the scores that would be used as inputs for the SBC model.
+
 # Loading of libraries
 
 Libraries needed to run the code must be loaded first
@@ -163,7 +168,7 @@ Y.pre.test.ssgsea <-t(gsva(t(Y.pre.test), gs, method="ssgsea", mx.diff=TRUE, ver
 
 ## Data visualization
 
-### Initial visualization of censoring, survival times and mRNAArray Data of the training and testing set
+### Censoring data for training and test set
 ```{r Table for censoring information of the training set}
 table(censoring) %>%  
   kable(caption = "Censoring frequency for the training set") %>%
@@ -178,18 +183,7 @@ table(censoring.new) %>%
 
 ```
 
-
-```{r Header of mRNA matrix of the training set}
-  Y.pre.train.gsva[1:5,1:5] %>%
-  kable(caption = "mRNA MicroArray data for the Training set " ) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
-```
-
-```{r Header of mRNA matrix of the testing set}
-  Y.pre.test.gsva[1:5,1:5] %>%
-  kable(caption = "mRNA MicroArray data for the Testing set " ) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")
-```
+### PCA of the GSE methods
 
 ```{r PCA Zscore}
 totalmRNA<-rbind(Y.pre.train.zscore,Y.pre.test.zscore)
@@ -208,8 +202,6 @@ p1
 
 ```
 ```{r PCA PLAGE}
-#Y.pre.train.plage.norm<-scale(Y.pre.train.plage,center=TRUE,scale=TRUE)
-#Y.pre.test.plage.norm<-scale(Y.pre.test.plage,center=TRUE,scale=TRUE)
 
 totalmRNA<-rbind(Y.pre.train.plage,Y.pre.test.plage)
 mRNA.pca<-as.data.frame(prcomp(totalmRNA,scale=FALSE, center= FALSE)$x[,1:2])
@@ -355,7 +347,7 @@ The SBC signature on the dataset looks like this
 mRNA.signature<-rbind(Y.pre.train.ssgsea[,signature.sbc],Y.pre.test.ssgsea[,signature.sbc])
 mRNA.signature.pca<-as.data.frame(prcomp(mRNA.signature,scale=TRUE, center= TRUE)$x[,1:2])
 mRNA.signature.pca$Classes<-classes
-p6 <- ggplot(mRNA.signature.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n SBC Signature mRNAArray Data of GBM") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p6 <- ggplot(mRNA.signature.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n SBC Signature genes") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
 p6
 ```
 
@@ -476,7 +468,7 @@ p4
 ############ Generating some Plots ##########################
 pc <- prcomp(Y)
 pc.pred <- predict(pc,newdata = Y)
-p5 <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.final))) + ggtitle(" SBC Clustering \n VerhaakCancer Data Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
+p5 <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.final))) + ggtitle("PCA after SBC clustering \n Training Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
 p5
 ```
 
@@ -501,7 +493,7 @@ Y.big.unscaled<-rbind(Y,Y.new)
 pc.unscaled <- prcomp(Y.big.unscaled,center=TRUE,scale = TRUE)
 labels<-c.sbc
 for (i in 1:dim(Y.new)[1]){labels<-append(labels,5)}
-p8 <- ggplot(as.data.frame(pc.unscaled$x), aes(x=pc.unscaled$x[,1], y= pc.unscaled$x[,2], colour= as.factor(labels))) + ggtitle("Scaled data") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#B1B4B6"))
+p8 <- ggplot(as.data.frame(pc.unscaled$x), aes(x=pc.unscaled$x[,1], y= pc.unscaled$x[,2], colour= as.factor(labels))) + ggtitle("PCA \n Training set with SBC labels and unlabeled test set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#B1B4B6"))
 p8
 ```
 
@@ -588,26 +580,26 @@ p5.new
 ```{r PCA from testing}
 pc <- prcomp(Y.new,center=TRUE,scale = TRUE)
 pc.pred <- predict(pc,newdata = Y.new)
-p4.new <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(" SBC Clustering \n GBM Cancer Test Data Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
+p4.new <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(" PCA after SBC Clustering \n  Test Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
 p4.new
 ```
 
 
-```{r Consolidated clustering results}
+```{r Consolidated clustering results training set}
 table(c.sbc) %>%
   kable(caption = "Clusters for the training set") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 ```
 
-```{r }
+```{r Consolidated clustering results test set}
 table(c.sbc.new) %>%
   kable(caption = "Clusters for the testing set") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 ```
 ```{r Final table of SBC vs others}
-Methods<-c("Flexmix","Flexmix + AFT","K-Means + Penalized AFT","K-Means + Penalized Cox","AFT","Cox","SBC + AFT","SBC")
-recovCIndex<-round(c(recovCIndex.flx,recovCIndex.flx.aft,recovCIndex.km.paft,recovCIndex.km.pcox,recovCIndex.na.aft,recovCIndex.na.cox,max(recovCIndex.sbc.paft),max(recovCIndex.sbc)),digits = 5)
-predCIndex<-c(predCIndex.flx,"NA","NA",predCIndex.kk.pcox,predCIndex.na.aft,predCIndex.na.cox,predCIndex.sbc.aft,max(predCIndex.sbc))
+Methods<-c("Flexmix","K-Means + Penalized AFT","K-Means + Penalized Cox","AFT","Cox","SBC")
+recovCIndex<-round(c(recovCIndex.flx,recovCIndex.km.paft,recovCIndex.km.pcox,recovCIndex.na.aft,recovCIndex.na.cox,max(recovCIndex.sbc)),digits = 5)
+predCIndex<-c(predCIndex.flx,"NA",predCIndex.kk.pcox,predCIndex.na.aft,predCIndex.na.cox,max(predCIndex.sbc))
 sbc_and_comparisons<-as.data.frame(Methods)
 sbc_and_comparisons$recovCIndex<-recovCIndex
 sbc_and_comparisons$predCIndex<-predCIndex

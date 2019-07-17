@@ -20,6 +20,9 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
@@ -273,6 +276,90 @@ $(document).ready(function () {
 
 
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -280,6 +367,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -343,11 +440,15 @@ $(document).ready(function () {
 <h1 class="title toc-ignore">SBC on the GBM dataset from the whole Firebrowse Database(TCGA).</h1>
 <h3 class="subtitle">Oncogene Sets + PCox</h3>
 <h4 class="author">Camila Duitama (Based on Ashar Ahmad’s code for the SBC model)</h4>
-<h4 class="date">May 2019</h4>
+<h4 class="date">5th July 2019</h4>
 
 </div>
 
 
+<div id="description" class="section level1">
+<h1>Description</h1>
+<p>The Oncogenic Gene Set was downloaded from <a href="http://software.broadinstitute.org/gsea/msigdb/genesets.jsp?collection=C6">MSigDB</a>. A penalized Cox model was fit on the training data, and the linear predictors were then used as input features for the SBC model. This model (which was fit on the training data set) was then used to obtain linear predictor on the test set, which would be the test input features for the SBC.</p>
+</div>
 <div id="loading-of-libraries" class="section level1">
 <h1>Loading of libraries</h1>
 <p>Libraries needed to run the code must be loaded first</p>
@@ -483,6 +584,8 @@ for (i in unique(db_genesets$gs_name)){
   lp[[i]] &lt;- predict(object =reg.pcox[[i]], newx = as.matrix(df), s=min(reg.pcox[[i]]$lambda) ,type=&quot;link&quot;)
 }
 </code></pre>
+<div id="percentage-of-ids-lost-per-gene-set-in-training-set" class="section level3">
+<h3>Percentage of ids lost per gene set in training set</h3>
 <pre class="r"><code>toplot&lt;-as.data.frame(x=unlist(lost))
 colnames(toplot)&lt;-&quot;Percentage&quot;
 ggplot(toplot, aes(x=&quot; &quot;, y=Percentage)) + 
@@ -492,8 +595,11 @@ ggplot(toplot, aes(x=&quot; &quot;, y=Percentage)) +
 Y.pre.train&lt;-do.call(cbind,lp)
 colnames(Y.pre.train)&lt;-names(lp)</code></pre>
 </div>
+</div>
 <div id="test-set" class="section level2">
 <h2>Test set</h2>
+<div id="percentage-of-ids-lost-per-gene-set-in-training-set-1" class="section level3">
+<h3>Percentage of ids lost per gene set in training set</h3>
 <pre class="r"><code>toplot.new&lt;-as.data.frame(x=unlist(lost.new))
 colnames(toplot.new)&lt;-&quot;Percentage&quot;
 ggplot(toplot, aes(x=&quot; &quot;, y=Percentage)) + 
@@ -503,10 +609,11 @@ ggplot(toplot, aes(x=&quot; &quot;, y=Percentage)) +
 Y.pre.test&lt;-do.call(cbind,lp.new)
 colnames(Y.pre.test)&lt;-names(lp.new)</code></pre>
 </div>
+</div>
 <div id="data-visualization" class="section level2">
 <h2>Data visualization</h2>
-<div id="initial-visualization-of-censoring-survival-times-and-mrnaarray-data-of-the-training-and-testing-set" class="section level3">
-<h3>Initial visualization of censoring, survival times and mRNAArray Data of the training and testing set</h3>
+<div id="censoring-data" class="section level3">
+<h3>Censoring data</h3>
 <pre class="r"><code>table(censoring) %&gt;%  
   kable(caption = &quot;Censoring frequency for the training set&quot;) %&gt;%
   kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)</code></pre>
@@ -579,6 +686,8 @@ Freq
 </tr>
 </tbody>
 </table>
+<div id="headers-of-matrixes-with-linear-predictors-per-gene-set" class="section level4">
+<h4>Headers of matrixes with linear predictors per gene set</h4>
 <pre class="r"><code>  Y.pre.train[1:5,1:5] %&gt;%
   kable(caption = &quot;mRNA MicroArray data for the Training set &quot; ) %&gt;%
   kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)</code></pre>
@@ -807,6 +916,9 @@ ALK_DN.V1_DN
 </tr>
 </tbody>
 </table>
+</div>
+<div id="pca-of-linear-predictors" class="section level4">
+<h4>PCA of linear predictors</h4>
 <pre class="r"><code>
 Y.pre.test&lt;-scale(Y.pre.test,scale=TRUE,center=TRUE)
 Y.pre.train&lt;-scale(Y.pre.train,scale=TRUE,center=TRUE)
@@ -828,9 +940,10 @@ p1</code></pre>
 </div>
 </div>
 </div>
+</div>
 <div id="signature-calculation" class="section level1">
 <h1>Signature calculation</h1>
-<p>This chunk calculates SBC gene signature It’s based on the idea of Univariate testing of Survival Data features <strong>NOTE:</strong> For now the rows where there is no censoring and time data will be removed from ALL datasets, until we find an imputation method.</p>
+<p>This chunk calculates SBC gene signature It’s based on the idea of Univariate testing of Survival Data features</p>
 <pre class="r"><code>######## Prefiltering of the Genes ############################### ###########################
 ######## Using Univariate Cox&#39;s Model for Ranking of the Survival Power of the Genes ########
 
@@ -1260,7 +1373,7 @@ p4</code></pre>
 Y&lt;-Y.pre.train[,signature.sbc]
 pc &lt;- prcomp(Y)
 pc.pred &lt;- predict(pc,newdata = Y)
-p5 &lt;- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.final))) + ggtitle(&quot; SBC Clustering \n VerhaakCancer Data Set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;)+scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;,&quot;#C70039&quot;))
+p5 &lt;- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.final))) + ggtitle(&quot; PCA after SBC Clustering \n Training set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;)+scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;,&quot;#C70039&quot;))
 p5</code></pre>
 <p><img src="OncogenicGeneSets+Pcox_files/figure-html/PCA%20from%20training-1.png" width="960" /></p>
 <pre class="r"><code>to_plot&lt;-as.data.frame(likli.burnin)
@@ -1283,7 +1396,7 @@ Y.big.unscaled&lt;-rbind(Y,Y.new)
 pc.unscaled &lt;- prcomp(Y.big.unscaled,center=TRUE,scale = TRUE)
 labels&lt;-c.sbc
 for (i in 1:dim(Y.new)[1]){labels&lt;-append(labels,5)}
-p8 &lt;- ggplot(as.data.frame(pc.unscaled$x), aes(x=pc.unscaled$x[,1], y= pc.unscaled$x[,2], colour= as.factor(labels))) + ggtitle(&quot;Scaled data&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;)+scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;,&quot;#C70039&quot;))
+p8 &lt;- ggplot(as.data.frame(pc.unscaled$x), aes(x=pc.unscaled$x[,1], y= pc.unscaled$x[,2], colour= as.factor(labels))) + ggtitle(&quot;PCA \n Training set with SBC labels and unlabeled test set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;)+scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;,&quot;#C70039&quot;))
 p8</code></pre>
 <p><img src="OncogenicGeneSets+Pcox_files/figure-html/PCA%20Scaled%20Y%20and%20Y.newE-1.png" width="960" /></p>
 <pre class="r"><code>######## Predict on New Data Set  BASED ON JUST THE MOLECULAR DATA #####################################
@@ -1361,7 +1474,7 @@ p4</code></pre>
 <p><img src="OncogenicGeneSets+Pcox_files/figure-html/Survival%20curves%20from%20testing-2.png" width="960" /></p>
 <pre class="r"><code>pc &lt;- prcomp(Y.new,center=TRUE,scale = TRUE)
 pc.pred &lt;- predict(pc,newdata = Y.new)
-p4.new &lt;- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(&quot; SBC Clustering \n GBM Cancer Test Data Set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) +scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;))
+p4.new &lt;- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(&quot; PCA after SBC Clustering \n Test set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) +scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;))
 p4.new</code></pre>
 <p><img src="OncogenicGeneSets+Pcox_files/figure-html/PCA%20from%20testing-1.png" width="960" /></p>
 <pre class="r"><code>table(c.sbc) %&gt;%
@@ -1476,9 +1589,9 @@ Freq
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>Methods&lt;-c(&quot;Flexmix&quot;,&quot;Flexmix + AFT&quot;,&quot;K-Means + Penalized AFT&quot;,&quot;K-Means + Penalized Cox&quot;,&quot;AFT&quot;,&quot;Cox&quot;,&quot;SBC + AFT&quot;,&quot;SBC&quot;)
-recovCIndex&lt;-round(c(recovCIndex.flx,recovCIndex.flx.aft,recovCIndex.km.paft,recovCIndex.km.pcox,recovCIndex.na.aft,recovCIndex.na.cox,max(recovCIndex.sbc.paft),max(recovCIndex.sbc)),digits = 5)
-predCIndex&lt;-c(predCIndex.flx,&quot;NA&quot;,&quot;NA&quot;,predCIndex.kk.pcox,predCIndex.na.aft,predCIndex.na.cox,predCIndex.sbc.aft,max(predCIndex.sbc))
+<pre class="r"><code>Methods&lt;-c(&quot;Flexmix&quot;,&quot;K-Means + Penalized AFT&quot;,&quot;K-Means + Penalized Cox&quot;,&quot;AFT&quot;,&quot;Cox&quot;,&quot;SBC&quot;)
+recovCIndex&lt;-round(c(recovCIndex.flx,recovCIndex.km.paft,recovCIndex.km.pcox,recovCIndex.na.aft,recovCIndex.na.cox,max(recovCIndex.sbc)),digits = 5)
+predCIndex&lt;-c(predCIndex.flx,&quot;NA&quot;,predCIndex.kk.pcox,predCIndex.na.aft,predCIndex.na.cox,max(predCIndex.sbc))
 sbc_and_comparisons&lt;-as.data.frame(Methods)
 sbc_and_comparisons$recovCIndex&lt;-recovCIndex
 sbc_and_comparisons$predCIndex&lt;-predCIndex
@@ -1512,17 +1625,6 @@ Flexmix
 </td>
 <td style="text-align:left;">
 0.86458295074742
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Flexmix + AFT
-</td>
-<td style="text-align:right;">
-0.99286
-</td>
-<td style="text-align:left;">
-NA
 </td>
 </tr>
 <tr>
@@ -1571,17 +1673,6 @@ Cox
 </tr>
 <tr>
 <td style="text-align:left;">
-SBC + AFT
-</td>
-<td style="text-align:right;">
-0.99406
-</td>
-<td style="text-align:left;">
-0.0981011495941528
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 SBC
 </td>
 <td style="text-align:right;">
@@ -1598,6 +1689,8 @@ SBC
 
 
 
+</div>
+</div>
 
 </div>
 

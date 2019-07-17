@@ -17,6 +17,10 @@ knitr::opts_chunk$set(cache=TRUE,include=TRUE,collapse=TRUE,warning=FALSE,messag
 rm(list = ls(all.names = TRUE))
 load("/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/R_Scripts_First_Results/Karnofsky_corrected_results.RData")
 ```
+# Description
+
+Due to the fact that the training a testing sets had a discrepancy in the average Karnofsky scores of the samples (the training set was slightly higher), we corrected the results and removed the patients with Karnofsky indexes lower that 70. 
+
 # Loading of libraries
 
 Libraries needed to run the code must be loaded first
@@ -139,7 +143,7 @@ print(paste0("Number of patients in test set: ",as.character(n.new)))
 
 ##Data visualization
 
-Initial visualization of censoring, survival times and mRNAArray Data of the training and testing set
+### Censoring
 ```{r Table for censoring information of the training set}
 
 table(censoring) %>%  
@@ -155,7 +159,7 @@ table(censoring.new) %>%
 
 ```
 
-
+### Headers of mRNA matrixes
 ```{r Header of mRNA matrix of the training set}
   Y.pre.train[1:5,1:5] %>%
   kable(caption = "mRNA MicroArray data for the Training set " ) %>%
@@ -167,6 +171,8 @@ table(censoring.new) %>%
   kable(caption = "mRNA MicroArray data for the Testing set " ) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")
 ```
+
+# PCA of training and test set
 
 ```{r PCA of the whole mRNA dataset, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 totalmRNA<-rbind(mRNAArray_TrainingSet,mRNAArray_TestSet)
@@ -191,7 +197,7 @@ p1
 
 This chunk calculates  SBC gene signature
 It's based on the idea of Univariate testing of Survival Data features
-**NOTE:** For now the rows where there is no censoring and time data will be removed from ALL datasets, until we find an imputation method.
+
 
 
 ```{r SBC Signature, eval=FALSE}
@@ -372,7 +378,7 @@ p4
 ############ Generating some Plots ##########################
 pc <- prcomp(Y)
 pc.pred <- predict(pc,newdata = Y)
-p5 <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.final))) + ggtitle(" SBC Clustering \n TCGA-GBM Training Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
+p5 <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.final))) + ggtitle("PCA after SBC Clustering \n Training Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
 p5
 ```
 
@@ -484,12 +490,12 @@ p5.new
 ```{r PCA from testing, echo=TRUE}
 pc <- prcomp(Y.new,center=TRUE,scale = TRUE)
 pc.pred <- predict(pc,newdata = Y.new)
-p4.new <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(" SBC Clustering \n TCGA-GBM Test Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes")+scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
+p4.new <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(" PCA after SBC Clustering \n Test Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes")+scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
 p4.new
 ```
 
 
-```{r Consolidated clustering results}
+```{r Consolidated clustering results training }
 table(c.sbc) %>%
   kable(caption = "Clusters for the training set") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
@@ -500,17 +506,16 @@ table(c.sbc.new) %>%
   kable(caption = "Clusters for the testing set") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 ```
-```{r FInal table of SBC vs others}
-Methods<-c("Flexmix","K-Means + Penalized Cox","SBC + AFT","SBC")
-recovCIndex<-round(c(recovCIndex.flx,recovCIndex.km.pcox,max(recovCIndex.sbc.paft),max(recovCIndex.sbc)),digits = 3)
-predCIndex<-round(c(predCIndex.flx,predCIndex.kk.pcox,predCIndex.sbc.aft,max(predCIndex.sbc)),digits=3)
+```{r Final table of SBC vs others}
+Methods<-c("Flexmix","K-Means + Penalized AFT","K-Means + Penalized Cox","AFT","Cox","SBC")
+recovCIndex<-round(c(recovCIndex.flx,recovCIndex.km.paft,recovCIndex.km.pcox,recovCIndex.na.aft,recovCIndex.na.cox,max(recovCIndex.sbc)),digits = 5)
+predCIndex<-c(predCIndex.flx,"NA",predCIndex.kk.pcox,predCIndex.na.aft,predCIndex.na.cox,max(predCIndex.sbc))
 sbc_and_comparisons<-as.data.frame(Methods)
 sbc_and_comparisons$recovCIndex<-recovCIndex
 sbc_and_comparisons$predCIndex<-predCIndex
 sbc_and_comparisons %>%
   kable(caption = "SBC vs other methods") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"), position = "center",full_width = FALSE ) %>%
-  save_kable("comparisons.png")
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 
 ```
 

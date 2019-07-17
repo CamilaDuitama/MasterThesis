@@ -16,11 +16,15 @@ rm(list = ls(all.names = TRUE))
 load("/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/R_Scripts_First_Results/Preliminary_Results.RData")
 
 ```
+# Description
+
+The first attempt to try the SBC model was done only on the Verhaak samples (patients) present in the TCGA-GBM data set. The samples were split using half for training and half for testing.
+
 # Loading of libraries
 
 Libraries needed to run the code must be loaded first
 
-```{r LibrariesLoading}
+```{r LibrariesLoading, eval= FALSE}
 library(sva)
 library(readr)
 library(ggplot2)
@@ -86,7 +90,7 @@ library(rmarkdown)
 
 Data is separated into training and testing
 
-```{r Loading files}
+```{r Loading files, eval= FALSE}
 ######## Input ###############
 Clinical_TrainingSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/First_data_split/TrainingSet/Clinical_TrainingSet.csv")
 mRNAArray_TrainingSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/First_data_split/TrainingSet/mRNAArray_TrainingSet.csv")
@@ -123,7 +127,7 @@ print(paste0("Number of patients in test set: ",length(time.new)))
 
 ### Data visualization
 
-Initial visualization of censoring, survival times and mRNAArray Data of the training and testing set
+#### Censoring data
 
 ```{r Table for censoring information of the training set}
 
@@ -141,6 +145,7 @@ table(censoring.new) %>%
 
 ```
 
+#### Header of mRNA matrixes for training and testing
 
 ```{r Header of mRNA matrix of the training set}
   Y.pre.train[1:5,1:5] %>%
@@ -153,6 +158,8 @@ table(censoring.new) %>%
   kable(caption = "mRNA MicroArray data for the Testing set " ) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")
 ```
+
+#### PCA of training and testing
 
 ```{r PCA of the whole mRNA dataset}
 mRNA.pca<-as.data.frame(prcomp(mRNAArray_TrainingSet,scale=TRUE, center= TRUE)$x[,1:2])
@@ -177,7 +184,7 @@ This chunk calculates  SBC gene signature
 It's based on the idea of Univariate testing of Survival Data features
 
 
-```{r SBC Signature}
+```{r SBC Signature, eval=FALSE}
 ######## Prefiltering of the Genes ############################### ###########################
 ######## Using Univariate Cox's Model for Ranking of the Survival Power of the Genes ########
   
@@ -357,7 +364,7 @@ p4
 ############ Generating some Plots ##########################
 pc <- prcomp(Y)
 pc.pred <- predict(pc,newdata = Y)
-p5 <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.final))) + ggtitle(" SBC Clustering \n VerhaakCancer Data Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
+p5 <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.final))) + ggtitle("PCA after SBC Clustering \n Training Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
 p5
 ```
 
@@ -383,7 +390,7 @@ Y.big.unscaled<-rbind(Y,Y.new)
 pc.unscaled <- prcomp(Y.big.unscaled,center=TRUE,scale = TRUE)
 labels<-c.sbc
 for (i in 1:dim(Y.new)[1]){labels<-append(labels,5)}
-p8 <- ggplot(as.data.frame(pc.unscaled$x), aes(x=pc.unscaled$x[,1], y= pc.unscaled$x[,2], colour= as.factor(labels))) + ggtitle("Unscaled data") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#A5A4A4"))
+p8 <- ggplot(as.data.frame(pc.unscaled$x), aes(x=pc.unscaled$x[,1], y= pc.unscaled$x[,2], colour= as.factor(labels))) + ggtitle("PCA \n Training set with SBC labels and unlabeled Test set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#A5A4A4"))
 p8
 ```
 
@@ -446,25 +453,26 @@ p5.new
 ```{r PCA from testing}
 pc <- prcomp(Y.new)
 pc.pred <- predict(pc,newdata = Y.new)
-p4.new <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(" SBC Clustering \n GBM Cancer Test Data Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#FFC300","#0F6DA2"))
+p4.new <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(" PCA after SBC Clustering \n Test Data Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#FFC300","#0F6DA2"))
 p4.new
 ```
 
-```{r Consolidated clustering results, echo=FALSE}
+```{r Consolidated clustering results training}
 table(c.sbc) %>%
   kable(caption = "Clusters for the training set") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 ```
 
-```{r}
+```{r Consolidated clustering results testing}
 table(c.sbc.new) %>%
   kable(caption = "Clusters for the testing set") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 ```
+
 ```{r Final table of SBC vs others}
-Methods<-c("Flexmix","Flexmix + AFT","K-Means + Penalized AFT","K-Means + Penalized Cox","AFT","Cox","SBC + AFT","SBC")
-recovCIndex<-c(recovCIndex.flx,recovCIndex.flx.aft,recovCIndex.km.paft,recovCIndex.km.pcox,recovCIndex.na.aft,recovCIndex.na.cox,max(recovCIndex.sbc.paft),max(recovCIndex.sbc))
-predCIndex<-c(predCIndex.flx,"NA","NA",predCIndex.kk.pcox,predCIndex.na.aft,predCIndex.na.cox,predCIndex.sbc.aft,max(predCIndex.sbc))
+Methods<-c("Flexmix","K-Means + Penalized AFT","K-Means + Penalized Cox","AFT","Cox","SBC")
+recovCIndex<-round(c(recovCIndex.flx,recovCIndex.km.paft,recovCIndex.km.pcox,recovCIndex.na.aft,recovCIndex.na.cox,max(recovCIndex.sbc)),digits = 5)
+predCIndex<-c(predCIndex.flx,"NA",predCIndex.kk.pcox,predCIndex.na.aft,predCIndex.na.cox,max(predCIndex.sbc))
 sbc_and_comparisons<-as.data.frame(Methods)
 sbc_and_comparisons$recovCIndex<-recovCIndex
 sbc_and_comparisons$predCIndex<-predCIndex
@@ -473,3 +481,4 @@ sbc_and_comparisons %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 ```
 
+ f

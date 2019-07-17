@@ -144,7 +144,7 @@ predictchineseAFTtime = function(Y.input){
     
  # modelweights[count] <- sum(exp((1/N.new) *apply(posteriortimeweight,1,sum)))
     
-  predCIndex.sbc[count] <- as.numeric(concordance(smod.new ~ exp(-post.time[,count]))[1]) 
+  predCIndex.sbc[count] <- as.numeric(concordance(smod.new ~ exp(post.time[,count]))[1]) 
 # 
 #    print(cind[count])
 
