@@ -438,7 +438,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">SBC on the GBM dataset from the whole Firebrowse Database(TCGA).</h1>
-<h3 class="subtitle">Oncogene Sets + PCox</h3>
+<h3 class="subtitle">Oncogene Sets + PAFT</h3>
 <h4 class="author">Camila Duitama (Based on Ashar Ahmad’s code for the SBC model)</h4>
 <h4 class="date">11th July 2019</h4>
 
@@ -503,8 +503,8 @@ print(paste0(&quot;Number of patients in test set: &quot;,as.character(n.new)))
 </div>
 <div id="oncogene-set-paft-fitting-of-model" class="section level1">
 <h1>Oncogene set PAFT fitting of model</h1>
-<div id="training-set" class="section level2">
-<h2>Training set</h2>
+<div id="paft-fitting-in-training-set" class="section level2">
+<h2>PAFT fitting in training set</h2>
 <pre class="r"><code>gs&lt;-list()
 reg.paft&lt;-list()
 linear.aft&lt;-list()
@@ -536,8 +536,8 @@ Y.pre.train&lt;-do.call(cbind,linear.aft)
 colnames(Y.pre.train)&lt;-names(linear.aft)</code></pre>
 </div>
 </div>
-<div id="test-set" class="section level2">
-<h2>Test set</h2>
+<div id="paft-fitting-in-test-set" class="section level2">
+<h2>PAFT fitting in test set</h2>
 <div id="percentage-of-ids-lost-per-gene-set-in-test-set" class="section level3">
 <h3>Percentage of ids lost per gene set in Test Set</h3>
 <pre class="r"><code>toplot.new&lt;-as.data.frame(x=unlist(lost.new))
@@ -1346,7 +1346,7 @@ Y.big.unscaled&lt;-rbind(Y,Y.new)
 pc.unscaled &lt;- prcomp(Y.big.unscaled,center=TRUE,scale = TRUE)
 labels&lt;-c.sbc
 for (i in 1:dim(Y.new)[1]){labels&lt;-append(labels,5)}
-p8 &lt;- ggplot(as.data.frame(pc.unscaled$x), aes(x=pc.unscaled$x[,1], y= pc.unscaled$x[,2], colour= as.factor(labels))) + ggtitle(&quot;PCA \n Training set with SBC labels and unlabeled test set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;)+scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;,&quot;#D4D4D4&quot;))
+p8 &lt;- ggplot(as.data.frame(pc.unscaled$x), aes(x=pc.unscaled$x[,1], y= pc.unscaled$x[,2], colour= as.factor(labels))) + ggtitle(&quot;PCA \n Training set with SBC labels and unlabeled test set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;)+scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;,&quot;#BDBDBF&quot;))
 p8</code></pre>
 <p><img src="OncogenicGeneSets+PAFT_files/figure-html/PCA%20Scaled%20Y%20and%20Y.new-1.png" width="960" /></p>
 <pre class="r"><code>######## Predict on New Data Set  BASED ON JUST THE MOLECULAR DATA #####################################

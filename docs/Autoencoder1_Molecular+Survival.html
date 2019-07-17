@@ -563,7 +563,8 @@ print(paste0(&quot;Number of patients in test set: &quot;,as.character(n.new)))
 ## [1] &quot;Number of patients in test set: 261&quot;</code></pre>
 <div id="data-visualization" class="section level2">
 <h2>Data visualization</h2>
-<p>Initial visualization of censoring, survival times and mRNAArray Data of the training and testing set</p>
+<div id="censoring-information" class="section level3">
+<h3>Censoring information</h3>
 <pre class="r"><code>
 table(censoring) %&gt;%  
   kable(caption = &quot;Censoring frequency for the training set&quot;) %&gt;%
@@ -637,6 +638,9 @@ Freq
 </tr>
 </tbody>
 </table>
+</div>
+<div id="header-of-mrna-matrixes" class="section level3">
+<h3>Header of mRNA matrixes</h3>
 <pre class="r"><code>  Y.pre.train[1:5,1:5] %&gt;%
   kable(caption = &quot;mRNA MicroArray data for the Training set &quot; ) %&gt;%
   kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)</code></pre>
@@ -865,6 +869,9 @@ mRNA MicroArray data for the Testing set
 </tr>
 </tbody>
 </table>
+</div>
+<div id="pca-of-training-and-test-sets" class="section level3">
+<h3>PCA of training and test sets</h3>
 <pre class="r"><code>mRNAArray_TestSet.scaled&lt;-scale(mRNAArray_TestSet,scale=TRUE,center=TRUE)
 mRNAArray_TrainingSet.scaled&lt;-scale(mRNAArray_TrainingSet,scale=TRUE,center=TRUE)
 
@@ -882,6 +889,7 @@ mRNA.pca$Classes&lt;-classes
 p1 &lt;- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PCA of the training and testing set \n mRNAArray Data of GBM&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
 p1</code></pre>
 <p><img src="Autoencoder1_Molecular+Survival_files/figure-html/PCA%20of%20the%20whole%20mRNA%20dataset-1.png" width="960" /></p>
+</div>
 </div>
 </div>
 

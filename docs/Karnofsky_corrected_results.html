@@ -869,10 +869,8 @@ RPS11
 </tbody>
 </table>
 </div>
-</div>
-</div>
-<div id="pca-of-training-and-test-set" class="section level1">
-<h1>PCA of training and test set</h1>
+<div id="pca-of-training-and-test-set" class="section level3">
+<h3>PCA of training and test set</h3>
 <pre class="r"><code>totalmRNA&lt;-rbind(mRNAArray_TrainingSet,mRNAArray_TestSet)
 mRNA.pca&lt;-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
 classes&lt;-c()
@@ -887,6 +885,8 @@ mRNA.pca$Classes&lt;-classes
 p1 &lt;- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PCA of the training and testing set \n mRNAArray Data of GBM&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
 p1</code></pre>
 <p><img src="Karnofsky_corrected_results_files/figure-html/PCA%20of%20the%20whole%20mRNA%20dataset-1.png" width="960" /></p>
+</div>
+</div>
 </div>
 <div id="signature-calculation" class="section level1">
 <h1>Signature calculation</h1>

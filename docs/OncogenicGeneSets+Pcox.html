@@ -564,8 +564,8 @@ print(paste0(&quot;Number of patients in test set: &quot;,as.character(n.new)))
 </div>
 <div id="oncogene-set-pcox-fitting-of-model" class="section level1">
 <h1>Oncogene set Pcox fitting of model</h1>
-<div id="training-set" class="section level2">
-<h2>Training set</h2>
+<div id="pcox-fitting-in-training-set" class="section level2">
+<h2>PCox fitting in training set</h2>
 <pre class="r"><code>smod &lt;-  Surv(exp(time), censoring)
 gs&lt;-list()
 reg.pcox&lt;-list()
@@ -596,8 +596,8 @@ Y.pre.train&lt;-do.call(cbind,lp)
 colnames(Y.pre.train)&lt;-names(lp)</code></pre>
 </div>
 </div>
-<div id="test-set" class="section level2">
-<h2>Test set</h2>
+<div id="pcox-fitting-on-test-set" class="section level2">
+<h2>PCox fitting on test set</h2>
 <div id="percentage-of-ids-lost-per-gene-set-in-training-set-1" class="section level3">
 <h3>Percentage of ids lost per gene set in training set</h3>
 <pre class="r"><code>toplot.new&lt;-as.data.frame(x=unlist(lost.new))
@@ -686,8 +686,9 @@ Freq
 </tr>
 </tbody>
 </table>
-<div id="headers-of-matrixes-with-linear-predictors-per-gene-set" class="section level4">
-<h4>Headers of matrixes with linear predictors per gene set</h4>
+</div>
+<div id="headers-of-matrixes-with-linear-predictors-per-gene-set" class="section level3">
+<h3>Headers of matrixes with linear predictors per gene set</h3>
 <pre class="r"><code>  Y.pre.train[1:5,1:5] %&gt;%
   kable(caption = &quot;mRNA MicroArray data for the Training set &quot; ) %&gt;%
   kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)</code></pre>
@@ -917,8 +918,8 @@ ALK_DN.V1_DN
 </tbody>
 </table>
 </div>
-<div id="pca-of-linear-predictors" class="section level4">
-<h4>PCA of linear predictors</h4>
+<div id="pca-of-linear-predictors" class="section level3">
+<h3>PCA of linear predictors</h3>
 <pre class="r"><code>
 Y.pre.test&lt;-scale(Y.pre.test,scale=TRUE,center=TRUE)
 Y.pre.train&lt;-scale(Y.pre.train,scale=TRUE,center=TRUE)
@@ -937,7 +938,6 @@ mRNA.pca$Classes&lt;-classes
 p1 &lt;- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PCA of the training and testing set \n GBM-TCGA Data set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
 p1</code></pre>
 <p><img src="OncogenicGeneSets+Pcox_files/figure-html/PCA-1.png" width="960" /></p>
-</div>
 </div>
 </div>
 </div>
@@ -1676,10 +1676,10 @@ Cox
 SBC
 </td>
 <td style="text-align:right;">
-0.04842
+0.96609
 </td>
 <td style="text-align:left;">
-0.230341205421089
+0.891688397546553
 </td>
 </tr>
 </tbody>

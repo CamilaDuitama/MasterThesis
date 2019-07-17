@@ -590,8 +590,8 @@ Y.pre.test.ssgsea &lt;-t(gsva(t(Y.pre.test), pathwaysets, method=&quot;ssgsea&qu
 </div>
 <div id="data-visualization" class="section level2">
 <h2>Data visualization</h2>
-<div id="initial-visualization-of-censoring-survival-times-and-mrnaarray-data-of-the-training-and-testing-set" class="section level3">
-<h3>Initial visualization of censoring, survival times and mRNAArray Data of the training and testing set</h3>
+<div id="censoring-information" class="section level3">
+<h3>Censoring information</h3>
 <pre class="r"><code>table(censoring) %&gt;%  
   kable(caption = &quot;Censoring frequency for the training set&quot;) %&gt;%
   kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)</code></pre>
@@ -664,8 +664,9 @@ Freq
 </tr>
 </tbody>
 </table>
-<div id="pca-zscore" class="section level4">
-<h4>PCA Zscore</h4>
+</div>
+<div id="pca-zscore" class="section level3">
+<h3>PCA Zscore</h3>
 <pre class="r"><code>totalmRNA&lt;-rbind(Y.pre.train.zscore,Y.pre.test.zscore)
 mRNA.pca&lt;-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
 classes&lt;-c()
@@ -681,8 +682,8 @@ p1 &lt;- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PC
 p1</code></pre>
 <p><img src="NCI_files/figure-html/PCA%20Zscore-1.png" width="960" /></p>
 </div>
-<div id="pca-ssgsea" class="section level4">
-<h4>PCA ssGSEA</h4>
+<div id="pca-ssgsea" class="section level3">
+<h3>PCA ssGSEA</h3>
 <pre class="r"><code>totalmRNA&lt;-rbind(Y.pre.train.ssgsea,Y.pre.test.ssgsea)
 mRNA.pca&lt;-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
 classes&lt;-c()
@@ -698,8 +699,8 @@ p1 &lt;- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PC
 p1</code></pre>
 <p><img src="NCI_files/figure-html/PCA%20ssGSEA-1.png" width="960" /></p>
 </div>
-<div id="pca-gsva" class="section level4">
-<h4>PCA GSVA</h4>
+<div id="pca-gsva" class="section level3">
+<h3>PCA GSVA</h3>
 <pre class="r"><code>totalmRNA&lt;-rbind(Y.pre.train.gsva,Y.pre.test.gsva)
 mRNA.pca&lt;-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
 classes&lt;-c()
@@ -757,6 +758,11 @@ for (i in (1:3)){
 }  
 
   </code></pre>
+</div>
+</div>
+</div>
+<div id="selection-of-gse-method" class="section level1">
+<h1>Selection of GSE method</h1>
 <pre class="r"><code>mean&lt;-list()
 sd&lt;-list()
 min&lt;-list()
@@ -860,9 +866,6 @@ GSVA
   ### Take the top 25 genes ####
   signature.sbc &lt;- names(output[[3]][1:25])</code></pre>
 <p>Since none of the p values were significant. The model was not trained.</p>
-</div>
-</div>
-</div>
 </div>
 
 

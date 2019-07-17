@@ -659,10 +659,8 @@ Freq
 </tbody>
 </table>
 </div>
-</div>
-</div>
-<div id="pca-of-the-gse-methods" class="section level1">
-<h1>PCA of the GSE methods</h1>
+<div id="pca-of-the-gse-methods" class="section level3">
+<h3>PCA of the GSE methods</h3>
 <pre class="r"><code>totalmRNA&lt;-rbind(Y.pre.train.zscore,Y.pre.test.zscore)
 mRNA.pca&lt;-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
 classes&lt;-c()
@@ -1026,6 +1024,8 @@ VEGF_A_UP.V1_UP
 </tr>
 </tbody>
 </table>
+</div>
+</div>
 </div>
 <div id="pca-of-the-signature-genes" class="section level2">
 <h2>PCA of the signature genes</h2>
