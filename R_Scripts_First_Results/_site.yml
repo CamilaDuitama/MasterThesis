@@ -2,6 +2,9 @@ name: "Master Thesis"
 output_dir: "../docs"
 navbar:
   title: "Master Thesis: External validation and characterization of cancer subtypes using SBC"
+  left:
+  - icon : fa-question fa-lg
+    href: About.html
   right:
   - icon: fa-envelope fa-lg
     href: mailto:camiladuitama@gmail.com
