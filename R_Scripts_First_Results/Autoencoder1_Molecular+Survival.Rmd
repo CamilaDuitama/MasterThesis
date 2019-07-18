@@ -145,7 +145,7 @@ print(paste0("Number of patients in test set: ",as.character(n.new)))
 
 ##Data visualization
 
-Initial visualization of censoring, survival times and mRNAArray Data of the training and testing set
+### Censoring information
 ```{r Table for censoring information of the training set}
 
 table(censoring) %>%  
@@ -161,6 +161,7 @@ table(censoring.new) %>%
 
 ```
 
+### Header of mRNA matrixes
 
 ```{r Header of mRNA matrix of the training set}
   Y.pre.train[1:5,1:5] %>%
@@ -174,6 +175,8 @@ table(censoring.new) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")
 ```
 
+
+### PCA of training and test sets
 ```{r PCA of the whole mRNA dataset}
 mRNAArray_TestSet.scaled<-scale(mRNAArray_TestSet,scale=TRUE,center=TRUE)
 mRNAArray_TrainingSet.scaled<-scale(mRNAArray_TrainingSet,scale=TRUE,center=TRUE)

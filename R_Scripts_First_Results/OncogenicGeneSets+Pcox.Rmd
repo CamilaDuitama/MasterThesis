@@ -143,7 +143,7 @@ print(paste0("Number of patients in test set: ",as.character(n.new)))
 ```
 # Oncogene set Pcox fitting of model
 
-## Training set
+## PCox fitting in training set
 
 ```{r GeneSet PCox fitting on training set, eval=FALSE}
 smod <-  Surv(exp(time), censoring)
@@ -153,6 +153,8 @@ lp<-list()
 lost<-list()
 db_genesets<-msigdbr(species="Homo sapiens",category = "C6")
 smod <-  Surv(exp(time), censoring)
+
+
 for (i in unique(db_genesets$gs_name)){
   gs[i]<-list(unique(filter(db_genesets,db_genesets$gs_name==i)$gene_symbol))
   #Select all columns that aren't in the original dataframe Y.pre.train
@@ -177,7 +179,7 @@ colnames(Y.pre.train)<-names(lp)
 
 ```
 
-## Test set
+## PCox fitting on test set
 ```{r Gene Set Pcox fitting on test set, eval=FALSE, include=FALSE}
 gs<-list()
 reg.pcox.new<-list()
@@ -191,7 +193,7 @@ for (i in unique(db_genesets$gs_name)){
   #list with the percentages of ids lost
   lost.new[[i]]<-(1-(length(tokeep.new)/length(gs[[i]])))*100
   df.new<-Y.pre.test[,tokeep.new]
-  lp.new[[i]] <- predict(object =reg.pcox[[i]], newx = as.matrix(df.new), s=min(reg.pcox.new[[i]]$lambda) ,type="link")
+  lp.new[[i]] <- predict(object =reg.pcox[[i]], newx = as.matrix(df.new), s=min(reg.pcox[[i]]$lambda) ,type="link")
 }
 
 ```
@@ -224,7 +226,7 @@ table(censoring.new) %>%
 
 ```
 
-#### Headers of matrixes with linear predictors per gene set
+### Headers of matrixes with linear predictors per gene set
 
 ```{r Header of mRNA matrix of the training set}
   Y.pre.train[1:5,1:5] %>%
@@ -238,7 +240,7 @@ table(censoring.new) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")
 ```
 
-#### PCA of linear predictors 
+### PCA of linear predictors 
 
 ```{r PCA }
 
@@ -551,7 +553,7 @@ logrank.new <- survdiff(smod.new ~ c.sbc.new)
 #df= Degrees of freedom should be number of clusters-1
 pval.new<-1 - pchisq(unlist(logrank.new)$chisq,df =length(logrank.new$n)-1)
 surv.fit <- survfit(smod.new ~ c.sbc.new)
-p5.new <- ggsurv(surv.fit, plot.cens=FALSE,main = " DPMM \n Kaplan Meier Estimators \n Test Set")+ ggplot2::guides(linetype = FALSE)+labs(subtitle = paste("P-value:",toString(round(pval.new,digits = 5))))
+p5.new <- ggsurv(surv.fit,surv.col=c("#b16ed3","#d37f6e","#90d36e"),plot.cens=FALSE,main = " DPMM \n Kaplan Meier Estimators \n Test Set")+ ggplot2::guides(linetype = FALSE)+labs(subtitle = paste("P-value:",toString(round(pval.new,digits = 5))))
 
 par(mfrow=c(2,1))
 p4
@@ -562,7 +564,7 @@ p5.new
 ```{r PCA from testing}
 pc <- prcomp(Y.new,center=TRUE,scale = TRUE)
 pc.pred <- predict(pc,newdata = Y.new)
-p4.new <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(" PCA after SBC Clustering \n Test set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
+p4.new <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(" PCA after SBC Clustering \n Test set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e"))
 p4.new
 ```
 

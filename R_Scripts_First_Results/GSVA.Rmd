@@ -1,7 +1,7 @@
 
 ---
 title: "SBC on the GBM dataset from the whole Firebrowse Database(TCGA)."
-subtitle: "GSVA preprocessing"
+subtitle: "Canonical Pathway Gene Sets"
 author: "Camila Duitama (Based on Ashar Ahmad's code for the SBC model)"
 date: "May 2019"
 params:

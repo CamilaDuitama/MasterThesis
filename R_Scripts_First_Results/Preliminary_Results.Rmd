@@ -118,16 +118,19 @@ censoring.new<-Clinical_TrainingSet[-(1:n),]$vital_status
 ######### mRNA (or miRNA expression values) (N*D) ###
 Y.pre.test<-mRNAArray_TrainingSet[-(1:n),]
 
+n<-dim(Y.pre.train)[1]
+n.new<-dim(Y.pre.test)[1]
+
 ```
 
 ```{r Number of samples}
-print(paste0("Number of patients in training set: ",as.character(length(time))))
-print(paste0("Number of patients in test set: ",length(time.new)))
+print(paste0("Number of patients in training set: ",as.character(n)))
+print(paste0("Number of patients in test set: ",as.character(n.new)))
 ```
 
-### Data visualization
+# Data visualization
 
-#### Censoring data
+## Censoring data
 
 ```{r Table for censoring information of the training set}
 
@@ -145,7 +148,7 @@ table(censoring.new) %>%
 
 ```
 
-#### Header of mRNA matrixes for training and testing
+## Header of mRNA matrixes for training and testing
 
 ```{r Header of mRNA matrix of the training set}
   Y.pre.train[1:5,1:5] %>%
@@ -159,7 +162,7 @@ table(censoring.new) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")
 ```
 
-#### PCA of training and testing
+## PCA of training and testing
 
 ```{r PCA of the whole mRNA dataset}
 mRNA.pca<-as.data.frame(prcomp(mRNAArray_TrainingSet,scale=TRUE, center= TRUE)$x[,1:2])
@@ -480,5 +483,3 @@ sbc_and_comparisons %>%
   kable(caption = "SBC vs other methods") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 ```
-
- f

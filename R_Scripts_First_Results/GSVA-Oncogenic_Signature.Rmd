@@ -184,7 +184,7 @@ table(censoring.new) %>%
 
 ```
 
-# PCA of the GSE methods
+### PCA of the GSE methods
 
 ```{r PCA Zscore}
 totalmRNA<-rbind(Y.pre.train.zscore,Y.pre.test.zscore)

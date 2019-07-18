@@ -1,7 +1,7 @@
 
 ---
 title: "SBC on the GBM dataset from the whole Firebrowse Database(TCGA)."
-subtitle: "Oncogene Sets + PCox"
+subtitle: "Oncogene Sets + PAFT"
 author: "Camila Duitama (Based on Ashar Ahmad's code for the SBC model)"
 date: "11th July 2019"
 params:
@@ -144,7 +144,7 @@ print(paste0("Number of patients in test set: ",as.character(n.new)))
 ```
 # Oncogene set PAFT fitting of model
 
-## Training set
+## PAFT fitting in training set
 
 ```{r GeneSet PCox fitting on training set, eval=FALSE}
 gs<-list()
@@ -181,7 +181,7 @@ colnames(Y.pre.train)<-names(linear.aft)
 
 ```
 
-## Test set
+## PAFT fitting in test set
 ```{r Gene Set Pcox fitting on test set, eval=FALSE, include=FALSE}
 gs<-list()
 reg.paft.new<-list()
@@ -491,7 +491,7 @@ Y.big.unscaled<-rbind(Y,Y.new)
 pc.unscaled <- prcomp(Y.big.unscaled,center=TRUE,scale = TRUE)
 labels<-c.sbc
 for (i in 1:dim(Y.new)[1]){labels<-append(labels,5)}
-p8 <- ggplot(as.data.frame(pc.unscaled$x), aes(x=pc.unscaled$x[,1], y= pc.unscaled$x[,2], colour= as.factor(labels))) + ggtitle("PCA \n Training set with SBC labels and unlabeled test set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes")+scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#D4D4D4"))
+p8 <- ggplot(as.data.frame(pc.unscaled$x), aes(x=pc.unscaled$x[,1], y= pc.unscaled$x[,2], colour= as.factor(labels))) + ggtitle("PCA \n Training set with SBC labels and unlabeled test set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes")+scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#BDBDBF"))
 p8
 ```
 
@@ -552,6 +552,7 @@ for (q in unique(c.sbc.new)){
   }
 }
 predCIndex.sbc.aft  <<- as.numeric(concordance(smod.new ~ exp(pre.sbc))[1])
+
 
 
 #### Use the adhoc-prediction algorithm ####################

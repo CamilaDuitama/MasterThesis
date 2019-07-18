@@ -80,8 +80,8 @@ kableExtra
 usethis
 devtools
 rmarkdown
+graphite
 flexdashboard
 tibble
 msigdbr
-graphite
 GSVA

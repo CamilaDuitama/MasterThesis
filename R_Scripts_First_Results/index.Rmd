@@ -4,27 +4,27 @@ output:
   flexdashboard::flex_dashboard:
     theme : cosmo
     navbar:
-      - { icon: fa-envelope fa-lg , href: "mailto:camiladuitama@gmail.com" }
-      - { icon: fa-linkedin fa-lg , href: "https://www.linkedin.com/in/camiladuitama/" }
+      - { icon: fa-envelope fa-lg , href: "mailto:camiladuitama@gmail.com" ,align: right}
+      - { icon: fa-linkedin fa-lg , href: "https://www.linkedin.com/in/camiladuitama/" ,align: right}
       - { icon: fa-github fa-lg, href:
-       "https://github.com/CamilaDuitama/MasterThesis" }
-      - { icon: fa-twitter fa-lg, href: "https://twitter.com/camiladuitama1" }
+       "https://github.com/CamilaDuitama/MasterThesis",align: right }
+      - { icon: fa-twitter fa-lg, href: "https://twitter.com/camiladuitama1",align: right }
       
 ---
+Home {data-icon="fa-home"}
+=====================================     
     
-    
----------------------------------
     
 ### Chart 1
     
 ```{r Verhaak signature in TCGA-GBM}
-valueBox(value = 1,caption = "Verhaak samples on the TCGA-GBM",href="Preliminary_Results.html", color="#D6EAF8")
+valueBox(value = 1,caption = "Verhaak samples present on the TCGA-GBM Dataset",href="Preliminary_Results.html", color="#85C1E9")
 ```
  
 ### Chart 2
     
 ```{r}
-valueBox(value = 2,caption = "All samples on the TCGA-GBM",href="Results.html",color = "#D6EAF8")
+valueBox(value = 2,caption = "All samples on the TCGA-GBM Dataset",href="Results.html",color = "#85C1E9")
 ``` 
 
 -------------------------------------
@@ -32,7 +32,7 @@ valueBox(value = 2,caption = "All samples on the TCGA-GBM",href="Results.html",c
 ### Chart 3
     
 ```{r}
-valueBox(value = 3,caption = "Karnofsky corrected samples from the TCGA-GBM",href="Karnofsky_corrected_results.html",color= "#AED6F1")
+valueBox(value = 3,caption = "Karnofsky corrected samples",href="Karnofsky_corrected_results.html",color= "#85C1E9")
 ```
 
 -------------------------------------
@@ -40,7 +40,7 @@ valueBox(value = 3,caption = "Karnofsky corrected samples from the TCGA-GBM",hre
 ### Chart 4
 
 ```{r}
-valueBox(value = 4,caption = "Karnofsky corrected samples from the TCGA-GBM and Flexmix Intialization",href="Karnofsky_correction+Flexmix_initialization.html", color = "#85C1E9")
+valueBox(value = 4,caption = "Karnofsky corrected samples and Flexmix Intialization",href="Karnofsky_correction+Flexmix_initialization.html", color = "#3498DB")
 ```
 
 -------------------------------------
@@ -49,26 +49,26 @@ valueBox(value = 4,caption = "Karnofsky corrected samples from the TCGA-GBM and 
 
     
 ```{r}
-valueBox(value = 5,caption = "GSE methods on KEGG pathways as feature selection",href="GSVA-KEGG.html",color= "#5DADE2")
+valueBox(value = 5,caption = "GSE methods on KEGG pathways for feature selection",href="GSVA-KEGG.html",color= "#2E86C1")
 ```
     
 ### Chart 6
 
 ```{r}
-valueBox(value = 6,caption = "GSE methods on Oncogenic gene sets as feature selection",href="GSVA-Oncogenic_Signature.html",color= "#5DADE2")
+valueBox(value = 6,caption = "GSE methods on Oncogenic gene sets for feature selection",href="GSVA-Oncogenic_Signature.html",color= "#2E86C1")
 ```
 
 
 ### Chart 7
     
 ```{r}
-valueBox(value = 7,caption = "GSE methods on NCI pathway sets as feature selection",href="NCI.html",color= "#5DADE2")
+valueBox(value = 7,caption = "GSE methods on NCI pathway sets for feature selection",href="NCI.html",color= "#2E86C1")
 ```
 
 ### Chart 8
 
 ```{r}
-valueBox(value = 8,caption = "GSVA on the Canonical Pathways",href="GSVA.html",color= "#5DADE2")
+valueBox(value = 8,caption = "GSVA on the Canonical Pathways",href="GSVA.html",color= "#2E86C1")
 ```
 
 -------------------------------------
@@ -76,7 +76,7 @@ valueBox(value = 8,caption = "GSVA on the Canonical Pathways",href="GSVA.html",c
 ### Chart 9
 
 ```{r}
-valueBox(value = 9,caption = "Latent layer of a simple autoencoder with molecular and survival data  as input for the SBC",href="Autoencoder1_Molecular+Survival.html", color= "#5DADE2")
+valueBox(value = 9,caption = "Latent layer of a simple autoencoder with molecular and survival data  as input for the SBC",href="Autoencoder1_Molecular+Survival.html", color= "#2874A6")
 ```
 
 -------------------------------------
@@ -84,23 +84,23 @@ valueBox(value = 9,caption = "Latent layer of a simple autoencoder with molecula
 ### Chart 10
     
 ```{r}
-valueBox(value = 10,caption = "Linear predictor of PCox model on the Oncogenic gene sets",href="OncogenicGeneSets+Pcox.html", color= "#5DADE2")
+valueBox(value = 10,caption = "Linear predictor of PCox model on the Oncogenic gene sets",href="OncogenicGeneSets+Pcox.html", color= "#21618C")
 ```
     
 ### Chart 11
 
 ```{r}
-valueBox(value = 11,caption = "Linear predictor of AFT model on the Oncogenic gene sets",href="OncogenicGeneSets+PAFT.html", color= "#5DADE2")
+valueBox(value = 11,caption = "Linear predictor of AFT model on the Oncogenic gene sets",href="OncogenicGeneSets+PAFT.html", color= "#21618C")
 ```
 
 
 
-Tables {data-icon="fa-table"}
+Consolidated results {data-icon="fa-table"}
 =====================================     
 
-### Table 1
+### Comparison of results
     
-```{r, eval= TRUE,include=FALSE}
+```{r}
 
 rownames<-c(1,2,3,4,5,6,7,8,9,10,11)
 description<-c("Verhaak samples present on the TCGA-GBM","All samples in the TCGA-GBM","Karnofsky corrected samples","Karnofsky corrected samples and Flexmix Intialization","GSE methods on KEGG pathways as feature selection","GSE methods on Oncogenic gene sets as feature selection","GSE methods on NCI pathway sets as feature selection","GSVA on the Canonical Pathways","Latent layer of a simple autoencoder with molecular and survival data  as input for the SBC","Linear predictor of PCox model on the Oncogenic gene sets","Linear predictor of AFT model on the Oncogenic gene sets")
@@ -122,11 +122,10 @@ root<-"/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/R_Scripts_Fir
 for (i in datasets){
     dummie<-i
   rm(list=setdiff(ls(), c("colnames","corrections","rownames","description","initialization","trainsize","testsize","traink","testk","train_pval","test_pval","pCIndex","rCIndex","datasets","root","dummie")))
-    print(dummie)
     load(paste0(root,dummie))
   if (dummie=="NCI.RData" | dummie == "Autoencoder1_Molecular+Survival.RData"){
     trainsize<-append(trainsize,n)
-    testsize<-append(testsize,n)
+    testsize<-append(testsize,n.new)
     traink<-append(traink,"NA")
     testk<-append(testk,"NA")
     train_pval<-append(train_pval,"NA")
@@ -135,7 +134,7 @@ for (i in datasets){
     rCIndex<-append(rCIndex,"NA")
   }else{
     trainsize<-append(trainsize,n)
-    testsize<-append(testsize,n)
+    testsize<-append(testsize,n.new)
     traink<-append(traink,length(table(c.sbc)))
     testk<-append(testk,length(table(c.sbc.new)))
     train_pval<-append(train_pval,pval)
@@ -144,10 +143,19 @@ for (i in datasets){
     rCIndex<-append(rCIndex,max(recovCIndex.sbc))
   }
 }
+trainsize<-as.numeric(unlist(trainsize))
+testsize<-as.numeric(unlist(testsize))
+traink<-unlist(traink)
+testk<-unlist(testk)
+train_pval<-round(as.numeric(unlist(train_pval)),5)
+test_pval<-round(as.numeric(unlist(test_pval)),5)
+pCIndex<-unlist(round(as.numeric(pCIndex),5))
+rCIndex<-unlist(round(as.numeric(rCIndex),5))
 
-Comparison<-data.frame("Number"=rownames,"Description"=description,"Initialization method"=initialization,"Correction to match testing and training set"=corrections,"Training set size"=trainsize,"Test set size"=testsize,"Number of training clusters"= traink,"Number of testing clusters" = testk,"P-value of KMC in training"=train_pval,"P-value of KMC in testing"=test_pval,"Predictive C-Index"=pCIndex,"Recovery C-Index"=rCIndex,stringsAsFactors = FALSE)
+
+Comparison<-data.frame("Number"=rownames,"Description"=description,"Initialization method"=initialization,"Correction"=corrections,"Training size"=trainsize,"Test size"=testsize,"K of training"= traink,"K of testing" = testk,"P-value of KMC in training"=train_pval,"P-value of KMC in testing"=test_pval,"Predictive C-Index"=pCIndex,"Recovery C-Index"=rCIndex,stringsAsFactors = FALSE)
 Comparison %>%
-  kable(caption = "Comparison of results") %>%
+  kable(caption = "Comparison of results",align = "c") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
  
 ```

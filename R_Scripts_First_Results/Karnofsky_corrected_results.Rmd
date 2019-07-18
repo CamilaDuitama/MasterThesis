@@ -172,7 +172,7 @@ table(censoring.new) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")
 ```
 
-# PCA of training and test set
+### PCA of training and test set
 
 ```{r PCA of the whole mRNA dataset, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 totalmRNA<-rbind(mRNAArray_TrainingSet,mRNAArray_TestSet)

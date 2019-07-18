@@ -7,10 +7,11 @@ navbar:
     href: mailto:camiladuitama@gmail.com
   - icon: fa-github fa-lg
     href: https://github.com/CamilaDuitama/MasterThesis
-  - icon: fa-twitter fa-lg
-    href: https://twitter.com/camiladuitama1
   - icon: fa-linkedin fa-lg
     href: https://www.linkedin.com/in/camiladuitama/
+  - icon: fa-twitter fa-lg
+    href: https://twitter.com/camiladuitama1
+
 output:
   html_document:
     theme: cosmo
@@ -21,3 +22,5 @@ output:
     fig_width: 10
     fig_height: 6
     fig_caption: true
+    df_print: kable
+

@@ -409,14 +409,14 @@ div.tocify {
   </a>
 </li>
 <li>
-  <a href="https://twitter.com/camiladuitama1">
-    <span class="fa fa-twitter fa-lg"></span>
+  <a href="https://www.linkedin.com/in/camiladuitama/">
+    <span class="fa fa-linkedin fa-lg"></span>
      
   </a>
 </li>
 <li>
-  <a href="https://www.linkedin.com/in/camiladuitama/">
-    <span class="fa fa-linkedin fa-lg"></span>
+  <a href="https://twitter.com/camiladuitama1">
+    <span class="fa fa-twitter fa-lg"></span>
      
   </a>
 </li>
@@ -539,10 +539,13 @@ time.new&lt;-log(time.new)
 censoring.new&lt;-Clinical_TrainingSet[-(1:n),]$vital_status
 ######### mRNA (or miRNA expression values) (N*D) ###
 Y.pre.test&lt;-mRNAArray_TrainingSet[-(1:n),]
+
+n&lt;-dim(Y.pre.train)[1]
+n.new&lt;-dim(Y.pre.test)[1]
 </code></pre>
-<pre class="r"><code>print(paste0(&quot;Number of patients in training set: &quot;,as.character(length(time))))
+<pre class="r"><code>print(paste0(&quot;Number of patients in training set: &quot;,as.character(n)))
 ## [1] &quot;Number of patients in training set: 80&quot;
-print(paste0(&quot;Number of patients in test set: &quot;,length(time.new)))
+print(paste0(&quot;Number of patients in test set: &quot;,as.character(n.new)))
 ## [1] &quot;Number of patients in test set: 80&quot;</code></pre>
 </div>
 </div>

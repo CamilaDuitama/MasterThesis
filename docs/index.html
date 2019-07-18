@@ -2684,478 +2684,467 @@ window.FlexDashboardComponents.push({
 <div class="knitr-options" data-fig-width="576" data-fig-height="460">
 
 </div>
-<pre><code>[1] &quot;Preliminary_Results.RData&quot;
-[1] &quot;Results.RData&quot;
-[1] &quot;Karnofsky_corrected_results.RData&quot;
-[1] &quot;Karnofsky_correction+Flexmix_initialization.RData&quot;
-[1] &quot;GSVA-KEGG.RData&quot;
-[1] &quot;GSVA-Oncogenic_Signature.RData&quot;
-[1] &quot;NCI.RData&quot;
-[1] &quot;GSVA.RData&quot;
-[1] &quot;Autoencoder1_Molecular+Survival.RData&quot;
-[1] &quot;OncogenicGeneSets+Pcox.RData&quot;
-[1] &quot;OncogenicGeneSets+PAFT.RData&quot;</code></pre>
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
 Comparison of results
 </caption>
 <thead>
 <tr>
-<th style="text-align:right;">
+<th style="text-align:center;">
 Number
 </th>
-<th style="text-align:left;">
+<th style="text-align:center;">
 Description
 </th>
-<th style="text-align:left;">
+<th style="text-align:center;">
 Initialization.method
 </th>
-<th style="text-align:left;">
-Correction.to.match.testing.and.training.set
+<th style="text-align:center;">
+Correction
 </th>
-<th style="text-align:right;">
-Training.set.size
+<th style="text-align:center;">
+Training.size
 </th>
-<th style="text-align:right;">
-Test.set.size
+<th style="text-align:center;">
+Test.size
 </th>
-<th style="text-align:left;">
-Number.of.training.clusters
+<th style="text-align:center;">
+K.of.training
 </th>
-<th style="text-align:left;">
-Number.of.testing.clusters
+<th style="text-align:center;">
+K.of.testing
 </th>
-<th style="text-align:right;">
+<th style="text-align:center;">
 P.value.of.KMC.in.training
 </th>
-<th style="text-align:right;">
+<th style="text-align:center;">
 P.value.of.KMC.in.testing
 </th>
-<th style="text-align:right;">
+<th style="text-align:center;">
 Predictive.C.Index
 </th>
-<th style="text-align:right;">
+<th style="text-align:center;">
 Recovery.C.Index
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:right;">
+<td style="text-align:center;">
 1
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Verhaak samples present on the TCGA-GBM
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 K-means
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 None
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 80
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 80
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 4
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 6
 </td>
-<td style="text-align:right;">
-0.000
+<td style="text-align:center;">
+0.00000
 </td>
-<td style="text-align:right;">
-0.019
+<td style="text-align:center;">
+0.01868
 </td>
-<td style="text-align:right;">
-0.573
+<td style="text-align:center;">
+0.57256
 </td>
-<td style="text-align:right;">
-0.744
+<td style="text-align:center;">
+0.74373
 </td>
 </tr>
 <tr>
-<td style="text-align:right;">
+<td style="text-align:center;">
 2
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 All samples in the TCGA-GBM
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 K-means
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 None
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 160
 </td>
-<td style="text-align:right;">
-160
+<td style="text-align:center;">
+336
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 4
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 4
 </td>
-<td style="text-align:right;">
-0.000
+<td style="text-align:center;">
+0.00000
 </td>
-<td style="text-align:right;">
-0.003
+<td style="text-align:center;">
+0.00342
 </td>
-<td style="text-align:right;">
-0.467
+<td style="text-align:center;">
+0.46737
 </td>
-<td style="text-align:right;">
-0.683
+<td style="text-align:center;">
+0.68306
 </td>
 </tr>
 <tr>
-<td style="text-align:right;">
+<td style="text-align:center;">
 3
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Karnofsky corrected samples
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 K-means
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Karnofsky Index correction
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 160
 </td>
-<td style="text-align:right;">
-160
+<td style="text-align:center;">
+261
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 4
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 4
 </td>
-<td style="text-align:right;">
-0.000
+<td style="text-align:center;">
+0.00000
 </td>
-<td style="text-align:right;">
-0.002
+<td style="text-align:center;">
+0.00170
 </td>
-<td style="text-align:right;">
-0.478
+<td style="text-align:center;">
+0.47798
 </td>
-<td style="text-align:right;">
-0.683
+<td style="text-align:center;">
+0.68306
 </td>
 </tr>
 <tr>
-<td style="text-align:right;">
+<td style="text-align:center;">
 4
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Karnofsky corrected samples and Flexmix Intialization
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Flexmix
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Karnofsky Index correction
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 160
 </td>
-<td style="text-align:right;">
-160
+<td style="text-align:center;">
+261
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 4
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 3
 </td>
-<td style="text-align:right;">
-0.004
+<td style="text-align:center;">
+0.00396
 </td>
-<td style="text-align:right;">
-0.161
+<td style="text-align:center;">
+0.16084
 </td>
-<td style="text-align:right;">
-0.484
+<td style="text-align:center;">
+0.48395
 </td>
-<td style="text-align:right;">
-0.322
+<td style="text-align:center;">
+0.32162
 </td>
 </tr>
 <tr>
-<td style="text-align:right;">
+<td style="text-align:center;">
 5
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 GSE methods on KEGG pathways as feature selection
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 K-means
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Karnofsky Index correction
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 160
 </td>
-<td style="text-align:right;">
-160
+<td style="text-align:center;">
+261
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 4
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 3
 </td>
-<td style="text-align:right;">
-0.220
+<td style="text-align:center;">
+0.22045
 </td>
-<td style="text-align:right;">
-0.066
+<td style="text-align:center;">
+0.06616
 </td>
-<td style="text-align:right;">
-0.509
+<td style="text-align:center;">
+0.50854
 </td>
-<td style="text-align:right;">
-0.469
+<td style="text-align:center;">
+0.46855
 </td>
 </tr>
 <tr>
-<td style="text-align:right;">
+<td style="text-align:center;">
 6
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 GSE methods on Oncogenic gene sets as feature selection
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 K-means
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Karnofsky Index correction
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 160
 </td>
-<td style="text-align:right;">
-160
+<td style="text-align:center;">
+261
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 4
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 4
 </td>
-<td style="text-align:right;">
-0.000
+<td style="text-align:center;">
+0.00040
 </td>
-<td style="text-align:right;">
-0.027
+<td style="text-align:center;">
+0.02667
 </td>
-<td style="text-align:right;">
-0.501
+<td style="text-align:center;">
+0.50081
 </td>
-<td style="text-align:right;">
-0.634
+<td style="text-align:center;">
+0.63444
 </td>
 </tr>
 <tr>
-<td style="text-align:right;">
+<td style="text-align:center;">
 7
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 GSE methods on NCI pathway sets as feature selection
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 K-means
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Karnofsky Index correction
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 160
 </td>
-<td style="text-align:right;">
-160
+<td style="text-align:center;">
+261
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 NA
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 NA
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 NA
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 NA
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 NA
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 NA
 </td>
 </tr>
 <tr>
-<td style="text-align:right;">
+<td style="text-align:center;">
 8
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 GSVA on the Canonical Pathways
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 K-means
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Karnofsky Index correction
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 160
 </td>
-<td style="text-align:right;">
-160
+<td style="text-align:center;">
+261
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 4
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 4
 </td>
-<td style="text-align:right;">
-0.666
+<td style="text-align:center;">
+0.66561
 </td>
-<td style="text-align:right;">
-0.014
+<td style="text-align:center;">
+0.01398
 </td>
-<td style="text-align:right;">
-0.554
+<td style="text-align:center;">
+0.55357
 </td>
-<td style="text-align:right;">
-0.307
+<td style="text-align:center;">
+0.30727
 </td>
 </tr>
 <tr>
-<td style="text-align:right;">
+<td style="text-align:center;">
 9
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Latent layer of a simple autoencoder with molecular and survival data as input for the SBC
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 K-means
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Karnofsky Index correction
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 160
 </td>
-<td style="text-align:right;">
-160
+<td style="text-align:center;">
+261
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 NA
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 NA
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 NA
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 NA
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 NA
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 NA
 </td>
 </tr>
 <tr>
-<td style="text-align:right;">
+<td style="text-align:center;">
 10
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Linear predictor of PCox model on the Oncogenic gene sets
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 K-means
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Karnofsky Index correction
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 160
 </td>
-<td style="text-align:right;">
-160
+<td style="text-align:center;">
+261
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 5
 </td>
-<td style="text-align:left;">
-4
+<td style="text-align:center;">
+3
 </td>
-<td style="text-align:right;">
-0.000
+<td style="text-align:center;">
+0.00000
 </td>
-<td style="text-align:right;">
-0.000
+<td style="text-align:center;">
+0.07452
 </td>
-<td style="text-align:right;">
-0.892
+<td style="text-align:center;">
+0.52986
 </td>
-<td style="text-align:right;">
-0.966
+<td style="text-align:center;">
+0.96609
 </td>
 </tr>
 <tr>
-<td style="text-align:right;">
+<td style="text-align:center;">
 11
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Linear predictor of AFT model on the Oncogenic gene sets
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 K-means
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Karnofsky Index correction
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 160
 </td>
-<td style="text-align:right;">
-160
+<td style="text-align:center;">
+261
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 4
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 4
 </td>
-<td style="text-align:right;">
-0.000
+<td style="text-align:center;">
+0.00000
 </td>
-<td style="text-align:right;">
-0.000
+<td style="text-align:center;">
+0.01806
 </td>
-<td style="text-align:right;">
-0.809
+<td style="text-align:center;">
+0.52832
 </td>
-<td style="text-align:right;">
-0.959
+<td style="text-align:center;">
+0.95888
 </td>
 </tr>
 </tbody>
