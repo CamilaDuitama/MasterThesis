@@ -8,9 +8,9 @@
 
 
 
-<title>Master Thesis: External validation and characterization of cancer subtypes using SBC</title>
+<title>External validation and characterization of cancer subtypes using SBC</title>
 
-<meta property="og:title" content="Master Thesis: External validation and characterization of cancer subtypes using SBC" />
+<meta property="og:title" content="External validation and characterization of cancer subtypes using SBC" />
 
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
 
@@ -811,7 +811,7 @@ html, body {
   
 </span>
 <span class="navbar-brand">
-  Master Thesis: External validation and characterization of cancer subtypes using SBC
+  External validation and characterization of cancer subtypes using SBC
   <span class="navbar-author">
         </span>
 </span>
@@ -3146,6 +3146,42 @@ Karnofsky Index correction
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+<div id="about" class="section level1" data-icon="fa-question">
+<h1>About</h1>
+</div>
+<div id="master-thesis-external-validation-and-characterization-of-cancer-subtypes-using-sbc" class="section level1">
+<h1>Master Thesis :External Validation and characterization of Cancer subtypes using SBC</h1>
+<p>This is the website were I present the results of my master thesis.</p>
+<p>The background of this projet is the SBC, a model that infers clinically relevant cancer subtypes, by jointly clustering molecular data along with survival datain a semi-supervised manner.The original paper and the supplementary material are <a href="https://github.com/CamilaDuitama/MasterThesis/tree/master/papers">here</a>. A graphical representation of the model is this:</p>
+<p>(../images/Graphical_model_SBC.png)</p>
+<p>SBC’s main features are:</p>
+<ul>
+<li><p>Fully bayesian approach as omics data contains a lot of noise with p &gt;&gt; n.</p></li>
+<li><p>Dirichlet Process prior to automatically infer the number of clusters.</p></li>
+<li><p>Molecular Data modelled as a Hierarchical Multivariate Gaussian Distribution (Mixture model).</p></li>
+<li><p>Survival time is modelled as Log-linear (Accelerated Failure Time) distribution with molecular covariates (Mixture model).</p></li>
+<li><p>L-1 regularization for the covariates of the Survival Model (Bayesian Lasso).</p></li>
+</ul>
+<div id="objectives" class="section level2">
+<h2>Objectives</h2>
+<ol style="list-style-type: decimal">
+<li><p>Perform an external validation of the SBC based clusters on the Verhaak study ensuring distinct survival curves for the predicted (as well as the training) clusters, using external datasets from patients diagnosed with Glioblastoma.</p></li>
+<li><p>Characterise the obtained clusters and the corresponding signature looking at other data modalities for consistent patterns (e.g. Somatic Mutation Data, Copy Number, Pathway Enrichment, etc.)</p></li>
+</ol>
+</div>
+<div id="data-preprocessing" class="section level2">
+<h2>Data preprocessing</h2>
+<ul>
+<li><a href="https://github.com/CamilaDuitama/MasterThesis/blob/master/DownloadTCGA.R">DownloadTCGA.R</a> is the code to download the TCGA-GBM Data from the TCGA Firehose Database (Using TCGAToolbox) and the GDC Data Portal (Using TCGABiolinks). It also contains the code to get the validated miRNA targets from a list of miRNA.</li>
+<li>The python notebook <a href="https://github.com/CamilaDuitama/MasterThesis/blob/master/Data%20preparation-RTCGA.ipynb">Data_preparation-RTCGA.ipynb</a> is contains the preprocessing of the data(where I unify patient identifiers, verify the data is complete and in the right scale and check for the presence of the Verhaak signature and samples in our dataset), initial visualization and selection of training and testing sets*.</li>
+</ul>
+</div>
+<div id="preliminary-results" class="section level2">
+<h2>Preliminary results</h2>
+<p><a href="https://github.com/CamilaDuitama/MasterThesis/tree/master/R_Scripts_First_Results">This folder</a> contains all the necessary scripts to train and run the model, and produce an R Notebook with the results.</p>
+<p>The results for 11 different runs of the model are shown in this website. The variations between one or the other occur mainly in the feature selection and preprocessing steps.</p>
 </div>
 </div>
 
