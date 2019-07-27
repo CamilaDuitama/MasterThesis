@@ -1,0 +1,478 @@
+
+---
+title: "SBC on the GBM dataset from the whole Firebrowse Database(TCGA)."
+subtitle: "Oncogene Sets + PAFT with Censoring Data"
+author: "Camila Duitama (Based on Ashar Ahmad's code for the SBC model)"
+date: "11th July 2019"
+params:
+  iter: 100
+  iter.burnin: 150
+  iter.thin: 5
+  pval.sbc : 0.95
+  output_folder : "OncogenicGeneSets+PAFT+CensoringData_files/"
+
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE,include=TRUE,collapse=TRUE,warning=FALSE,message=FALSE, fig.width = 10, fig.height = 6)
+rm(list = ls(all.names = TRUE))
+load("/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/R_Scripts_First_Results/OncogenicGeneSets+PAFT+CensoringData.RData")
+
+```
+# Description
+
+The Oncogenic Gene Set was downloaded from [MSigDB](http://software.broadinstitute.org/gsea/msigdb/genesets.jsp?collection=C6). A penalized AFT model that was fit on the training data, and the linear predictors were then used as input features for the SBC model. This model (which was fit on the training data set) was then used to obtain linear predictor on the test set, which would be the test input features for the SBC.
+
+# Loading of libraries
+
+Libraries needed to run the code must be loaded first
+
+```{r LibrariesLoading, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+library(GSVA)
+library(sva)
+library(readr)
+library(ggplot2)
+library(matrixcalc)
+library(stats)
+library(Runuran)
+library(truncnorm)
+library(Matrix)
+library(psych)
+library(VGAM)
+library(MixSim)
+library(statmod)
+library(flexclust)
+library(mixAK)
+library(mclust)
+library(monomvn)
+library(cluster)
+library(flexmix)
+library(survival)
+library(utils)
+library(rms)
+library(pec)
+library(ipred)
+library(verification)
+library(Hmisc)
+library(glmpath)
+library(glmnet)
+library(gplots)
+library(sparcl)
+library(kernlab)
+library(class)
+library(reshape)
+library(GGally)
+library(XML)
+library(RCurl)
+library(MASS)
+library(matrixcalc)
+library(stats)
+library(Runuran)
+library(MCMCpack)
+library(VGAM)
+library(statmod)
+library(survcomp)
+library(gtools)
+library(ggplot2)
+library(GenOrd)
+library(plyr)
+library(dplyr)
+library(iCluster)
+library(CCA)
+library(caret)
+library(mcclust)
+library(Biobase)
+library(mixtools)
+library(knitr)
+library(kableExtra)
+library(devtools)
+library(rmarkdown)
+library(msigdbr)
+library(flexdashboard)
+library(AdapEnetClass)
+
+```
+
+# Loading/Splitting training and testing sets
+
+Data is separated into training and testing
+
+```{r Loading files, eval=FALSE}
+######## Input ###############
+
+Clinical_TrainingSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/Second_data_split/TrainingSet/Clinical_TrainingSet.csv")
+mRNAArray_TrainingSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/Second_data_split/TrainingSet/mRNAArray_TrainingSet.csv")
+Clinical_TestSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/Second_data_split/TestSet/Clinical_TestSet.csv")
+mRNAArray_TestSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/Second_data_split/TestSet/mRNAArray_TestSet.csv")
+indexes.train<-which(is.na(Clinical_TrainingSet$days_to_death), arr.ind=TRUE)
+indexes.test<-which(is.na(Clinical_TestSet$days_to_death), arr.ind=TRUE)
+training_time<-Clinical_TrainingSet$days_to_death
+test_time<-Clinical_TestSet$days_to_death
+for (i in indexes.train){
+  training_time[i]<-Clinical_TrainingSet$days_to_last_followup[i]
+}
+for (i in indexes.test){
+  test_time[i]<-Clinical_TestSet$days_to_last_followup[i]
+}
+total_time<-append(training_time,test_time)
+
+n<-length(Clinical_TrainingSet$X1)
+n.new<-length(Clinical_TestSet$X1)
+
+
+#### Overall Survival Time Vector (N*1)
+time<-total_time[1:n]
+time<-log(time)
+########### Event or Not Vector (N * 1) ####
+censoring<-Clinical_TrainingSet$vital_status
+######### mRNA (or miRNA expression values) (N*D) ###
+mRNAArray_TrainingSet$X1<-NULL
+Y.pre.train<-mRNAArray_TrainingSet
+
+#### Overall Survival Time Vector (N*1)
+time.new<-total_time[-(1:n)]
+time.new<-log(time.new)
+########### Event or Not Vector (N * 1) ####
+censoring.new<-Clinical_TestSet$vital_status
+######### mRNA (or miRNA expression values) (N*D) ###
+mRNAArray_TestSet$X1<-NULL
+Y.pre.test<-mRNAArray_TestSet
+
+```
+
+```{r Number of samples}
+print(paste0("Number of patients in training set: ",as.character(n)))
+print(paste0("Number of patients in test set: ",as.character(n.new)))
+```
+# Oncogene set PAFT fitting of model
+## Weibull
+### PAFT fitting in training set
+
+```{r GeneSet PCox fitting on training set, eval=FALSE}
+
+Y.pre.train<-mRNAArray_TrainingSet
+gs<-list()
+AFT<-list()
+distributions<-c("weibull","exponential","gaussian","logistic","lognormal","loglogistic")
+
+for (dist in distributions){
+  AFT[[dist]]<-list()
+  AFT[[dist]]$model<-list()
+  AFT[[dist]]$linear.aft<-list()
+  }
+lost<-list()
+db_genesets<-msigdbr(species="Homo sapiens",category = "C6")
+smod <-  Surv(exp(time), censoring)
+
+for (dist in distributions){
+  for (i in unique(db_genesets$gs_name)){
+    gs[i]<-list(unique(filter(db_genesets,db_genesets$gs_name==i)$gene_symbol))
+    #Select all columns that aren't in the original dataframe Y.pre.train
+    tokeep <- gs[[i]][(gs[[i]] %in% colnames(Y.pre.train))]
+    #list with the percentages of ids lost
+    lost[[i]]<-(1-(length(tokeep)/length(gs[[i]])))*100
+    df<-Y.pre.train[,tokeep]
+    
+    AFT[[dist]]$model[[i]]<-survreg(smod ~ . , dist=dist, data=df)
+    AFT[[dist]]$linear.aft[[i]] <- predict(object = AFT[[dist]]$model[[i]], newdata = df, type="lp") 
+    
+  }
+}
+
+for (dist in distributions){
+  AFT[[dist]]$Y.pre.train<-do.call(cbind,AFT[[dist]]$linear.aft)
+}
+```
+
+
+## PAFT fitting in test set
+```{r Gene Set Pcox fitting on test set, eval=FALSE}
+Y.pre.test<-mRNAArray_TestSet
+gs<-list()
+for (dist in distributions){
+  AFT[[dist]]$linear.aft.new<-list()
+  }
+lost.new<-list()
+db_genesets<-msigdbr(species="Homo sapiens",category = "C6")
+for (dist in distributions){
+  for (i in unique(db_genesets$gs_name)){
+    gs[i]<-list(unique(filter(db_genesets,db_genesets$gs_name==i)$gene_symbol))
+    #Select all columns that aren't in the original dataframe Y.pre.test
+    tokeep.new <- gs[[i]][(gs[[i]] %in% colnames(Y.pre.test))]
+    #list with the percentages of ids lost
+    lost.new[[i]]<-(1-(length(tokeep.new)/length(gs[[i]])))*100
+    df.new<-Y.pre.test[,tokeep.new]
+    AFT[[dist]]$linear.aft.new[[i]] <- predict(object = AFT[[dist]]$model[[i]], newdata = df.new, type="lp")
+    }
+  }
+
+for (dist in distributions){
+  AFT[[dist]]$Y.pre.test<-do.call(cbind,AFT[[dist]]$linear.aft.new)
+}
+```
+
+## Data visualization
+
+### Censoring
+```{r Table for censoring information of the training set}
+table(censoring) %>%  
+  kable(caption = "Censoring frequency for the training set") %>%
+  kable_styling(bootstrap_options = c("striped", "hover","responsive"),full_width = T, position = "center")
+
+```
+
+```{r Table for censoring information of the testing set}
+table(censoring.new) %>%
+  kable(caption = "Censoring frequency for the testing set") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
+
+```
+
+### PCA Weibull
+```{r PCA Weibull}
+
+AFT$weibull$Y.pre.train<-scale(AFT$weibull$Y.pre.train,scale=TRUE,center=TRUE)
+AFT$weibull$Y.pre.test<-scale(AFT$weibull$Y.pre.test,scale=TRUE,center=TRUE)
+
+totalmRNA<-rbind(AFT$weibull$Y.pre.train,AFT$weibull$Y.pre.test)
+mRNA.pca<-as.data.frame(prcomp(na.omit(totalmRNA))$x[,1:2])
+classes<-c()
+for (i in 1:n){
+    classes<-append(classes,"Training")
+  }
+for (i in 1:n.new){
+    classes<-append(classes,"Testing")
+  }
+
+mRNA.pca$Classes<-classes
+p1.weibull <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n GBM-TCGA Data set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p1.weibull
+
+```
+
+### PCA Exponential
+```{r PCA Exponential }
+
+AFT$exponential$Y.pre.train<-scale(AFT$exponential$Y.pre.train,scale=TRUE,center=TRUE)
+AFT$exponential$Y.pre.test<-scale(AFT$exponential$Y.pre.test,scale=TRUE,center=TRUE)
+
+totalmRNA<-rbind(AFT$exponential$Y.pre.train,AFT$exponential$Y.pre.test)
+mRNA.pca<-as.data.frame(prcomp(na.omit(totalmRNA))$x[,1:2])
+classes<-c()
+for (i in 1:n){
+    classes<-append(classes,"Training")
+  }
+for (i in 1:n.new){
+    classes<-append(classes,"Testing")
+  }
+
+mRNA.pca$Classes<-classes
+p1.exponential <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n GBM-TCGA Data set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p1.exponential
+
+```
+
+### PCA Gaussian
+```{r PCA Gaussian}
+
+AFT$gaussian$Y.pre.train<-scale(AFT$gaussian$Y.pre.train,scale=TRUE,center=TRUE)
+AFT$gaussian$Y.pre.test<-scale(AFT$gaussian$Y.pre.test,scale=TRUE,center=TRUE)
+
+totalmRNA<-rbind(AFT$gaussian$Y.pre.train,AFT$gaussian$Y.pre.test)
+mRNA.pca<-as.data.frame(prcomp(na.omit(totalmRNA))$x[,1:2])
+classes<-c()
+for (i in 1:n){
+    classes<-append(classes,"Training")
+  }
+for (i in 1:n.new){
+    classes<-append(classes,"Testing")
+  }
+
+mRNA.pca$Classes<-classes
+p1.gaussian <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n GBM-TCGA Data set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p1.gaussian
+
+```
+
+### PCA Logistic
+```{r PCA Logistic }
+
+AFT$logistic$Y.pre.train<-scale(AFT$logistic$Y.pre.train,scale=TRUE,center=TRUE)
+AFT$logistic$Y.pre.test<-scale(AFT$logistic$Y.pre.test,scale=TRUE,center=TRUE)
+
+totalmRNA<-rbind(AFT$logistic$Y.pre.train,AFT$logistic$Y.pre.test)
+mRNA.pca<-as.data.frame(prcomp(na.omit(totalmRNA))$x[,1:2])
+classes<-c()
+for (i in 1:n){
+    classes<-append(classes,"Training")
+  }
+for (i in 1:n.new){
+    classes<-append(classes,"Testing")
+  }
+
+mRNA.pca$Classes<-classes
+p1.logistic <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n GBM-TCGA Data set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p1.logistic
+
+```
+
+### PCA Lognormal
+```{r PCA  Lognormal}
+
+AFT$lognormal$Y.pre.train<-scale(AFT$lognormal$Y.pre.train,scale=TRUE,center=TRUE)
+AFT$lognormal$Y.pre.test<-scale(AFT$lognormal$Y.pre.test,scale=TRUE,center=TRUE)
+
+totalmRNA<-rbind(AFT$lognormal$Y.pre.train,AFT$lognormal$Y.pre.test)
+mRNA.pca<-as.data.frame(prcomp(na.omit(totalmRNA))$x[,1:2])
+classes<-c()
+for (i in 1:n){
+    classes<-append(classes,"Training")
+  }
+for (i in 1:n.new){
+    classes<-append(classes,"Testing")
+  }
+
+mRNA.pca$Classes<-classes
+p1.lognormal <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n GBM-TCGA Data set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p1.lognormal
+
+```
+
+### PCA Loglogistic
+```{r PCA Loglogistic }
+
+AFT$loglogistic$Y.pre.train<-scale(AFT$loglogistic$Y.pre.train,scale=TRUE,center=TRUE)
+AFT$loglogistic$Y.pre.test<-scale(AFT$loglogistic$Y.pre.test,scale=TRUE,center=TRUE)
+
+totalmRNA<-rbind(AFT$loglogistic$Y.pre.train,AFT$loglogistic$Y.pre.test)
+mRNA.pca<-as.data.frame(prcomp(na.omit(totalmRNA))$x[,1:2])
+classes<-c()
+for (i in 1:n){
+    classes<-append(classes,"Training")
+  }
+for (i in 1:n.new){
+    classes<-append(classes,"Testing")
+  }
+
+mRNA.pca$Classes<-classes
+p1.loglogistic <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n GBM-TCGA Data set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p1.loglogistic
+
+```
+
+#Signature calculation
+
+This chunk calculates  SBC gene signature
+It's based on the idea of Univariate testing of Survival Data features
+
+
+```{r SBC Signature, eval=FALSE}
+######## Prefiltering of the Genes ############################### ###########################
+######## Using Univariate Cox's Model for Ranking of the Survival Power of the Genes ########
+todo<-list(AFT$weibull$Y.pre.train,AFT$exponential$Y.pre.train,AFT$gaussian$Y.pre.train,AFT$logistic$Y.pre.train,AFT$lognormal$Y.pre.train,AFT$loglogistic$Y.pre.train)
+
+output<-list() 
+ 
+for (i in 1:length(todo)){
+  input<-as.matrix(todo[[i]])
+  surv.obj <- Surv(time,censoring)
+  coeff.sig <- c(0)
+  
+  pvalue.sig <- c(0)
+  
+  
+  calcCox = function(x){
+    q1 <- unlist(summary(coxph(surv.obj ~ ., data = as.data.frame(x))))
+    return(q1$logtest.pvalue)
+  }
+  
+  
+  pvalue.sig <- apply(input,2,calcCox)
+  
+  
+  ###### Adjusting p-values for Multiple Test Correction
+  pvalue.sig.adj <- p.adjust(pvalue.sig, method = "fdr")
+  
+  #### As the number of features are quite variable choose first a very loose cut-off 
+  
+  signature.loose <- colnames(input)[(pvalue.sig.adj < params$pval.sbc)] 
+  
+  ### Combined the P-values
+  pvalue.combined <- (pvalue.sig.adj) 
+  names(pvalue.combined) <- colnames(input)
+  ## Sort it
+  pvalue.combined.sort <- sort(pvalue.combined)
+  ## Only select those genes which are loosely in the signature
+  pvalue.combined.adj <- pvalue.combined.sort[names(pvalue.combined.sort) %in% signature.loose]
+  
+  output[i]<-list(pvalue.combined.adj)
+}  
+
+```
+## Selection of Gene Set Enrichment method
+
+```{r Which method should we select?}
+mean<-list()
+sd<-list()
+min<-list()
+max<-list()
+for (i in 1:length(todo)){
+  mean<-c(mean,mean(output[[i]][1:50]))
+  sd<-c(sd,sd((output[[i]][1:50])))
+  min<-c(min,min((output[[i]][1:50])))
+  max<-c(max,max(output[[i]][1:50]))
+  
+}
+result<-data.frame("Distribution"=distributions)
+result$Mean<-formatC(unlist(mean), format = "e", digits = 2)
+result$SD<-formatC(unlist(sd), format = "e", digits = 2)
+result$Min<-formatC(unlist(min), format = "e", digits = 2)
+result$Max<-formatC(unlist(max), format = "e", digits = 2)
+result%>%
+     kable(caption = "Results of the AFT model on different distributions for the Y variable") %>%
+     kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")%>%
+     scroll_box(width = "500px", height = "200px")
+
+```
+```{r Select signature}
+signature.sbc<-names(output[[2]][1:50])
+```
+
+The SBC signature on the dataset looks like this
+
+```{r Table for the SBC signature}
+  to_plot<-data.frame(Genes=signature.sbc)
+   to_plot%>%
+     kable(caption = "SBC Signature") %>%
+     kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")%>%
+     scroll_box(width = "500px", height = "200px")
+```
+
+
+## Survival curves for both training and testing set
+
+```{r Survival curves for both training and testing set}
+surv.fit <- survfit(Surv(total_time,append(Clinical_TrainingSet$vital_status,Clinical_TestSet$vital_status))~ classes)
+p3 <- ggsurv(surv.fit, plot.cens=FALSE,main = " DPMM \n Kaplan Meier curves for training and test set")+ ggplot2::guides(linetype = FALSE)
+p3
+```
+
+## PCA of the signature genes
+
+```{r PCA of the signature}
+
+Y <- AFT$exponential$Y.pre.train[,signature.sbc]
+Y.new <- AFT$exponential$Y.pre.test[,signature.sbc]
+Y<-scale(Y,scale=TRUE,center=TRUE)
+Y.new<-scale(Y.new,scale=TRUE,center=TRUE)
+#Y <- scale(Y, center = TRUE, scale = TRUE)
+#obj <- scale(Y, center = TRUE, scale = TRUE)
+#Y.new <- scale(Y.new, center = attr(obj,"scaled:center"), scale = (attr(obj,"scaled:scale")))
+
+mRNA.signature<-rbind(Y,Y.new)
+mRNA.signature.pca<-as.data.frame(prcomp(mRNA.signature,scale=TRUE, center=TRUE)$x[,1:2])
+mRNA.signature.pca$Classes<-classes
+p6 <- ggplot(mRNA.signature.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n SBC Signature mRNAArray Data of GBM") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p6
+```
+
+*Note:* None of the distributions used to calculate the linear predictors with the AFT model resulted in a dataset for which the training could be done.

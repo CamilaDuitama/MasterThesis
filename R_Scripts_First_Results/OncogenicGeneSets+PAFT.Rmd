@@ -9,7 +9,7 @@ params:
   iter.burnin: 150
   iter.thin: 5
   pval.sbc : 0.95
-  output_folder : "OcogenicGeneSets+PAFT_files/"
+  output_folder : "OncogenicGeneSets+PAFT_files/"
 
 ---
 ```{r setup, include=FALSE}
@@ -153,6 +153,7 @@ linear.aft<-list()
 lost<-list()
 db_genesets<-msigdbr(species="Homo sapiens",category = "C6")
 smod <-  Surv(exp(time), censoring)
+
 for (i in unique(db_genesets$gs_name)){
   gs[i]<-list(unique(filter(db_genesets,db_genesets$gs_name==i)$gene_symbol))
   #Select all columns that aren't in the original dataframe Y.pre.train

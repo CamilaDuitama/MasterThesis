@@ -13,7 +13,8 @@ output:
 ---
 Home {data-icon="fa-home"}
 =====================================     
-    
+
+-------------------------------------
     
 ### Chart 1
     
@@ -90,9 +91,31 @@ valueBox(value = 10,caption = "Linear predictor of PCox model on the Oncogenic g
 ### Chart 11
 
 ```{r}
-valueBox(value = 11,caption = "Linear predictor of AFT model on the Oncogenic gene sets",href="OncogenicGeneSets+PAFT.html", color= "#21618C")
+valueBox(value = 11,caption = "Linear predictor of GLM using time-to-event data only on the Oncogenic gene sets",href="OncogenicGeneSets+PAFT.html", color= "#21618C")
 ```
 
+
+### Chart 12
+    
+```{r}
+valueBox(value = 12,caption = "Linear predictor of AFT model using censoring data and time-to-event data, on the Oncogenic gene sets",href="OncogenicGeneSets+PAFT+CensoringData.html", color= "#21618C")
+```
+    
+    
+-------------------------------------
+    
+    
+### Chart 13
+
+```{r}
+valueBox(value = 13,caption = "HSIC-Lasso for feature selection using the Verhaak Labels (Classification)",href="HSIC-Lasso-Classification.html", color= "#1B4F72")
+```
+
+### Chart 14
+
+```{r}
+valueBox(value = 13,caption = "HSIC-Lasso for feature selection using survival data (Regression)",href="HSIC-Lasso-Regression.html", color= "#1B4F72")
+```
 
 
 Consolidated results {data-icon="fa-table"}
@@ -100,12 +123,12 @@ Consolidated results {data-icon="fa-table"}
 
 ### Comparison of results
     
-```{r}
+```{r, fig.width=10, fig.height=15}
 
-rownames<-c(1,2,3,4,5,6,7,8,9,10,11)
-description<-c("Verhaak samples present on the TCGA-GBM","All samples in the TCGA-GBM","Karnofsky corrected samples","Karnofsky corrected samples and Flexmix Intialization","GSE methods on KEGG pathways as feature selection","GSE methods on Oncogenic gene sets as feature selection","GSE methods on NCI pathway sets as feature selection","GSVA on the Canonical Pathways","Latent layer of a simple autoencoder with molecular and survival data  as input for the SBC","Linear predictor of PCox model on the Oncogenic gene sets","Linear predictor of AFT model on the Oncogenic gene sets")
-initialization<-c("K-means","K-means","K-means","Flexmix","K-means","K-means","K-means","K-means","K-means","K-means","K-means")
-corrections<-c("None","None","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction")
+rownames<-c(1,2,3,4,5,6,7,8,9,10,11,12,13,14)
+description<-c("Verhaak samples present on the TCGA-GBM","All samples in the TCGA-GBM","Karnofsky corrected samples","Karnofsky corrected samples and Flexmix Intialization","GSE methods on KEGG pathways as feature selection","GSE methods on Oncogenic gene sets as feature selection","GSE methods on NCI pathway sets as feature selection","GSVA on the Canonical Pathways","Latent layer of a simple autoencoder with molecular and survival data  as input for the SBC","Linear predictor of PCox model on the Oncogenic gene sets","Linear predictor of GLM using time-to-event data only on the Oncogenic gene sets","Linear predictor of AFT model using censoring data and time-to-event data, on the Oncogenic gene sets","HSIC-Lasso for feature selection using the Verhaak Labels (Classification)","HSIC-Lasso for feature selection using survival data (Regression)")
+initialization<-c("K-means","K-means","K-means","Flexmix","K-means","K-means","K-means","K-means","K-means","K-means","K-means","K-means","K-means","K-means")
+corrections<-c("None","None","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction")
 
 trainsize<-list()
 testsize<-list()
@@ -116,14 +139,14 @@ test_pval<-list()
 pCIndex<-list()
 rCIndex<-list()
 
-datasets<-c("Preliminary_Results.RData","Results.RData","Karnofsky_corrected_results.RData","Karnofsky_correction+Flexmix_initialization.RData","GSVA-KEGG.RData","GSVA-Oncogenic_Signature.RData","NCI.RData","GSVA.RData","Autoencoder1_Molecular+Survival.RData","OncogenicGeneSets+Pcox.RData","OncogenicGeneSets+PAFT.RData")
+datasets<-c("Preliminary_Results.RData","Results.RData","Karnofsky_corrected_results.RData","Karnofsky_correction+Flexmix_initialization.RData","GSVA-KEGG.RData","GSVA-Oncogenic_Signature.RData","NCI.RData","GSVA.RData","Autoencoder1_Molecular+Survival.RData","OncogenicGeneSets+Pcox.RData","OncogenicGeneSets+PAFT.RData","OncogenicGeneSets+PAFT+CensoringData.RData","HSIC-Lasso-Regression.RData","HSIC-Lasso-Classification.RData")
 root<-"/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/R_Scripts_First_Results/"
     
 for (i in datasets){
     dummie<-i
   rm(list=setdiff(ls(), c("colnames","corrections","rownames","description","initialization","trainsize","testsize","traink","testk","train_pval","test_pval","pCIndex","rCIndex","datasets","root","dummie")))
     load(paste0(root,dummie))
-  if (dummie=="NCI.RData" | dummie == "Autoencoder1_Molecular+Survival.RData"){
+  if (dummie=="NCI.RData" | dummie == "Autoencoder1_Molecular+Survival.RData"| dummie == "OncogenicGeneSets+PAFT+CensoringData.RData"){
     trainsize<-append(trainsize,n)
     testsize<-append(testsize,n.new)
     traink<-append(traink,"NA")
@@ -167,7 +190,7 @@ This is the website were I present the results of my master thesis.
 
 The background of this project is the *SBC*, a model that infers clinically relevant cancer subtypes, by jointly clustering molecular data along with survival datain a semi-supervised manner. The original paper and the supplementary material are [here](https://github.com/CamilaDuitama/MasterThesis/tree/master/papers). A graphical representation of the model is this:
 
-```{r  out.width = "50%", out.height = "50%", include=FALSE, eval=TRUE}
+```{r  out.width = "50%", out.height = "50%", eval=TRUE}
 include_graphics("../images/Graphical_model_SBC.png") 
 ```
 

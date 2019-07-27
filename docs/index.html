@@ -2594,6 +2594,7 @@ window.FlexDashboardComponents.push({
 
 <div id="home" class="section level1" data-icon="fa-home">
 <h1>Home</h1>
+<hr />
 <div id="chart-1" class="section level3">
 <h3>Chart 1</h3>
 <div class="knitr-options" data-fig-width="576" data-fig-height="460">
@@ -2674,14 +2675,36 @@ window.FlexDashboardComponents.push({
 <div class="knitr-options" data-fig-width="576" data-fig-height="460">
 
 </div>
-<span class="value-output" data-caption="Linear predictor of AFT model on the Oncogenic gene sets" data-color="#21618C" data-href="OncogenicGeneSets+PAFT.html">11</span>
+<span class="value-output" data-caption="Linear predictor of GLM using time-to-event data only on the Oncogenic gene sets" data-color="#21618C" data-href="OncogenicGeneSets+PAFT.html">11</span>
+</div>
+<div id="chart-12" class="section level3">
+<h3>Chart 12</h3>
+<div class="knitr-options" data-fig-width="576" data-fig-height="460">
+
+</div>
+<span class="value-output" data-caption="Linear predictor of AFT model using censoring data and time-to-event data, on the Oncogenic gene sets" data-color="#21618C" data-href="OncogenicGeneSets+PAFT+CensoringData.html">12</span>
+<hr />
+</div>
+<div id="chart-13" class="section level3">
+<h3>Chart 13</h3>
+<div class="knitr-options" data-fig-width="576" data-fig-height="460">
+
+</div>
+<span class="value-output" data-caption="HSIC-Lasso for feature selection using the Verhaak Labels (Classification)" data-color="#1B4F72" data-href="HSIC-Lasso-Classification.html">13</span>
+</div>
+<div id="chart-14" class="section level3">
+<h3>Chart 14</h3>
+<div class="knitr-options" data-fig-width="576" data-fig-height="460">
+
+</div>
+<span class="value-output" data-caption="HSIC-Lasso for feature selection using survival data (Regression)" data-color="#1B4F72" data-href="HSIC-Lasso-Regression.html">13</span>
 </div>
 </div>
 <div id="consolidated-results" class="section level1" data-icon="fa-table">
 <h1>Consolidated results</h1>
 <div id="comparison-of-results" class="section level3">
 <h3>Comparison of results</h3>
-<div class="knitr-options" data-fig-width="576" data-fig-height="460">
+<div class="knitr-options" data-fig-width="960" data-fig-height="1440">
 
 </div>
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
@@ -3111,7 +3134,7 @@ Karnofsky Index correction
 11
 </td>
 <td style="text-align:center;">
-Linear predictor of AFT model on the Oncogenic gene sets
+Linear predictor of GLM using time-to-event data only on the Oncogenic gene sets
 </td>
 <td style="text-align:center;">
 K-means
@@ -3144,6 +3167,120 @@ Karnofsky Index correction
 0.95888
 </td>
 </tr>
+<tr>
+<td style="text-align:center;">
+12
+</td>
+<td style="text-align:center;">
+Linear predictor of AFT model using censoring data and time-to-event data, on the Oncogenic gene sets
+</td>
+<td style="text-align:center;">
+K-means
+</td>
+<td style="text-align:center;">
+Karnofsky Index correction
+</td>
+<td style="text-align:center;">
+160
+</td>
+<td style="text-align:center;">
+261
+</td>
+<td style="text-align:center;">
+NA
+</td>
+<td style="text-align:center;">
+NA
+</td>
+<td style="text-align:center;">
+NA
+</td>
+<td style="text-align:center;">
+NA
+</td>
+<td style="text-align:center;">
+NA
+</td>
+<td style="text-align:center;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+13
+</td>
+<td style="text-align:center;">
+HSIC-Lasso for feature selection using the Verhaak Labels (Classification)
+</td>
+<td style="text-align:center;">
+K-means
+</td>
+<td style="text-align:center;">
+Karnofsky Index correction
+</td>
+<td style="text-align:center;">
+160
+</td>
+<td style="text-align:center;">
+261
+</td>
+<td style="text-align:center;">
+4
+</td>
+<td style="text-align:center;">
+4
+</td>
+<td style="text-align:center;">
+0.00001
+</td>
+<td style="text-align:center;">
+0.04701
+</td>
+<td style="text-align:center;">
+0.56490
+</td>
+<td style="text-align:center;">
+0.69753
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+14
+</td>
+<td style="text-align:center;">
+HSIC-Lasso for feature selection using survival data (Regression)
+</td>
+<td style="text-align:center;">
+K-means
+</td>
+<td style="text-align:center;">
+Karnofsky Index correction
+</td>
+<td style="text-align:center;">
+160
+</td>
+<td style="text-align:center;">
+261
+</td>
+<td style="text-align:center;">
+4
+</td>
+<td style="text-align:center;">
+4
+</td>
+<td style="text-align:center;">
+0.59859
+</td>
+<td style="text-align:center;">
+0.00030
+</td>
+<td style="text-align:center;">
+0.58266
+</td>
+<td style="text-align:center;">
+0.70606
+</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -3152,6 +3289,10 @@ Karnofsky Index correction
 <h1>About</h1>
 <p>This is the website were I present the results of my master thesis.</p>
 <p>The background of this project is the <em>SBC</em>, a model that infers clinically relevant cancer subtypes, by jointly clustering molecular data along with survival datain a semi-supervised manner. The original paper and the supplementary material are <a href="https://github.com/CamilaDuitama/MasterThesis/tree/master/papers">here</a>. A graphical representation of the model is this:</p>
+<div class="knitr-options" data-fig-width="576" data-fig-height="460">
+
+</div>
+<p><img src="../images/Graphical_model_SBC.png" width="50%" height="50%" data-figure-id=fig1 /></p>
 <p>SBC’s main features are:</p>
 <ul>
 <li><p>Fully bayesian approach as omics data contains a lot of noise with p &gt;&gt; n.</p></li>

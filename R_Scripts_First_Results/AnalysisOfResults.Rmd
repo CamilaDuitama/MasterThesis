@@ -1,0 +1,55 @@
+---
+title: "Analysis of results: SBC on the GBM dataset from the whole Firebrowse Database(TCGA)."
+subtitle: ""
+author: "Camila Duitama (Based on Ashar Ahmad's code for the SBC model)"
+date: "24th July 2019"
+params:
+  model: "OncogenicGeneSets+PAFT.RData"
+  output_folder : "OncogenicGeneSets+PAFT_files/"
+
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE,include=TRUE,collapse=TRUE,warning=FALSE,message=FALSE, fig.width = 10, fig.height = 6)
+rm(list = ls(all.names = TRUE))
+load("/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/R_Scripts_First_Results/AnalysisOfResults.RData")
+
+```
+
+# Description
+
+This is the analysis of the SBC results after having fitting an AFT model the Oncogenic Gene Set  downloaded from [MSigDB](http://software.broadinstitute.org/gsea/msigdb/genesets.jsp?collection=C6). A penalized AFT model was fit on the training data, and the linear predictors were then used as input features for the SBC model. This model (which was fit on the training data set) was then used to obtain linear predictor on the test set, which would be the test input features for the SBC.
+
+# Loading of other datasets
+
+```{r}
+Somatic_TrainingSet <- read_csv("../../Data/Second_Data_Split/TrainingSet/SomaticMutation_TrainingSet.csv")
+CopyNumber_TrainingSet <- read_csv("../../Data/Second_Data_Split/TrainingSet/CopyNumber_TrainingSet.csv")
+Somatic_TestSet <- read_csv("../../Data/Second_Data_Split/TestSet/SomaticMutation_TestSet.csv")
+CopyNumber_TestSet <- read_csv("../../Data/Second_Data_Split/TestSet/CopyNumber_TestSet.csv")
+```
+
+# Analysis of Copy Number Data
+
+## Training set
+```{r}
+
+```
+
+## Test set
+
+```{r}
+
+```
+
+# Analysis of Somatic Mutation Data
+
+## Training set
+```{r}
+
+```
+
+## Test set
+
+```{r}
+
+```

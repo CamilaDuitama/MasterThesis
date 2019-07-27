@@ -1,4 +1,5 @@
 base
+GSVA
 nlme
 mgcv
 genefilter
@@ -80,8 +81,11 @@ kableExtra
 usethis
 devtools
 rmarkdown
-graphite
-flexdashboard
 tibble
 msigdbr
-GSVA
+flexdashboard
+quadprog
+emplik
+imputeYn
+AdapEnetClass
+graphite
