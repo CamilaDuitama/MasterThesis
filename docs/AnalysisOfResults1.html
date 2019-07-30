@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Camila Duitama (Based on Ashar Ahmad’s code for the SBC model)" />
+
+
+<title>Analysis of results: SBC on the GBM dataset from the whole Firebrowse Database(TCGA).</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">External validation and characterization of cancer subtypes using SBC</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="mailto:camiladuitama@gmail.com">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/CamilaDuitama/MasterThesis">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/camiladuitama/">
+    <span class="fa fa-linkedin fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/camiladuitama1">
+    <span class="fa fa-twitter fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Analysis of results: SBC on the GBM dataset from the whole Firebrowse Database(TCGA).</h1>
+<h3 class="subtitle">Block HSIC-Lasso as feature selection</h3>
+<h4 class="author">Camila Duitama (Based on Ashar Ahmad’s code for the SBC model)</h4>
+<h4 class="date">30th July 2019</h4>
+
+</div>
+
+
+<div id="description" class="section level1">
+<h1>Description</h1>
+<p>This is the analysis of the SBC results after having used the Block HSIC-Lasso feature selection method.</p>
+</div>
+<div id="loading-of-other-datasets" class="section level1">
+<h1>Loading of other datasets</h1>
+<pre class="r"><code>Somatic_TrainingSet &lt;- read_csv(&quot;../../Data/Second_Data_Split/TrainingSet/SomaticMutation_TrainingSet.csv&quot;)
+CopyNumber_TrainingSet &lt;- read_csv(&quot;../../Data/Second_Data_Split/TrainingSet/CopyNumber_TrainingSet.csv&quot;)
+Somatic_TestSet &lt;- read_csv(&quot;../../Data/Second_Data_Split/TestSet/SomaticMutation_TestSet.csv&quot;)
+CopyNumber_TestSet &lt;- read_csv(&quot;../../Data/Second_Data_Split/TestSet/CopyNumber_TestSet.csv&quot;)</code></pre>
+</div>
+<div id="analysis-of-copy-number-data" class="section level1">
+<h1>Analysis of Copy Number Data</h1>
+<div id="training-set" class="section level2">
+<h2>Training set</h2>
+<pre class="r"><code>CopyNumber_TrainingSet$X1&lt;-NULL
+CopyNumber_TrainingSet$sbc.labels&lt;-c.sbc
+table&lt;-list()
+for (i in 1:4){
+  table[[i]]&lt;-table(unlist(CopyNumber_TrainingSet[CopyNumber_TrainingSet$sbc.labels==i,]))
+}
+table
+## [[1]]
+## 
+##     -2     -1      0      1      2 
+##   1843  80706 372519  62426   2823 
+## 
+## [[2]]
+## 
+##     -2     -1      0      1      2 
+##   3297  48872 267512  25666   1531 
+## 
+## [[3]]
+## 
+##     -2     -1      0      1      2      3 
+##   1199  34641 187938  21857   2125     10 
+## 
+## [[4]]
+## 
+##      -2      -1       0       1       2       4 
+##    2784  470107 1935772  432694    7883     115
+rownames&lt;-c(1,2,3,4)
+colnames&lt;-c(-2,-1,0,1,2,3,4)
+data&lt;-c(1843,80706,372519,62426,2823,0,0,3297,48872,267512,25666,1531,0,0,1199,34641,187938,21857,2125,10,0,2784,470107,1935772,432694,7883,0,115)
+freq_table&lt;-matrix(data,dimnames=list(rownames,colnames),ncol=7,byrow=TRUE)
+freq_table
+##     -2     -1       0      1    2  3   4
+## 1 1843  80706  372519  62426 2823  0   0
+## 2 3297  48872  267512  25666 1531  0   0
+## 3 1199  34641  187938  21857 2125 10   0
+## 4 2784 470107 1935772 432694 7883  0 115
+ChiCN_Train&lt;-chisq.test(freq_table)
+ChiCN_Train
+## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  freq_table
+## X-squared = 41641, df = 18, p-value &lt; 2.2e-16</code></pre>
+</div>
+<div id="test-set" class="section level2">
+<h2>Test set</h2>
+<pre class="r"><code>CopyNumber_TestSet$X1&lt;-NULL
+CopyNumber_TestSet$sbc.labels&lt;-c.sbc.new
+table.new&lt;-list()
+for (i in 1:4){
+  table.new[[i]]&lt;-table(unlist(CopyNumber_TestSet[CopyNumber_TestSet$sbc.labels==i,]))
+}
+table.new
+## [[1]]
+## 
+##     -2     -1      0      1      2 
+##   2473 126291 544712 113681   5707 
+## 
+## [[2]]
+## 
+##     -2     -1      0      1      2 
+##   2768  47942 151093  44568   1399 
+## 
+## [[3]]
+## 
+##    -2    -1     0     1     2     3 
+##  1332 25625 82039 13601  1283     5 
+## 
+## [[4]]
+## 
+##      -2      -1       0       1       2       4 
+##    9231  824357 3735904  719281   13291     214
+rownames&lt;-c(1,2,3,4)
+colnames&lt;-c(-2,-1,0,1,2,3,4)
+data.new&lt;-c(2473,126291,544712,113681,5707,0,0,2768,47942,151093,44568,1399,0,0,1332,25625,82039,13601,1283,5,0,9231,824357,3735904,719281,13291,0,214)
+freq_table.new&lt;-matrix(data.new,dimnames=list(rownames,colnames),ncol=7,byrow=TRUE)
+freq_table.new
+##     -2     -1       0      1     2 3   4
+## 1 2473 126291  544712 113681  5707 0   0
+## 2 2768  47942  151093  44568  1399 0   0
+## 3 1332  25625   82039  13601  1283 5   0
+## 4 9231 824357 3735904 719281 13291 0 214
+ChiCN_Train&lt;-chisq.test(freq_table.new)
+ChiCN_Train
+## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  freq_table.new
+## X-squared = 31328, df = 18, p-value &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<div id="analysis-of-mrna-microarray-data" class="section level1">
+<h1>Analysis of mRNA MicroArray Data</h1>
+<div id="training-set-1" class="section level2">
+<h2>Training Set</h2>
+<pre class="r"><code>rank &lt;- matrix(0, nrow = N, ncol =Nps)
+
+for (j in 1:Nps){
+  
+  Y.scaled &lt;- matrix(0, nrow = N, ncol =D)
+  for ( v in 1:4){
+    clust &lt;- which(c.list[[j]] == v)
+    Y.scaled[clust,1:D] &lt;- scale(Y[clust,1:D], center = TRUE, scale = TRUE)
+  }
+  
+  
+  for ( i in 1:N){
+    rank[i,j] &lt;- dMVN(as.vector(t(Y[i,1:D])), mean = mu.list[[j]][c.final[i],1:D], Q= S.list[[j]][c.final[i],1:D,1:D], log = TRUE) - dMVN(as.vector(t(Y[i,1:D])), mean = mu.list[[j]][1,1:D], Q= S.list[[j]][1,1:D,1:D], log = TRUE) +  dnorm(x = That[i], mean = beta0.list[[j]][c.final[i]] + betahat.list[[j]][c.final[i],1:D] %*% as.vector(t(Y.scaled[i,1:D])), sd = sqrt(sigma2.list[[j]][c.final[i]]), log =TRUE) -  dnorm(x = That[i], mean = beta0.list[[j]][1] + betahat.list[[j]][1,1:D] %*% as.vector(t(Y.scaled[i,1:D])), sd = sqrt(sigma2.list[[j]][1]), log =TRUE) 
+  }
+}
+
+avg.rank &lt;- apply(rank,1,mean)
+order.zo &lt;- range01(avg.rank)
+
+order.train &lt;- sort(order.zo,index.return = TRUE, decreasing = TRUE)
+Y.order &lt;- Y[order.train$ix,]
+c.final.order &lt;- c.final[order.train$ix]
+
+
+######## Reordering Again ################
+order.2 &lt;- c(which(c.final.order==1),which(c.final.order==3),which(c.final.order==4),which(c.final.order==2))
+Y.order.2 &lt;- Y.order[order.2,]
+c.final.order.2 &lt;- c.final.order[order.2]
+hmcols&lt;-colorRampPalette(c(&quot;green&quot;,&quot;black&quot;,&quot;red&quot;))(256)
+heatmap.2(x = t(Y.order.2), Rowv =TRUE ,Colv = FALSE, dendrogram = c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;green&quot;,&quot;red&quot;,&quot;blue&quot;,&quot;orange&quot;)[c.final.order.2], labRow = colnames(Y.order.2), labCol = NA, main = &#39; \n Training Set \n Gene Sets SBC Signature&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+legend(&quot;topright&quot;, legend = c(&quot;Best&quot;,&quot;Good Moderate&quot;,&quot;Bad moderate&quot;,&quot;Worst&quot;),fill = c(&quot;Green&quot;,&quot;Blue&quot;,&quot;Orange&quot;,&quot;Red&quot;), cex = 0.4)</code></pre>
+<p><img src="AnalysisOfResults1_files/figure-html/Heatmap%20training%20set-1.png" width="960" /></p>
+</div>
+<div id="test-set-1" class="section level2">
+<h2>Test set</h2>
+</div>
+</div>
+<div id="feature-importance" class="section level1">
+<h1>Feature Importance</h1>
+<pre class="r"><code>range01 &lt;- function(x){(x-min(x))/(max(x)-min(x))}
+
+##### Visualization of the Results ###############################
+#### USE Top 35 Molecular Features OBTAINED FROM THE MODEL ############
+sum.diff12  &lt;- c(0)
+for ( i in 1:Nps){
+  sum.diff12 &lt;- sum.diff12 + abs(mu.list[[i]][1,] - mu.list[[i]][2,])  
+}
+sum.diff12.sc &lt;- (1/Nps) * (sum.diff12)/(diag(W))
+cluste12 &lt;- range01(sum.diff12.sc)
+
+sum.diff23  &lt;- c(0)
+for ( i in 1:Nps){
+  sum.diff23 &lt;- sum.diff23 + abs(mu.list[[i]][2,] - mu.list[[i]][3,])  
+}
+sum.diff23.sc &lt;- (1/Nps) * (sum.diff23)/(diag(W))
+
+cluste23 &lt;- range01(sum.diff23.sc)
+
+sum.diff34  &lt;- c(0)
+for ( i in 1:Nps){
+  sum.diff34 &lt;- sum.diff34 + abs(mu.list[[i]][3,] - mu.list[[i]][4,])  
+}
+sum.diff34.sc &lt;- (1/Nps) * (sum.diff34)/(diag(W))
+
+cluste34 &lt;- range01(sum.diff34.sc)
+
+sum.diff41  &lt;- c(0)
+for ( i in 1:Nps){
+  sum.diff41 &lt;- sum.diff34 + abs(mu.list[[i]][4,] - mu.list[[i]][1,])  
+}
+sum.diff41.sc &lt;- (1/Nps) * (sum.diff41)/(diag(W))
+
+cluste41 &lt;- range01(sum.diff41.sc)
+
+sum.diff13  &lt;- c(0)
+for ( i in 1:Nps){
+  sum.diff13 &lt;- sum.diff13 + abs(mu.list[[i]][1,] - mu.list[[i]][3,])  
+}
+sum.diff13.sc &lt;- (1/Nps) * (sum.diff13)/(diag(W))
+
+cluste13 &lt;- range01(sum.diff13.sc)
+
+sum.diff24  &lt;- c(0)
+for ( i in 1:Nps){
+  sum.diff24 &lt;- sum.diff24 + abs(mu.list[[i]][2,] - mu.list[[i]][4,])  
+}
+sum.diff24.sc &lt;- (1/Nps) * (sum.diff24)/(diag(W))
+cluste24 &lt;- range01(sum.diff24.sc)
+
+####################### Feature Signficance matrix
+
+cluste &lt;- cbind(cluste12,cluste23,cluste34, cluste41, cluste13, cluste24)
+heatmapdata &lt;- cluste
+rownames(heatmapdata) &lt;-  colnames(Y)
+colnames(heatmapdata) &lt;- c(&quot;1 v s2&quot;,&quot;2 vs 3&quot;,&quot;3 v s4&quot;,&quot;4 vs 1&quot;,&quot;1 vs 3&quot;,&quot;2 vs 4&quot;)
+hmcols&lt;-colorRampPalette(c(&quot;white&quot;,&quot;black&quot;))(128)
+heatmap.2(heatmapdata , margins=c(6,10),col = hmcols, main = &quot;SBC signature \n Feature Importance \n GBM &quot;, cexCol = 0.85, cexRow = 0.7, Rowv = TRUE, Colv = TRUE, trace = &quot;none&quot;, xlab = &quot;Clusters&quot;) </code></pre>
+<p><img src="AnalysisOfResults1_files/figure-html/Feature%20importance-1.png" width="960" /></p>
+</div>
+<div id="analysis-of-the-sbc-gene-signature" class="section level1">
+<h1>Analysis of the SBC gene signature</h1>
+<div id="biological-process-go-terms" class="section level2">
+<h2>Biological Process GO terms</h2>
+</div>
+<div id="molecular-function-go-terms" class="section level2">
+<h2>Molecular Function GO terms</h2>
+</div>
+<div id="kegg-pathways" class="section level2">
+<h2>KEGG pathways</h2>
+</div>
+</div>
+<div id="association-between-verhaak-labels-and-sbc-labels" class="section level1">
+<h1>Association between Verhaak labels and SBC labels</h1>
+<pre class="r"><code>########## Look for Relationship between Our classes and Verhaak Classes ########################
+table(c.sbc,c.true)
+##      c.true
+## c.sbc  1  2  3  4
+##     1  5  5  6  5
+##     2  4  1  0  9
+##     3  0  0  0 10
+##     4 27 45 18 25
+matrix.assoc &lt;- rbind(c(29,33,18,25), c(1,1,1,0), c(3,8,2,15), c(3,9,3,9))
+fisher.test(matrix.assoc, workspace = 10000000,hybrid =TRUE)
+## 
+##  Fisher&#39;s Exact Test for Count Data hybrid using asym.chisq. iff
+##  (exp=5, perc=80, Emin=1)
+## 
+## data:  matrix.assoc
+## p-value = 0.07203
+## alternative hypothesis: two.sided</code></pre>
+</div>
+<div id="mirna-data" class="section level1">
+<h1>miRNA Data</h1>
+<div id="training-set-2" class="section level2">
+<h2>Training Set</h2>
+<pre class="r"><code>library(multiMiR)
+#Load data
+miRNA_TrainingSet &lt;- read_csv(&quot;../../Data/Second_data_split/TrainingSet/miRNA_TrainingSet.csv&quot;)
+miRNA_TrainingSet$X1&lt;-NULL
+
+#Find all the validated targets for the miRNA present in our data
+result&lt;-list()
+try(example1 &lt;- get_multimir(mirna = names(miRNA_TrainingSet), summary = TRUE))
+result &lt;- unlist(unique(example1@data$target_symbol))
+names.use &lt;- names(mRNAArray_TrainingSet)[(names(mRNAArray_TrainingSet) %in% result)]
+</code></pre>
+<pre class="r"><code>
+#PCA of the expression of the mRNA targets
+targets.train&lt;-mRNAArray_TrainingSet[,names.use]
+targets.train.pca&lt;-as.data.frame(prcomp(targets.train,scale=TRUE, center= TRUE)$x[,1:2])
+targets.train.pca$SBC_labels&lt;-c.sbc
+p.targets.train &lt;- ggplot(targets.train.pca, aes(x=targets.train.pca$PC1, y= targets.train.pca$PC2, colour= as.factor(SBC_labels))) + ggtitle(&quot;PCA \n Training set with SBC labels and unlabeled test set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;SBC_labels&quot;) +scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;,&quot;#858687&quot;))
+p.targets.train</code></pre>
+<p><img src="AnalysisOfResults1_files/figure-html/PCA%20of%20the%20expression%20of%20the%20mRNA%20targets%20for%20the%20training%20set-1.png" width="960" /></p>
+</div>
+<div id="test-set-2" class="section level2">
+<h2>Test Set</h2>
+<pre class="r"><code>#Load data
+miRNA_TestSet &lt;- read_csv(&quot;../../Data/Second_data_split/TrainingSet/miRNA_TrainingSet.csv&quot;)
+miRNA_TestSet$X1&lt;-NULL
+
+#Find all the validated targets for the miRNA present in our data
+result.new&lt;-list()
+try(example1.new &lt;- get_multimir(mirna = names(miRNA_TestSet), summary = TRUE))
+result.new &lt;- unlist(unique(example1.new@data$target_symbol))
+ names.use.new &lt;- names(mRNAArray_TestSet)[(names(mRNAArray_TestSet) %in% result.new)]
+</code></pre>
+<pre class="r"><code>#PCA of the expression of the mRNA targets
+targets.test&lt;-mRNAArray_TestSet[,names.use.new]
+targets.test.pca&lt;-as.data.frame(prcomp(targets.test,scale=TRUE, center= TRUE)$x[,1:2])
+targets.test.pca$SBC_labels&lt;-c.sbc.new
+p.targets.test &lt;- ggplot(targets.test.pca, aes(x=targets.test.pca$PC1, y= targets.test.pca$PC2, colour= as.factor(SBC_labels))) + ggtitle(&quot;PCA \n Training set with SBC labels and unlabeled test set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;SBC_labels&quot;) +scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;,&quot;#858687&quot;))
+p.targets.test</code></pre>
+</div>
+</div>
+<div id="clinical-data" class="section level1">
+<h1>Clinical Data</h1>
+<div id="training-set-3" class="section level2">
+<h2>Training Set</h2>
+<pre class="r"><code>Clinical_TrainingSet$sbc.labels&lt;-c.sbc
+for (i in colnames(Clinical_TrainingSet)){
+  if (i==&quot;X1&quot;|i==&quot;sbc.labels&quot;){
+    next
+  }else{
+    dummie&lt;-chisq.test(table(Clinical_TrainingSet[[i]],Clinical_TrainingSet$sbc.labels))
+    if (is.nan(dummie$p.value)==FALSE &amp;&amp; dummie$p.value&lt;0.05){
+      print(i)
+      print(dummie)
+    }
+  }
+}
+## [1] &quot;years_to_birth&quot;
+## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(Clinical_TrainingSet[[i]], Clinical_TrainingSet$sbc.labels)
+## X-squared = 236.28, df = 177, p-value = 0.001929
+## 
+## [1] &quot;vital_status&quot;
+## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(Clinical_TrainingSet[[i]], Clinical_TrainingSet$sbc.labels)
+## X-squared = 11.089, df = 3, p-value = 0.01125
+## 
+## [1] &quot;tumor_tissue_site&quot;
+## 
+##  Chi-squared test for given probabilities
+## 
+## data:  table(Clinical_TrainingSet[[i]], Clinical_TrainingSet$sbc.labels)
+## X-squared = 189.05, df = 3, p-value &lt; 2.2e-16
+## 
+## [1] &quot;date_of_initial_pathologic_diagnosis&quot;
+## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(Clinical_TrainingSet[[i]], Clinical_TrainingSet$sbc.labels)
+## X-squared = 73.721, df = 54, p-value = 0.03849
+## 
+## [1] &quot;histological_type&quot;
+## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(Clinical_TrainingSet[[i]], Clinical_TrainingSet$sbc.labels)
+## X-squared = 31.346, df = 6, p-value = 2.177e-05
+## 
+## [1] &quot;Subtype&quot;
+## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(Clinical_TrainingSet[[i]], Clinical_TrainingSet$sbc.labels)
+## X-squared = 41.136, df = 9, p-value = 4.725e-06</code></pre>
+</div>
+<div id="test-set-3" class="section level2">
+<h2>Test Set</h2>
+<pre class="r"><code>Clinical_TestSet$sbc.labels&lt;-c.sbc.new
+for (i in colnames(Clinical_TestSet)){
+  if (i==&quot;X1&quot;|i==&quot;sbc.labels&quot;){
+    next
+  }else{
+    dummie&lt;-chisq.test(table(Clinical_TestSet[[i]],Clinical_TestSet$sbc.labels))
+    if (is.nan(dummie$p.value)==FALSE &amp;&amp; dummie$p.value&lt;0.05){
+      print(i)
+      print(dummie)
+    }
+  }
+}
+## [1] &quot;years_to_birth&quot;
+## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(Clinical_TestSet[[i]], Clinical_TestSet$sbc.labels)
+## X-squared = 263.28, df = 180, p-value = 5.111e-05
+## 
+## [1] &quot;vital_status&quot;
+## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(Clinical_TestSet[[i]], Clinical_TestSet$sbc.labels)
+## X-squared = 7.9451, df = 3, p-value = 0.04716
+## 
+## [1] &quot;tumor_tissue_site&quot;
+## 
+##  Chi-squared test for given probabilities
+## 
+## data:  table(Clinical_TestSet[[i]], Clinical_TestSet$sbc.labels)
+## X-squared = 458.46, df = 3, p-value &lt; 2.2e-16
+## 
+## [1] &quot;histological_type&quot;
+## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(Clinical_TestSet[[i]], Clinical_TestSet$sbc.labels)
+## X-squared = 21.857, df = 6, p-value = 0.001285
+## 
+## [1] &quot;race&quot;
+## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(Clinical_TestSet[[i]], Clinical_TestSet$sbc.labels)
+## X-squared = 17.159, df = 6, p-value = 0.008718</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
