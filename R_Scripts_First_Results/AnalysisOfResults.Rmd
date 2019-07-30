@@ -1,8 +1,8 @@
 ---
 title: "Analysis of results: SBC on the GBM dataset from the whole Firebrowse Database(TCGA)."
-subtitle: ""
+subtitle: "AFT on the Oncogenic Gene Set "
 author: "Camila Duitama (Based on Ashar Ahmad's code for the SBC model)"
-date: "24th July 2019"
+date: "30th July 2019"
 params:
   model: "OncogenicGeneSets+PAFT.RData"
   output_folder : "OncogenicGeneSets+PAFT_files/"
@@ -17,11 +17,11 @@ load("/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/R_Scripts_Firs
 
 # Description
 
-This is the analysis of the SBC results after having fitting an AFT model the Oncogenic Gene Set  downloaded from [MSigDB](http://software.broadinstitute.org/gsea/msigdb/genesets.jsp?collection=C6). A penalized AFT model was fit on the training data, and the linear predictors were then used as input features for the SBC model. This model (which was fit on the training data set) was then used to obtain linear predictor on the test set, which would be the test input features for the SBC.
+This is the analysis of the SBC results after having fitting an AFT model the Oncogenic Gene Set downloaded from [MSigDB](http://software.broadinstitute.org/gsea/msigdb/genesets.jsp?collection=C6). A penalized AFT model was fit on the training data, and the linear predictors were then used as input features for the SBC model. This model (which was fit on the training data set) was then used to obtain linear predictor on the test set, which would be the test input features for the SBC.
 
 # Loading of other datasets
 
-```{r}
+```{r Load datasets, eval=FALSE}
 Somatic_TrainingSet <- read_csv("../../Data/Second_Data_Split/TrainingSet/SomaticMutation_TrainingSet.csv")
 CopyNumber_TrainingSet <- read_csv("../../Data/Second_Data_Split/TrainingSet/CopyNumber_TrainingSet.csv")
 Somatic_TestSet <- read_csv("../../Data/Second_Data_Split/TestSet/SomaticMutation_TestSet.csv")
@@ -31,25 +31,239 @@ CopyNumber_TestSet <- read_csv("../../Data/Second_Data_Split/TestSet/CopyNumber_
 # Analysis of Copy Number Data
 
 ## Training set
-```{r}
+```{r Chi-Square test for training set}
+CopyNumber_TrainingSet$X1<-NULL
+CopyNumber_TrainingSet$sbc.labels<-c.sbc
+table<-list()
+for (i in 1:4){
+  table[[i]]<-table(unlist(CopyNumber_TrainingSet[CopyNumber_TrainingSet$sbc.labels==i,]))
+}
+table
+rownames<-c(1,2,3,4)
+colnames<-c(-2,-1,0,1,2,3,4)
+data<-c(6408,368131,1882192,336625,336625,0,0,69,19126,47422,6370,1344,0,0,1412,131345,457006,100953,3012,28,0,1234,115724,377121,98779,1766,0,24)
+freq_table<-matrix(data,dimnames=list(rownames,colnames),ncol=7,byrow=TRUE)
+freq_table
+ChiCN_Train<-chisq.test(freq_table)
+ChiCN_Train
 
 ```
 
 ## Test set
 
-```{r}
-
+```{r Chi-Square test for test set}
+CopyNumber_TestSet$X1<-NULL
+CopyNumber_TestSet$sbc.labels<-c.sbc.new
+table.new<-list()
+for (i in 1:4){
+  table.new[[i]]<-table(unlist(CopyNumber_TestSet[CopyNumber_TestSet$sbc.labels==i,]))
+}
+table.new
+rownames<-c(1,2,3,4)
+colnames<-c(-2,-1,0,1,2,3,4)
+data<-c(6408,368131,1882192,336625,336625,0,0,69,19126,47422,6370,1344,0,0,1412,131345,457006,100953,3012,28,0,1234,115724,377121,98779,1766,0,24)
+freq_table<-matrix(data,dimnames=list(rownames,colnames),ncol=7,byrow=TRUE)
+freq_table
+ChiCN_Train<-chisq.test(freq_table)
+ChiCN_Train
 ```
 
-# Analysis of Somatic Mutation Data
+# Analysis of mRNA MicroArray Data
 
-## Training set
-```{r}
+## Training Set
 
+```{r Heatmap training set}
+rank <- matrix(0, nrow = N, ncol =Nps)
+
+for (j in 1:Nps){
+  
+  Y.scaled <- matrix(0, nrow = N, ncol =D)
+  for ( v in 1:4){
+    clust <- which(c.list[[j]] == v)
+    Y.scaled[clust,1:D] <- scale(Y[clust,1:D], center = TRUE, scale = TRUE)
+  }
+  
+  
+  for ( i in 1:N){
+    rank[i,j] <- dMVN(as.vector(t(Y[i,1:D])), mean = mu.list[[j]][c.final[i],1:D], Q= S.list[[j]][c.final[i],1:D,1:D], log = TRUE) - dMVN(as.vector(t(Y[i,1:D])), mean = mu.list[[j]][1,1:D], Q= S.list[[j]][1,1:D,1:D], log = TRUE) +  dnorm(x = That[i], mean = beta0.list[[j]][c.final[i]] + betahat.list[[j]][c.final[i],1:D] %*% as.vector(t(Y.scaled[i,1:D])), sd = sqrt(sigma2.list[[j]][c.final[i]]), log =TRUE) -  dnorm(x = That[i], mean = beta0.list[[j]][1] + betahat.list[[j]][1,1:D] %*% as.vector(t(Y.scaled[i,1:D])), sd = sqrt(sigma2.list[[j]][1]), log =TRUE) 
+  }
+}
+
+avg.rank <- apply(rank,1,mean)
+order.zo <- range01(avg.rank)
+
+order.train <- sort(order.zo,index.return = TRUE, decreasing = TRUE)
+Y.order <- Y[order.train$ix,]
+c.final.order <- c.final[order.train$ix]
+
+
+######## Reordering Again ################
+order.2 <- c(which(c.final.order==1),which(c.final.order==3),which(c.final.order==4),which(c.final.order==2))
+Y.order.2 <- Y.order[order.2,]
+c.final.order.2 <- c.final.order[order.2]
+hmcols<-colorRampPalette(c("green","black","red"))(256)
+heatmap.2(x = t(Y.order.2), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[c.final.order.2], labRow = colnames(Y.order.2), labCol = NA, main = ' \n Training Set \n Gene Sets SBC Signature', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fill = c("Green","Blue","Orange","Red"), cex = 0.4)
 ```
 
 ## Test set
 
-```{r}
+# Feature Importance
+
+```{r Feature importance}
+range01 <- function(x){(x-min(x))/(max(x)-min(x))}
+
+##### Visualization of the Results ###############################
+#### USE Top 35 Molecular Features OBTAINED FROM THE MODEL ############
+sum.diff12  <- c(0)
+for ( i in 1:Nps){
+  sum.diff12 <- sum.diff12 + abs(mu.list[[i]][1,] - mu.list[[i]][2,])  
+}
+sum.diff12.sc <- (1/Nps) * (sum.diff12)/(diag(W))
+cluste12 <- range01(sum.diff12.sc)
+
+sum.diff23  <- c(0)
+for ( i in 1:Nps){
+  sum.diff23 <- sum.diff23 + abs(mu.list[[i]][2,] - mu.list[[i]][3,])  
+}
+sum.diff23.sc <- (1/Nps) * (sum.diff23)/(diag(W))
+
+cluste23 <- range01(sum.diff23.sc)
+
+sum.diff34  <- c(0)
+for ( i in 1:Nps){
+  sum.diff34 <- sum.diff34 + abs(mu.list[[i]][3,] - mu.list[[i]][4,])  
+}
+sum.diff34.sc <- (1/Nps) * (sum.diff34)/(diag(W))
+
+cluste34 <- range01(sum.diff34.sc)
+
+sum.diff41  <- c(0)
+for ( i in 1:Nps){
+  sum.diff41 <- sum.diff34 + abs(mu.list[[i]][4,] - mu.list[[i]][1,])  
+}
+sum.diff41.sc <- (1/Nps) * (sum.diff41)/(diag(W))
+
+cluste41 <- range01(sum.diff41.sc)
+
+sum.diff13  <- c(0)
+for ( i in 1:Nps){
+  sum.diff13 <- sum.diff13 + abs(mu.list[[i]][1,] - mu.list[[i]][3,])  
+}
+sum.diff13.sc <- (1/Nps) * (sum.diff13)/(diag(W))
+
+cluste13 <- range01(sum.diff13.sc)
+
+sum.diff24  <- c(0)
+for ( i in 1:Nps){
+  sum.diff24 <- sum.diff24 + abs(mu.list[[i]][2,] - mu.list[[i]][4,])  
+}
+sum.diff24.sc <- (1/Nps) * (sum.diff24)/(diag(W))
+cluste24 <- range01(sum.diff24.sc)
+
+####################### Feature Signficance matrix
+
+cluste <- cbind(cluste12,cluste23,cluste34, cluste41, cluste13, cluste24)
+heatmapdata <- cluste
+rownames(heatmapdata) <-  colnames(Y)
+colnames(heatmapdata) <- c("1 v s2","2 vs 3","3 v s4","4 vs 1","1 vs 3","2 vs 4")
+hmcols<-colorRampPalette(c("white","black"))(128)
+heatmap.2(heatmapdata , margins=c(6,10),col = hmcols, main = "SBC signature \n Feature Importance \n GBM ", cexCol = 0.85, cexRow = 0.7, Rowv = TRUE, Colv = TRUE, trace = "none", xlab = "Clusters") 
+```
+
+# Association between Verhaak labels and SBC labels
+
+```{r Association between Verhaak labels and SBC labels}
+########## Look for Relationship between Our classes and Verhaak Classes ########################
+table(c.sbc,c.true)
+matrix.assoc <- rbind(c(29,33,18,25), c(1,1,1,0), c(3,8,2,15), c(3,9,3,9))
+fisher.test(matrix.assoc, workspace = 10000000,hybrid =TRUE)
+```
+
+# miRNA Data
+
+## Training Set
+```{r miRNA validated targets for the training set, eval=FALSE}
+library(multiMiR)
+#Load data
+miRNA_TrainingSet <- read_csv("../../Data/Second_data_split/TrainingSet/miRNA_TrainingSet.csv")
+miRNA_TrainingSet$X1<-NULL
+
+#Find all the validated targets for the miRNA present in our data
+result<-list()
+try(example1 <- get_multimir(mirna = names(miRNA_TrainingSet), summary = TRUE))
+result <- unlist(unique(example1@data$target_symbol))
+names.use <- names(mRNAArray_TrainingSet)[(names(mRNAArray_TrainingSet) %in% result)]
 
 ```
+
+```{r PCA of the expression of the mRNA targets for the training set}
+
+#PCA of the expression of the mRNA targets
+targets.train<-mRNAArray_TrainingSet[,names.use]
+targets.train.pca<-as.data.frame(prcomp(targets.train,scale=TRUE, center= TRUE)$x[,1:2])
+targets.train.pca$SBC_labels<-c.sbc
+p.targets.train <- ggplot(targets.train.pca, aes(x=targets.train.pca$PC1, y= targets.train.pca$PC2, colour= as.factor(SBC_labels))) + ggtitle("PCA \n Training set with SBC labels and unlabeled test set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "SBC_labels") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#858687"))
+p.targets.train
+
+```
+
+
+## Test Set
+```{r miRNA validated targets for the test set, eval=FALSE}
+#Load data
+miRNA_TestSet <- read_csv("../../Data/Second_data_split/TrainingSet/miRNA_TrainingSet.csv")
+miRNA_TestSet$X1<-NULL
+
+#Find all the validated targets for the miRNA present in our data
+result.new<-list()
+try(example1.new <- get_multimir(mirna = names(miRNA_TestSet), summary = TRUE))
+result.new <- unlist(unique(example1.new@data$target_symbol))
+names.use.new <- names(mRNAArray_TestSet)[(names(mRNAArray_TestSet) %in% result.new)]
+
+```
+
+```{r miRNA validated targets for the testing set, eval=FALSE}
+#PCA of the expression of the mRNA targets
+targets.test<-mRNAArray_TestSet[,names.use.new]
+targets.test.pca<-as.data.frame(prcomp(targets.test,scale=TRUE, center= TRUE)$x[,1:2])
+targets.test.pca$SBC_labels<-c.sbc.new
+p.targets.test <- ggplot(targets.test.pca, aes(x=targets.test.pca$PC1, y= targets.test.pca$PC2, colour= as.factor(SBC_labels))) + ggtitle("PCA \n Training set with SBC labels and unlabeled test set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "SBC_labels") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#858687"))
+p.targets.test
+```
+
+# Clinical Data
+
+## Training Set
+```{r Contingency analysis for clinical variables in Training Set }
+Clinical_TrainingSet$sbc.labels<-c.sbc
+for (i in colnames(Clinical_TrainingSet)){
+  if (i=="X1"|i=="sbc.labels"){
+    next
+  }else{
+    dummie<-chisq.test(table(Clinical_TrainingSet[[i]],Clinical_TrainingSet$sbc.labels))
+    if (is.nan(dummie$p.value)==FALSE && dummie$p.value<0.05){
+      print(i)
+      print(dummie)
+    }
+  }
+}
+
+```
+
+## Test Set
+```{r Contingency analysis for clinical variables in Test Set}
+Clinical_TestSet$sbc.labels<-c.sbc.new
+for (i in colnames(Clinical_TestSet)){
+  if (i=="X1"|i=="sbc.labels"){
+    next
+  }else{
+    dummie<-chisq.test(table(Clinical_TestSet[[i]],Clinical_TestSet$sbc.labels))
+    if (is.nan(dummie$p.value)==FALSE && dummie$p.value<0.05){
+      print(i)
+      print(dummie)
+    }
+  }
+}
+```
+
