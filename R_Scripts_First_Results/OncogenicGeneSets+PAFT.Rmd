@@ -361,7 +361,7 @@ p6
 #Training
 
 ##Preparation of the data needed for the training of the model
-```{r Preparation of Data Structures to train the SBC}
+```{r Preparation of Data Structures to train the SBC, eval=FALSE}
 ########################################################################
 ###### We prepare the Data Structures Needed for the Running of the SBC ####
 #############################################################################

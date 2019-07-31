@@ -144,7 +144,7 @@ print(paste0("Number of patients in test set: ",as.character(n.new)))
 ```
 # HSIC-Lasso feature selection
 
-```{r Loading of HSIC-Lasso feature selection}
+```{r Loading of HSIC-Lasso feature selection, eval=FALSE}
 HSIC<- read_csv("/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/hsic_classification_verhaak_labels.csv", 
     col_types = cols(X1 = col_skip()))
 HSIC<-HSIC$`0`
@@ -293,7 +293,7 @@ p6
 #Training
 
 ##Preparation of the data needed for the training of the model
-```{r Preparation of Data Structures to train the SBC}
+```{r Preparation of Data Structures to train the SBC, eval=FALSE}
 ########################################################################
 ###### We prepare the Data Structures Needed for the Running of the SBC ####
 #############################################################################

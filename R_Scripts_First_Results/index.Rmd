@@ -113,7 +113,7 @@ valueBox(value = 11,caption = "Linear predictor of GLM using time-to-event data 
 ### Chart 16
 
 ```{r}
-valueBox(value = 11.1, caption="Analysis of results 11",href="AnalysisOfResults1.html", color= "#FA8072")
+valueBox(value = 11.1, caption="Analysis of results 11",href="AnalysisOfResults.html", color= "#FA8072")
 ```
 
 
