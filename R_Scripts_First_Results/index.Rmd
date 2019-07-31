@@ -3,8 +3,9 @@ title: "External validation and characterization of cancer subtypes using SBC"
 output: 
   flexdashboard::flex_dashboard:
     theme : cosmo
+    orientation: rows
     navbar:
-      - { icon: fa-question fa-lg , href: "About.html" ,align: left}
+      - { icon: fa-question fa-lg , href: "About.html" ,align: left, title: "About"}
       - { icon: fa-envelope fa-lg , href: "mailto:camiladuitama@gmail.com" ,align: right}
       - { icon: fa-linkedin fa-lg , href: "https://www.linkedin.com/in/camiladuitama/" ,align: right}
       - { icon: fa-github fa-lg, href:
@@ -112,7 +113,7 @@ valueBox(value = 11,caption = "Linear predictor of GLM using time-to-event data 
 ### Chart 16
 
 ```{r}
-valueBox(value = "Results 11",href="AnalysisOfResults1.html", color= "#FA8072")
+valueBox(value = 11.1, caption="Analysis of results 11",href="AnalysisOfResults1.html", color= "#FA8072")
 ```
 
 
@@ -143,7 +144,7 @@ valueBox(value = 14,caption = "HSIC-Lasso for feature selection using survival d
 ### Chart 15
 
 ```{r}
-valueBox(value = "Results 15",href="AnalysisOfResults1.html", color= "#CD5C5C")
+valueBox(value = 15.1, caption= "Analysis of results 15",href="AnalysisOfResults1.html", color= "#CD5C5C")
 ```
 
 
