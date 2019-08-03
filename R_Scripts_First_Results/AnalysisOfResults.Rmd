@@ -28,49 +28,78 @@ Somatic_TestSet <- read_csv("../../Data/Second_Data_Split/TestSet/SomaticMutatio
 CopyNumber_TestSet <- read_csv("../../Data/Second_Data_Split/TestSet/CopyNumber_TestSet.csv")
 ```
 
-# Analysis of Copy Number Data
+# Copy Number Data
 
 ## Training set
-```{r Chi-Square test for training set}
+```{r Chi-Square test for training set, eval=FALSE}
 CopyNumber_TrainingSet$X1<-NULL
 CopyNumber_TrainingSet$sbc.labels<-c.sbc
 table<-list()
-for (i in 1:4){
-  table[[i]]<-table(unlist(CopyNumber_TrainingSet[CopyNumber_TrainingSet$sbc.labels==i,]))
+for (i in names(CopyNumber_TrainingSet)){
+  if (i=="sbc.labels"){
+    next
+  }else{
+  table[[i]]<-chisq.test(table(CopyNumber_TrainingSet$sbc.labels,CopyNumber_TrainingSet[[i]]))$p.value
+  }
 }
-table
-rownames<-c(1,2,3,4)
-colnames<-c(-2,-1,0,1,2,3,4)
-data<-c(6408,368131,1882192,336625,336625,0,0,69,19126,47422,6370,1344,0,0,1412,131345,457006,100953,3012,28,0,1234,115724,377121,98779,1766,0,24)
-freq_table<-matrix(data,dimnames=list(rownames,colnames),ncol=7,byrow=TRUE)
-freq_table
-ChiCN_Train<-chisq.test(freq_table)
-ChiCN_Train
+table.adj <- p.adjust(unlist(table), method = "fdr")
+CN_pval <- colnames(CopyNumber_TrainingSet)[(table.adj < 0.00000005)] 
+CN_signature<-CopyNumber_TrainingSet[CN_pval]
+
+par(mar=c(1,1,1,1))
+
+CN_signature$sbc.labels<-c.sbc
+CN_signature<-CN_signature[order(CN_signature$sbc.labels),]
+ordered_labels<-CN_signature$sbc.labels
+CN_signature$sbc.labels<-NULL
 
 ```
+```{r}
+
+hmcols<-colorRampPalette(c("green","black","red"))(256)
+heatmap.2(x = t(CN_signature), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[ordered_labels], labRow = colnames(CN_signature), labCol = NA, main = ' \n Training Set \n Significant features for Copy Number Data', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fill = c("Green","Blue","Orange","Red"), cex = 0.4)
+
+```
+
 
 ## Test set
 
-```{r Chi-Square test for test set}
+```{r Chi-Square test for test set, eval= FALSE}
 CopyNumber_TestSet$X1<-NULL
 CopyNumber_TestSet$sbc.labels<-c.sbc.new
 table.new<-list()
-for (i in 1:4){
-  table.new[[i]]<-table(unlist(CopyNumber_TestSet[CopyNumber_TestSet$sbc.labels==i,]))
+for (i in names(CopyNumber_TestSet)){
+  if (i=="sbc.labels"){
+    next
+  }else{
+  table.new[[i]]<-chisq.test(table(CopyNumber_TestSet$sbc.labels,CopyNumber_TestSet[[i]]))$p.value
+  }
 }
-table.new
-rownames<-c(1,2,3,4)
-colnames<-c(-2,-1,0,1,2,3,4)
-data<-c(6408,368131,1882192,336625,336625,0,0,69,19126,47422,6370,1344,0,0,1412,131345,457006,100953,3012,28,0,1234,115724,377121,98779,1766,0,24)
-freq_table<-matrix(data,dimnames=list(rownames,colnames),ncol=7,byrow=TRUE)
-freq_table
-ChiCN_Train<-chisq.test(freq_table)
-ChiCN_Train
+table.adj.new <- p.adjust(unlist(table.new), method = "fdr")
+CN_pval.new <- colnames(CopyNumber_TestSet)[(table.adj.new < 0.00000005)] 
+CN_signature.new<-CopyNumber_TestSet[CN_pval.new]
+
+par(mar=c(1,1,1,1))
+
+CN_signature.new$sbc.labels<-c.sbc.new
+CN_signature.new<-CN_signature.new[order(CN_signature.new$sbc.labels),]
+ordered_labels.new<-CN_signature.new$sbc.labels
+CN_signature.new$sbc.labels<-NULL
+
+
+```
+```{r}
+hmcols<-colorRampPalette(c("green","black","red"))(256)
+heatmap.2(x = t(CN_signature.new), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[ordered_labels.new], labRow = colnames(CN_signature.new), labCol = NA, main = ' \n Test Set \n Significant features for Copy Number Data', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fill = c("Green","Blue","Orange","Red"), cex = 0.4)
 ```
 
-# Analysis of mRNA MicroArray Data
+# mRNA MicroArray Data
 
-## Training Set
+## Heatmap 
+
+### Training Set
 
 ```{r Heatmap training set}
 rank <- matrix(0, nrow = N, ncol =Nps)
@@ -102,11 +131,105 @@ order.2 <- c(which(c.final.order==1),which(c.final.order==3),which(c.final.order
 Y.order.2 <- Y.order[order.2,]
 c.final.order.2 <- c.final.order[order.2]
 hmcols<-colorRampPalette(c("green","black","red"))(256)
+
 heatmap.2(x = t(Y.order.2), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[c.final.order.2], labRow = colnames(Y.order.2), labCol = NA, main = ' \n Training Set \n Gene Sets SBC Signature', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fill = c("Green","Blue","Orange","Red"), cex = 0.4)
+
+```
+
+### Test set
+
+```{r}
+rank <- matrix(0, nrow = N.new, ncol =Nps)
+
+for (j in 1:Nps){
+  
+  Y.scaled <- matrix(0, nrow = N.new, ncol =D)
+  for ( v in 1:4){
+    clust <- which(c.matrix.new[,j] == v)
+    Y.scaled[clust,1:D] <- scale(Y.new[clust,1:D], center = TRUE, scale = TRUE)
+  }
+  
+  
+  for ( i in 1:N.new){
+    rank[i,j] <- dMVN(as.vector(t(Y.new[i,1:D])), mean = mu.list[[j]][c.sbc.new[i],1:D], Q= S.list[[j]][c.sbc.new[i],1:D,1:D], log = TRUE) - dMVN(as.vector(t(Y.new[i,1:D])), mean = mu.list[[j]][1,1:D], Q= S.list[[j]][1,1:D,1:D], log = TRUE) +  dnorm(x = time.new[i], mean = beta0.list[[j]][c.sbc.new[i]] + betahat.list[[j]][c.sbc.new[i],1:D] %*% as.vector(t(Y.scaled[i,1:D])), sd = sqrt(sigma2.list[[j]][c.sbc.new[i]]), log =TRUE) -  dnorm(x = time.new[i], mean = beta0.list[[j]][1] + betahat.list[[j]][1,1:D] %*% as.vector(t(Y.scaled[i,1:D])), sd = sqrt(sigma2.list[[j]][1]), log =TRUE) 
+  }
+}
+
+avg.rank <- apply(rank,1,mean)
+order.zo <- range01(avg.rank)
+
+order.train <- sort(order.zo,index.return = TRUE, decreasing = TRUE)
+Y.order.new <- Y.new[order.train$ix,]
+c.final.order.new <- c.sbc.new[order.train$ix]
+
+
+######## Reordering Again ################
+order.2.new <- c(which(c.final.order.new==1),which(c.final.order.new==3),which(c.final.order.new==4),which(c.final.order.new==2))
+Y.order.2.new <- Y.order.new[order.2.new,]
+c.final.order.2.new <- c.final.order.new[order.2.new]
+
+hmcols<-colorRampPalette(c("green","black","red"))(256)
+heatmap.2(x = t(Y.order.2.new), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[c.final.order.2.new], labRow = colnames(Y.order.2.new), labCol = NA, main = ' \n Testing Set \n 47 Gene DPMM signature', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fill = c("Green","Blue","Orange","Red"), cex = 0.4)
+
+```
+
+## Differential expression
+
+### Training set
+
+```{r differential expression of training set}
+##### Load the SBC Labels
+cluster  <- factor(c.sbc)
+##### Create the design matrix with these labels
+mm <- model.matrix( ~0+cluster)
+
+##### You can also define a contrast matrix which only looks at cluster specific contrasts
+cont.matrix <- makeContrasts(Cluster1vsCluster2 = cluster1 - cluster2,Cluster1vsCluster3=cluster1 - cluster3,Cluster1vsCluster4=cluster1 - cluster4,Cluster2vsCluster3= cluster2 - cluster3,
+Cluster2vsCluster4=cluster2 - cluster4,Cluster3vsCluster4=cluster3 - cluster4,levels= mm)
+###### Fit limma model
+fit <- lmFit(t(mRNAArray_TrainingSet), design = mm)
+efit <- eBayes(fit)
+###### Look for DE table
+topmRNA.train<-rownames(topTable(efit,number=50,adjust.method="BH"))
+
+mRNA.matrix.train<-mRNAArray_TrainingSet[,topmRNA.train]
+mRNA.matrix.train$sbc.labels<-c.sbc
+mRNA.matrix.train<-mRNA.matrix.train[order(mRNA.matrix.train$sbc.labels),]
+ordered_labels<-mRNA.matrix.train$sbc.labels
+mRNA.matrix.train$sbc.labels<-NULL
+
+heatmap.2(x = t(mRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[ordered_labels], labRow = colnames(mRNA.matrix.train), labCol = NA, main = ' \n Training Set \n Differentially expressed mRNA transcripts', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
 legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fill = c("Green","Blue","Orange","Red"), cex = 0.4)
 ```
 
-## Test set
+### Test set
+
+```{r differential expression of test set}
+##### Load the SBC Labels
+cluster.new  <- factor(c.sbc.new)
+##### Create the design matrix with these labels
+mm.new <- model.matrix( ~0+cluster.new)
+
+##### You can also define a contrast matrix which only looks at cluster specific contrasts
+cont.matrix <- makeContrasts(Cluster1vsCluster2 = cluster1 - cluster2,Cluster1vsCluster3=cluster1 - cluster3,Cluster1vsCluster4=cluster1 - cluster4,Cluster2vsCluster3= cluster2 - cluster3,
+Cluster2vsCluster4=cluster2 - cluster4,Cluster3vsCluster4=cluster3 - cluster4,levels= mm)
+###### Fit limma model
+fit.new <- lmFit(t(mRNAArray_TestSet), design = mm.new)
+efit.new <- eBayes(fit.new)
+###### Look for DE table
+topmRNA.test<-rownames(topTable(efit.new,number=50,adjust.method="BH"))
+
+mRNA.matrix.test<-mRNAArray_TestSet[,topmRNA.test]
+mRNA.matrix.test$sbc.labels<-c.sbc.new
+mRNA.matrix.test<-mRNA.matrix.test[order(mRNA.matrix.test$sbc.labels),]
+ordered_labels.new<-mRNA.matrix.test$sbc.labels
+mRNA.matrix.test$sbc.labels<-NULL
+
+heatmap.2(x = t(mRNA.matrix.test),Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[ordered_labels.new], labRow = colnames(mRNA.matrix.test), labCol = NA, main = ' \n Test Set \n Differentially expressed mRNA transcripts', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fill = c("Green","Blue","Orange","Red"), cex = 0.4)
+```
 
 # Feature Importance
 
@@ -182,12 +305,44 @@ fisher.test(matrix.assoc, workspace = 10000000,hybrid =TRUE)
 
 # miRNA Data
 
-## Training Set
-```{r miRNA validated targets for the training set, eval=FALSE}
+```{r Loading miRNA training, eval= FALSE}
 library(multiMiR)
 #Load data
 miRNA_TrainingSet <- read_csv("../../Data/Second_data_split/TrainingSet/miRNA_TrainingSet.csv")
 miRNA_TrainingSet$X1<-NULL
+```
+
+## Expression data
+
+### Training set
+
+```{r PCA of miRNA data for training}
+miRNA.train.pca<-as.data.frame(prcomp(miRNA_TrainingSet,scale=TRUE, center= TRUE)$x[,1:2])
+miRNA.train.pca$SBC_labels<-c.sbc
+plotmiRNA.train <- ggplot(miRNA.train.pca, aes(x=miRNA.train.pca$PC1, y= miRNA.train.pca$PC2, colour= as.factor(SBC_labels))) + ggtitle("PCA \n Training set with SBC labels and unlabeled test set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "SBC_labels") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#858687"))
+plotmiRNA.train
+```
+```{r Loading miRNA testing, eval= FALSE}
+#Load data
+miRNA_TestSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/GitHub//Data/Second_data_split/TestSet/miRNA_TestSet.csv")
+miRNA_TestSet$X1<-NULL
+
+```
+
+
+### Test set
+
+```{r PCA of miRNA data for testing}
+miRNA.test.pca<-as.data.frame(prcomp(miRNA_TestSet,scale=TRUE, center= TRUE)$x[,1:2])
+miRNA.test.pca$SBC_labels<-c.sbc.new
+plotmiRNA.test <- ggplot(miRNA.test.pca, aes(x=miRNA.test.pca$PC1, y= miRNA.test.pca$PC2, colour= as.factor(SBC_labels))) + ggtitle("PCA \n Training set with SBC labels and unlabeled test set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "SBC_labels") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#858687"))
+plotmiRNA.test
+```
+
+## Validated targets 
+
+### Training Set
+```{r miRNA validated targets for the training set, eval=FALSE}
 
 #Find all the validated targets for the miRNA present in our data
 result<-list()
@@ -209,11 +364,8 @@ p.targets.train
 ```
 
 
-## Test Set
+### Test Set
 ```{r miRNA validated targets for the test set, eval=FALSE}
-#Load data
-miRNA_TestSet <- read_csv("../../Data/Second_data_split/TrainingSet/miRNA_TrainingSet.csv")
-miRNA_TestSet$X1<-NULL
 
 #Find all the validated targets for the miRNA present in our data
 result.new<-list()
@@ -223,13 +375,71 @@ names.use.new <- names(mRNAArray_TestSet)[(names(mRNAArray_TestSet) %in% result.
 
 ```
 
-```{r miRNA validated targets for the testing set, eval=FALSE}
+```{r miRNA validated targets for the testing set}
 #PCA of the expression of the mRNA targets
 targets.test<-mRNAArray_TestSet[,names.use.new]
 targets.test.pca<-as.data.frame(prcomp(targets.test,scale=TRUE, center= TRUE)$x[,1:2])
 targets.test.pca$SBC_labels<-c.sbc.new
 p.targets.test <- ggplot(targets.test.pca, aes(x=targets.test.pca$PC1, y= targets.test.pca$PC2, colour= as.factor(SBC_labels))) + ggtitle("PCA \n Training set with SBC labels and unlabeled test set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "SBC_labels") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#858687"))
 p.targets.test
+```
+
+## Differential expression
+
+### Training set
+
+```{r miRNA differential expression  of training set}
+##### Load the SBC Labels
+cluster  <- factor(c.sbc)
+##### Create the design matrix with these labels
+mm <- model.matrix( ~0+cluster)
+
+##### You can also define a contrast matrix which only looks at cluster specific contrasts
+cont.matrix <- makeContrasts(Cluster1vsCluster2 = cluster1 - cluster2,Cluster1vsCluster3=cluster1 - cluster3,Cluster1vsCluster4=cluster1 - cluster4,Cluster2vsCluster3= cluster2 - cluster3,
+Cluster2vsCluster4=cluster2 - cluster4,Cluster3vsCluster4=cluster3 - cluster4,levels= mm)
+###### Fit limma model
+fit <- lmFit(t(miRNA_TrainingSet), design = mm)
+efit <- eBayes(fit)
+###### Look for DE table
+topmiRNA.train<-rownames(topTable(efit,number=50,adjust.method="BH"))
+
+miRNA.matrix.train<-miRNA_TrainingSet[,topmiRNA.train]
+miRNA.matrix.train$sbc.labels<-c.sbc
+miRNA.matrix.train<-miRNA.matrix.train[order(miRNA.matrix.train$sbc.labels),]
+ordered_labels<-miRNA.matrix.train$sbc.labels
+miRNA.matrix.train$sbc.labels<-NULL
+
+hmcols<-colorRampPalette(c("green","black","red"))(256)
+heatmap.2(x = t(miRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[ordered_labels], labRow = colnames(miRNA.matrix.train), labCol = NA, main = ' \n Training Set \n Differentially expressed miRNA transcripts', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fill = c("Green","Blue","Orange","Red"), cex = 0.4)
+```
+
+### Test set
+
+```{r miRNA differential expression of test set}
+##### Load the SBC Labels
+cluster.new  <- factor(c.sbc.new)
+##### Create the design matrix with these labels
+mm.new <- model.matrix( ~0+cluster.new)
+
+##### You can also define a contrast matrix which only looks at cluster specific contrasts
+cont.matrix <- makeContrasts(Cluster1vsCluster2 = cluster1 - cluster2,Cluster1vsCluster3=cluster1 - cluster3,Cluster1vsCluster4=cluster1 - cluster4,Cluster2vsCluster3= cluster2 - cluster3,
+Cluster2vsCluster4=cluster2 - cluster4,Cluster3vsCluster4=cluster3 - cluster4,levels= mm)
+###### Fit limma model
+fit.new <- lmFit(t(miRNA_TestSet), design = mm.new)
+efit.new <- eBayes(fit.new)
+###### Look for DE table
+topmiRNA.test<-rownames(topTable(efit.new,number=50,adjust.method="BH"))
+
+miRNA.matrix.test<-miRNA_TestSet[,topmiRNA.test]
+miRNA.matrix.test$sbc.labels<-c.sbc.new
+miRNA.matrix.test<-miRNA.matrix.test[order(miRNA.matrix.test$sbc.labels),]
+ordered_labels.new<-miRNA.matrix.test$sbc.labels
+miRNA.matrix.test$sbc.labels<-NULL
+
+hmcols<-colorRampPalette(c("green","black","red"))(256)
+heatmap.2(x = t(miRNA.matrix.test),Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[ordered_labels.new], labRow = colnames(miRNA.matrix.test), labCol = NA, main = ' \n Test Set \n Differentially expressed miRNA transcripts', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fill = c("Green","Blue","Orange","Red"), cex = 0.4)
 ```
 
 # Clinical Data

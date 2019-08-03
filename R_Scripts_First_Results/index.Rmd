@@ -84,15 +84,6 @@ Row
 valueBox(value = 8,caption = "GSVA on the Canonical Pathways",href="GSVA.html",color= "#2E86C1")
 ```
 
-
-Row
--------------------------------------
-### Chart 9
-
-```{r}
-valueBox(value = 9,caption = "Latent layer of a simple autoencoder with molecular and survival data  as input for the SBC",href="Autoencoder1_Molecular+Survival.html", color= "#2874A6")
-```
-
 Row
 -------------------------------------
     
@@ -127,14 +118,7 @@ valueBox(value = 12,caption = "Linear predictor of AFT model using censoring dat
     
 Row
 -------------------------------------   
-### Chart 13
 
-```{r}
-valueBox(value = 13,caption = "HSIC-Lasso for feature selection using the Verhaak Labels (Classification)",href="HSIC-Lasso-Classification.html", color= "#1B4F72")
-```
-
-Row
--------------------------------------
 ### Chart 14
 
 ```{r}

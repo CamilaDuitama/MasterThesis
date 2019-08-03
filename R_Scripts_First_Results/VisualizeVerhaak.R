@@ -67,19 +67,19 @@ dev.off()
 ########################################################################
 
 
-rank <- matrix(0, nrow = N, ncol =Nps)
+rank <- matrix(0, nrow = N.new, ncol =Nps)
 
 for (j in 1:Nps){
   
-  Y.scaled <- matrix(0, nrow = N, ncol =D)
+  Y.scaled <- matrix(0, nrow = N.new, ncol =D)
   for ( v in 1:4){
-    clust <- which(c.new.list.save[[j]] == v)
+    clust <- which(c.matrix.new[,j] == v)
     Y.scaled[clust,1:D] <- scale(Y.new[clust,1:D], center = TRUE, scale = TRUE)
   }
   
   
-  for ( i in 1:N){
-    rank[i,j] <- dMVN(as.vector(t(Y.new[i,1:D])), mean = mu.list[[j]][c.final.new[i],1:D], Q= S.list[[j]][c.final.new[i],1:D,1:D], log = TRUE) - dMVN(as.vector(t(Y.new[i,1:D])), mean = mu.list[[j]][1,1:D], Q= S.list[[j]][1,1:D,1:D], log = TRUE) +  dnorm(x = time.new[i], mean = beta0.list[[j]][c.final.new[i]] + betahat.list[[j]][c.final.new[i],1:D] %*% as.vector(t(Y.scaled[i,1:D])), sd = sqrt(sigma2.list[[j]][c.final.new[i]]), log =TRUE) -  dnorm(x = time.new[i], mean = beta0.list[[j]][1] + betahat.list[[j]][1,1:D] %*% as.vector(t(Y.scaled[i,1:D])), sd = sqrt(sigma2.list[[j]][1]), log =TRUE) 
+  for ( i in 1:N.new){
+    rank[i,j] <- dMVN(as.vector(t(Y.new[i,1:D])), mean = mu.list[[j]][c.sbc.new[i],1:D], Q= S.list[[j]][c.sbc.new[i],1:D,1:D], log = TRUE) - dMVN(as.vector(t(Y.new[i,1:D])), mean = mu.list[[j]][1,1:D], Q= S.list[[j]][1,1:D,1:D], log = TRUE) +  dnorm(x = time.new[i], mean = beta0.list[[j]][c.sbc.new[i]] + betahat.list[[j]][c.sbc.new[i],1:D] %*% as.vector(t(Y.scaled[i,1:D])), sd = sqrt(sigma2.list[[j]][c.sbc.new[i]]), log =TRUE) -  dnorm(x = time.new[i], mean = beta0.list[[j]][1] + betahat.list[[j]][1,1:D] %*% as.vector(t(Y.scaled[i,1:D])), sd = sqrt(sigma2.list[[j]][1]), log =TRUE) 
   }
 }
 
@@ -88,7 +88,7 @@ order.zo <- range01(avg.rank)
 
 order.train <- sort(order.zo,index.return = TRUE, decreasing = TRUE)
 Y.order.new <- Y.new[order.train$ix,]
-c.final.order.new <- c.final.new[order.train$ix]
+c.final.order.new <- c.sbc.new[order.train$ix]
 
 
 ######## Reordering Again ################
@@ -98,7 +98,7 @@ c.final.order.2.new <- c.final.order.new[order.2.new]
 
 
 surv.ob <- Surv(exp(time.new),censoring.new)
-Classes <- c.final.new
+Classes <- c.sbc.new
 Classes <- as.factor(Classes)
 surv.fit <- survfit(surv.ob ~ Classes)
 p5 <- ggsurv(surv.fit, main = " Testing Data Set \n Kaplan Meier Estimators \n pvalue 3e -02", surv.col = c("green","red","blue","orange"), cens.col ="Blue")  
@@ -107,7 +107,7 @@ p5 <- ggsurv(surv.fit, main = " Testing Data Set \n Kaplan Meier Estimators \n p
 ############ Generating some Plots ##########################
 pc <- prcomp(Y.new)
 pc.pred <- predict(pc,newdata = Y.new)
-p1 <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], color = as.factor(c.final.new) )) + ggtitle(" DPMM Clustering\n Testing Data \n 47 Gene Signature Verhaak \n 44% Variance Explained") + geom_point(shape=19) + labs(y = "PC1", x = "PC2") + scale_color_manual(breaks = c("1", "2", "3","4"),values=  c("green","red","blue","orange"))
+p1 <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], color = as.factor(c.sbc.new) )) + ggtitle(" DPMM Clustering\n Testing Data \n 47 Gene Signature Verhaak \n 44% Variance Explained") + geom_point(shape=19) + labs(y = "PC1", x = "PC2") + scale_color_manual(breaks = c("1", "2", "3","4"),values=  c("green","red","blue","orange"))
 
 
 
@@ -272,5 +272,48 @@ heatmap.2(heatmapdata , margins=c(6,10),col = hmcols, main = "SBC signature \n F
 dev.off()
 
 
+########################### New Code ADDED 1 AUGUST 2019 ###################################
+######################### Code Added to visualize the miRNA data set  ###################
+####################################### LIMMA  #############################################
 
-#
+##### Load the miRNA data for Verhaak Samples
+mirna 
+
+##### Load the SBC Labels
+pheno  <- as.data.frame(c.sbc) 
+names(pheno) <- c('labels')
+##### Create the design matrix with these labels
+mm <- model.matrix( ~ labels, pheno)
+##### You can also define a contrast matrix which only looks at cluster specific contrasts
+cont.matrix <- makeContrasts(cluster1vscluster2 = cluster1 - cluster2, levels= mm)
+###### Fit limma model
+fit <- lmFit(mirna, design = mm)
+####### Fit particular contrasts
+fit2 <- contrasts.fit(fit, cont.matrix)
+###### Use eBayes Normalization
+fit3 <- eBayes(fit2)
+###### Look for DE table
+DEG_table <- topTable(fit3, adjust="BH", coef='cluster1vscluster2', number = Inf)
+
+
+############################ Here for the difference between all the clusters ############
+##### Load the miRNA data for Verhaak Samples
+mirna 
+
+##### Load the SBC Labels
+pheno  <- as.data.frame(c.sbc) 
+names(pheno) <- c('labels')
+##### Create the design matrix with these labels
+mm <- model.matrix( ~ labels, pheno)
+##### You can also define a contrast matrix which only looks at cluster specific contrasts
+cont.matrix <- makeContrasts(cluster1vscluster2 = cluster1 - cluster2, levels= mm)
+###### Fit limma model
+fit <- lmFit(mirna, design = mm)
+####### Fit particular contrasts
+#fit2 <- contrasts.fit(fit, cont.matrix)
+###### Use eBayes Normalization
+fit3 <- eBayes(fit)
+###### Look for DE table
+DEG_table <- topTable(fit3, adjust="BH", coef='cluster1vscluster2', number = Inf)
+
+

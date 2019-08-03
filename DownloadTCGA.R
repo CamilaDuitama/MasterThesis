@@ -59,7 +59,7 @@ miRNA_GBM_Firebrowse <- read_csv("miRNA_GBM_Firebrowse.csv",
 result<-list()
 for (i in names(miRNA_GBM_Firebrowse))
 {
-  example1 <- get_multimir(mirna = 'hsa-miR-18a-3p', summary = TRUE)
+  example1 <- get_multimir(mirna = i, summary = TRUE)
   result <- c(result, example1@data$target_symbol) 
 }
 result<-unlist(result, recursive=FALSE)

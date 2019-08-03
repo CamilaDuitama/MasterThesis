@@ -141,34 +141,114 @@ Y.pre.test<-mRNAArray_TestSet
 print(paste0("Number of patients in training set: ",as.character(n)))
 print(paste0("Number of patients in test set: ",as.character(n.new)))
 ```
+
 # GSVA preprocessing
 
 ```{r eval=FALSE}
 gs<-list()
-db_genesets<-msigdbr(species="Homo sapiens",category = "C2",subcategory="CP:KEGG")
+db_genesets<-msigdbr(species="Homo sapiens",category = "C2",subcategory="CP")
 for (i in unique(db_genesets$gs_name)){
-  gs[i]<-unique(filter(db_genesets,db_genesets$gs_name==i)$gene_symbol)
+  gs[i]<-list(unique(filter(db_genesets,db_genesets$gs_name==i)$gene_symbol))
 }
 
+Y.pre.train.gsva <- t(gsva(t(Y.pre.train),gs,mx.diff=TRUE,verbose=FALSE,parallel.sz=1))
+Y.pre.test.gsva <- t(gsva(t(Y.pre.test), gs, mx.diff=TRUE, verbose=FALSE, parallel.sz=1))
 
-#First for the training set
-p<-dim(Y.pre.train)[2] #Number of genes
-n<-dim(Y.pre.train)[1] #Number of samples
+Y.pre.train.plage <- t(gsva(t(Y.pre.train),gs,mx.diff=TRUE,verbose=FALSE,parallel.sz=1,method="plage"))
+Y.pre.test.plage <-t(gsva(t(Y.pre.test), gs, mx.diff=TRUE, verbose=FALSE, parallel.sz=1,method="plage"))
+
+Y.pre.train.zscore <- t(gsva(t(Y.pre.train),gs,mx.diff=TRUE,verbose=FALSE,parallel.sz=1,method="zscore"))
+Y.pre.test.zscore <-t(gsva(t(Y.pre.test), gs, mx.diff=TRUE, verbose=FALSE, parallel.sz=1,method="zscore"))
+
+Y.pre.train.ssgsea <- t(gsva(t(Y.pre.train),gs, method="ssgsea",mx.diff=TRUE,verbose=FALSE,parallel.sz=1))
+Y.pre.test.ssgsea <-t(gsva(t(Y.pre.test), gs, method="ssgsea", mx.diff=TRUE, verbose=FALSE, parallel.sz=1))
+
+```
 
 
-#ID mapping
-IDmap.train<-select(org.Hs.eg.db,colnames(Y.pre.train),c("ENTREZID","GENENAME"),"ALIAS")
-IDmap.test<-select(org.Hs.eg.db,colnames(Y.pre.test),c("ENTREZID","GENENAME"),"ALIAS")
+## Data visualization
 
-ExpSet.train<-ExpressionSet(t(Y.pre.train))
-ExpSet.test<-ExpressionSet(t(Y.pre.test))
+### Censoring data for training and test set
+```{r Table for censoring information of the training set}
+table(censoring) %>%  
+  kable(caption = "Censoring frequency for the training set") %>%
+  kable_styling(bootstrap_options = c("striped", "hover","responsive"),full_width = T, position = "center")
 
-xx <- as.list(org.Hs.egALIAS2EG)
-xx <- xx[!is.na(xx)]
+```
 
-Y.pre.train.gsva <- gsva(t(Y.pre.train),canonicalC2BroadSets,annotation=org.Hs.egALIAS2EG,mx.diff=TRUE,verbose=FALSE,parallel.sz=1)
+```{r Table for censoring information of the testing set}
+table(censoring.new) %>%
+  kable(caption = "Censoring frequency for the testing set") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
 
-Y.pre.test.gsva <-gsva(t(Y.pre.test), canonicalC2BroadSets, mx.diff=TRUE, verbose=FALSE, parallel.sz=1)
+```
+
+### PCA of the GSE methods
+
+```{r PCA Zscore}
+totalmRNA<-rbind(Y.pre.train.zscore,Y.pre.test.zscore)
+mRNA.pca<-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
+classes<-c()
+for (i in 1:length(Clinical_TrainingSet$days_to_death)){
+    classes<-append(classes,"Training")
+  }
+for (i in 1:length(Clinical_TestSet$days_to_death)){
+    classes<-append(classes,"Testing")
+  }
+
+mRNA.pca$Classes<-classes
+p1 <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n Zscores of the GBM-TCGA Data set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p1
+
+```
+```{r PCA PLAGE}
+
+totalmRNA<-rbind(Y.pre.train.plage,Y.pre.test.plage)
+mRNA.pca<-as.data.frame(prcomp(totalmRNA,scale=FALSE, center= FALSE)$x[,1:2])
+classes<-c()
+for (i in 1:length(Clinical_TrainingSet$days_to_death)){
+    classes<-append(classes,"Training")
+  }
+for (i in 1:length(Clinical_TestSet$days_to_death)){
+    classes<-append(classes,"Testing")
+  }
+
+mRNA.pca$Classes<-classes
+p1 <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n PLAGE scores of the GBM-TCGA Data set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p1
+
+```
+```{r PCA ssGSEA}
+totalmRNA<-rbind(Y.pre.train.ssgsea,Y.pre.test.ssgsea)
+mRNA.pca<-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
+classes<-c()
+for (i in 1:length(Clinical_TrainingSet$days_to_death)){
+    classes<-append(classes,"Training")
+  }
+for (i in 1:length(Clinical_TestSet$days_to_death)){
+    classes<-append(classes,"Testing")
+  }
+
+mRNA.pca$Classes<-classes
+p1 <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n ssGSEA scores of the GBM-TCGA Data set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p1
+
+```
+```{r PCA GSVA}
+totalmRNA<-rbind(Y.pre.train.gsva,Y.pre.test.gsva)
+mRNA.pca<-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
+classes<-c()
+for (i in 1:length(Clinical_TrainingSet$days_to_death)){
+    classes<-append(classes,"Training")
+  }
+for (i in 1:length(Clinical_TestSet$days_to_death)){
+    classes<-append(classes,"Testing")
+  }
+
+mRNA.pca$Classes<-classes
+p1 <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n GSVA scores of the GBM-TCGA Data set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p1
+
 ```
 
 
