@@ -87,48 +87,39 @@ valueBox(value = 8,caption = "GSVA on the Canonical Pathways",href="GSVA.html",c
 Row
 -------------------------------------
     
-### Chart 10
+### Chart 9
     
 ```{r}
-valueBox(value = 10,caption = "Linear predictor of PCox model on the Oncogenic gene sets",href="OncogenicGeneSets+Pcox.html", color= "#21618C")
+valueBox(value = 9,caption = "Linear predictor of PCox model on the Oncogenic gene sets",href="OncogenicGeneSets+Pcox.html", color= "#21618C")
 ```
     
 Row
 -------------------------------------    
+### Chart 10
+
+```{r}
+valueBox(value = 10,caption = "Linear predictor of GLM using time-to-event data on the Oncogenic gene sets",href="OncogenicGeneSets+PAFT.html", color= "#21618C")
+```
+
 ### Chart 11
 
 ```{r}
-valueBox(value = 11,caption = "Linear predictor of GLM using time-to-event data on the Oncogenic gene sets",href="OncogenicGeneSets+PAFT.html", color= "#21618C")
+valueBox(value = 10.1, caption="Analysis of results 11",href="AnalysisOfResults.html", color= "#FA8072")
 ```
 
-### Chart 16
-
-```{r}
-valueBox(value = 11.1, caption="Analysis of results 11",href="AnalysisOfResults.html", color= "#FA8072")
-```
-
-
-Row
--------------------------------------
-### Chart 12
-    
-```{r}
-valueBox(value = 12,caption = "Linear predictor of AFT model using censoring data and time-to-event data, on the Oncogenic gene sets",href="OncogenicGeneSets+PAFT+CensoringData.html", color= "#21618C")
-```
-    
 Row
 -------------------------------------   
 
-### Chart 14
+### Chart 12
 
 ```{r}
-valueBox(value = 14,caption = "HSIC-Lasso for feature selection using survival data (Regression)",href="HSIC-Lasso-Regression.html", color= "#1B4F72")
+valueBox(value = 11,caption = "HSIC-Lasso for feature selection using survival data (Regression)",href="HSIC-Lasso-Regression.html", color= "#1B4F72")
 ```
 
-### Chart 15
+### Chart 12
 
 ```{r}
-valueBox(value = 14.1, caption= "Analysis of results 14",href="AnalysisOfResults1.html", color= "#CD5C5C")
+valueBox(value = 11.1, caption= "Analysis of results 14",href="AnalysisOfResults1.html", color= "#CD5C5C")
 ```
 
 
@@ -140,10 +131,10 @@ Consolidated results {data-icon="fa-table"}
     
 ```{r, fig.width=10, fig.height=15}
 
-rownames<-c(1,2,3,4,5,6,7,8,9,10,11,12,13,14)
-description<-c("Verhaak samples present on the TCGA-GBM","All samples in the TCGA-GBM","Karnofsky corrected samples","Karnofsky corrected samples and Flexmix Intialization","GSE methods on KEGG pathways as feature selection","GSE methods on Oncogenic gene sets as feature selection","GSE methods on NCI pathway sets as feature selection","GSVA on the Canonical Pathways","Latent layer of a simple autoencoder with molecular and survival data  as input for the SBC","Linear predictor of PCox model on the Oncogenic gene sets","Linear predictor of GLM using time-to-event data only on the Oncogenic gene sets","Linear predictor of AFT model using censoring data and time-to-event data, on the Oncogenic gene sets","HSIC-Lasso for feature selection using the Verhaak Labels (Classification)","HSIC-Lasso for feature selection using survival data (Regression)")
-initialization<-c("K-means","K-means","K-means","Flexmix","K-means","K-means","K-means","K-means","K-means","K-means","K-means","K-means","K-means","K-means")
-corrections<-c("None","None","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction")
+rownames<-c(1,2,3,4,5,6,7,8,9,10,11)
+description<-c("Verhaak samples present on the TCGA-GBM","All samples in the TCGA-GBM","Karnofsky corrected samples","Karnofsky corrected samples and Flexmix Intialization","GSE methods on KEGG pathways as feature selection","GSE methods on Oncogenic gene sets as feature selection","GSE methods on NCI pathway sets as feature selection","GSVA on the Canonical Pathways","Linear predictor of PCox model on the Oncogenic gene sets","Linear predictor of GLM using time-to-event data only on the Oncogenic gene sets","HSIC-Lasso for feature selection using survival data (Regression)")
+initialization<-c("K-means","K-means","K-means","Flexmix","K-means","K-means","K-means","K-means","K-means","K-means","K-means")
+corrections<-c("None","None","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction")
 
 trainsize<-list()
 testsize<-list()
@@ -154,14 +145,14 @@ test_pval<-list()
 pCIndex<-list()
 rCIndex<-list()
 
-datasets<-c("Preliminary_Results.RData","Results.RData","Karnofsky_corrected_results.RData","Karnofsky_correction+Flexmix_initialization.RData","GSVA-KEGG.RData","GSVA-Oncogenic_Signature.RData","NCI.RData","GSVA.RData","Autoencoder1_Molecular+Survival.RData","OncogenicGeneSets+Pcox.RData","OncogenicGeneSets+PAFT.RData","OncogenicGeneSets+PAFT+CensoringData.RData","HSIC-Lasso-Regression.RData","HSIC-Lasso-Classification.RData")
+datasets<-c("Preliminary_Results.RData","Results.RData","Karnofsky_corrected_results.RData","Karnofsky_correction+Flexmix_initialization.RData","GSVA-KEGG.RData","GSVA-Oncogenic_Signature.RData","NCI.RData","GSVA.RData","OncogenicGeneSets+Pcox.RData","OncogenicGeneSets+PAFT.RData","HSIC-Lasso-Regression.RData")
 root<-"/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/R_Scripts_First_Results/"
     
 for (i in datasets){
     dummie<-i
   rm(list=setdiff(ls(), c("colnames","corrections","rownames","description","initialization","trainsize","testsize","traink","testk","train_pval","test_pval","pCIndex","rCIndex","datasets","root","dummie")))
     load(paste0(root,dummie))
-  if (dummie=="NCI.RData" | dummie == "Autoencoder1_Molecular+Survival.RData"| dummie == "OncogenicGeneSets+PAFT+CensoringData.RData"){
+  if (dummie=="NCI.RData" | dummie == "Autoencoder1_Molecular+Survival.RData"| dummie == "OncogenicGeneSets+PAFT+CensoringData.RData"| dummie == "GSVA.RData"){
     trainsize<-append(trainsize,n)
     testsize<-append(testsize,n.new)
     traink<-append(traink,"NA")

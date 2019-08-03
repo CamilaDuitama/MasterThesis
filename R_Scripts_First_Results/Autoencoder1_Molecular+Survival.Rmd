@@ -13,9 +13,9 @@ params:
 
 ---
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache=TRUE,include=TRUE,collapse=TRUE,warning=FALSE,message=FALSE, fig.width = 10, fig.height = 6)
+knitr::opts_chunk$set(cache=TRUE,eval=FALSE,include=TRUE,collapse=TRUE,warning=FALSE,message=FALSE, fig.width = 10, fig.height = 6)
 rm(list = ls(all.names = TRUE))
-load("/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/R_Scripts_First_Results/Autoencoder1_Molecular+Survival.RData")
+#load("/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/R_Scripts_First_Results/Autoencoder1_Molecular+Survival.RData")
 
 ```
 # Description

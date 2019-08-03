@@ -8,7 +8,7 @@ params:
   iter: 100
   iter.burnin: 150
   iter.thin: 5
-  pval.sbc : 0.8
+  pval.sbc : 0.99
   output_folder : "GSVA_files/"
 ---
 ```{r setup, include=FALSE}
@@ -250,59 +250,7 @@ p1 <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the
 p1
 
 ```
-
-
-##Data visualization
-
-### Censoring information
-```{r Table for censoring information of the training set}
-
-table(censoring) %>%  
-  kable(caption = "Censoring frequency for the training set") %>%
-  kable_styling(bootstrap_options = c("striped", "hover","responsive"),full_width = T, position = "center")
-
-```
-
-```{r Table for censoring information of the testing set}
-table(censoring.new) %>%
-  kable(caption = "Censoring frequency for the testing set") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
-
-```
- 
-### mRNA headers of the matrix with  GSVA scores
-```{r Header of mRNA matrix of the training set}
-  Y.pre.train.gsva[1:5,1:5] %>%
-  kable(caption = "mRNA MicroArray data for the Training set " ) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
-```
-
-```{r Header of mRNA matrix of the testing set}
-  Y.pre.test.gsva[1:5,1:5] %>%
-  kable(caption = "mRNA MicroArray data for the Testing set " ) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")
-```
-
-### PCA of the GSVA scores
-```{r PCA of the whole mRNA dataset}
-totalmRNA<-rbind(Y.pre.train.gsva,Y.pre.test.gsva)
-mRNA.pca<-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
-classes<-c()
-for (i in 1:length(Clinical_TrainingSet$days_to_death)){
-    classes<-append(classes,"Training")
-  }
-for (i in 1:length(Clinical_TestSet$days_to_death)){
-    classes<-append(classes,"Testing")
-  }
-
-mRNA.pca$Classes<-classes
-p1 <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n GSVA Scores of the Canonical Pathway Sets") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
-p1
-
-```
-
-
-#Signature calculation
+# Signature calculation
 
 This chunk calculates  SBC gene signature
 It's based on the idea of Univariate testing of Survival Data features
@@ -312,8 +260,12 @@ It's based on the idea of Univariate testing of Survival Data features
 ```{r SBC Signature, eval=FALSE}
 ######## Prefiltering of the Genes ############################### ###########################
 ######## Using Univariate Cox's Model for Ranking of the Survival Power of the Genes ########
-  
+todo<-list(Y.pre.train.zscore,Y.pre.train.plage,Y.pre.train.ssgsea,Y.pre.train.gsva)
 
+output<-list() 
+ 
+for (i in (1:4)){
+  input<-as.matrix(todo[[i]])
   surv.obj <- Surv(time,censoring)
   coeff.sig <- c(0)
   
@@ -326,7 +278,7 @@ It's based on the idea of Univariate testing of Survival Data features
   }
   
   
-  pvalue.sig <- apply(Y.pre.train.gsva,2,calcCox)
+  pvalue.sig <- apply(input,2,calcCox)
   
   
   ###### Adjusting p-values for Multiple Test Correction
@@ -334,299 +286,48 @@ It's based on the idea of Univariate testing of Survival Data features
   
   #### As the number of features are quite variable choose first a very loose cut-off 
   
-  signature.loose <- which(pvalue.sig.adj < params$pval.sbc)
+  signature.loose <- colnames(input)[(pvalue.sig.adj < params$pval.sbc)] 
   
   ### Combined the P-values
   pvalue.combined <- (pvalue.sig.adj) 
+  names(pvalue.combined) <- colnames(input)
   ## Sort it
   pvalue.combined.sort <- sort(pvalue.combined)
   ## Only select those genes which are loosely in the signature
-  pvalue.combined.adj <- pvalue.combined[signature.loose]
+  pvalue.combined.adj <- pvalue.combined.sort[names(pvalue.combined.sort) %in% signature.loose]
   
-  
+  output[i]<-list(pvalue.combined.adj)
+}  
   ### Take the top 50 genes ####
-  signature.sbc <- order(pvalue.combined.adj)[1:50]
+  signature.sbc <- names(output[[3]][1:25])
   
 ```
+## Selection of Gene Set Enrichment method
 
-The SBC signature on the dataset looks like this
-
-```{r Table for the SBC signature}
-  to_plot<-data.frame(Genes=signature.sbc)
-   to_plot%>%
-     kable(caption = "SBC Signature") %>%
+```{r Which method should we select?}
+mean<-list()
+sd<-list()
+min<-list()
+max<-list()
+for (i in (1:4)){
+  mean<-c(mean,round(mean(output[[i]][1:25]),4))
+  sd<-c(sd,round(sd((output[[i]][1:25])),4))
+  min<-c(min,round(min((output[[i]][1:25])),4))
+  max<-c(max,round(max(output[[i]][1:25]),4))
+  
+}
+result<-data.frame("Method"=c("Zscore","PLAGE","ssGSEA","GSVA"))
+result$Mean<-mean
+result$SD<-sd
+result$Min<-min
+result$Max<-max
+result%>%
+     kable(caption = "Results of the Univariate Cox Model on the 4 Pathway scoring methods") %>%
      kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = F, position = "center")%>%
      scroll_box(width = "500px", height = "200px")
-```
-
-## PCA of the signature genes
-
-```{r PCA of the signature}
-mRNA.signature<-rbind(Y.pre.train.gsva[,signature.sbc],Y.pre.test.gsva[,signature.sbc])
-mRNA.signature.pca<-as.data.frame(prcomp(mRNA.signature,scale=TRUE, center= TRUE)$x[,1:2])
-mRNA.signature.pca$Classes<-classes
-p6 <- ggplot(mRNA.signature.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n SBC Signature of the GSVA Scores on the Canonical Pathways Gene Sets") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
-p6
-```
-
-## Survival curves for both training and testing set
-
-```{r Survival curves for both training and testing set}
-surv.fit <- survfit(Surv(total_time,append(Clinical_TrainingSet$vital_status,Clinical_TestSet$vital_status))~ classes)
-p3 <- ggsurv(surv.fit, plot.cens=FALSE,main = " DPMM \n Kaplan Meier curves for training and test set")+ ggplot2::guides(linetype = FALSE)
-p3
-```
-
-
-#Training
-
-##Preparation of the data needed for the training of the model
-```{r Preparation of Data Structures to train the SBC, eval=FALSE}
-########################################################################
-###### We prepare the Data Structures Needed for the Running of the SBC ####
-#############################################################################
-
-######## Verhaak Signature ###############
-Verhaak_gene_signature <-read_csv("/Volumes/GoogleDrive/My Drive/Documents/Life Science Informatics Master/Master thesis/Data/Verhaak_Data/Verhaak_GS_according_to_Training_Set_Split1.csv", 
-                                  col_names = FALSE, col_types = cols(X1 = col_skip()))
-signature.vk<-Verhaak_gene_signature$X2
-######## Verhaak Labels #################
-labels.vk<-Clinical_TrainingSet$Subtype
-
-#######Getting signature matrix on training and testing######
-Y <- Y.pre.train.gsva[,signature.sbc]
-c.true <- as.factor(labels.vk)
-c.true<-unclass(c.true)
-
-Y.new <- Y.pre.test.gsva[,signature.sbc]
-```
-
-
-## Training results
-
-```{r Training of SBC, eval=FALSE}
-##############################################################################
-############ This file takes in training data for Glioblastoma #################
-################################################################################
-
-###### Scaling the data #########
-Y <- scale(Y, center = TRUE, scale = TRUE)
-
-######
-N <- nrow(Y)
-D <- ncol(Y)
-smod <-  Surv(exp(time), censoring)
-
-##### Initial number of clusters
-k =4
-F =k
-
-
-##################### STATE OF THE ART TECHNIQUES #################################
-##################### BASIC METHODS + SOME ADVANCED METHODS ########################
-
-source('Comparisonx.R')
-Comparisonx()
-
-source('ComparisionFLX.R')
-ComparisionFLX()
-
-
-############################# PARAMETERS for GIBB's SAMPLING ####
-iter = params$iter
-iter.burnin = params$iter.burnin
-iter.thin  = params$iter.thin
-Nps = as.integer(iter/ iter.thin)
-
-
-######################### Initialize the Parameters ##############################
-source('initialize.R')
-initialize()
-
-###################### Start with a good configuration ###########################
-#source('startSBC.R')
-#startSBC()
-
-
-########### Train the Model #########################################
-source('burninDPMM.R')
-burninDPMM()
-
-source('gibbsDPMM.R')
-gibbsDPMM()
-
-########## Analyze the fit ##########################################
-### Good feature selection from heatmap plus cindex plus randindex
-source('MCMCanalyze.R')
-MCMCanalyze()
-```
-```{r}
-print(paste0("Time (hours) necessary for burnin :",as.character(round(sum(burnintime)/3600),digits=5)))
-print(paste0("Time (hours) necessary for Gibb's sampling :",as.character(round(sum(gibbstime/3600),digits=5))))
-```
-
-
-## Plots of results from training
-
-```{r Survival curves from training}
-
-###############################
-### Some plots and analysis ####
-#################################
-#### Generating some plots and results ON Training data ###
-logrank <- survdiff(smod ~ c.final)
-pval<-1 - pchisq(unlist(logrank)$chisq,df =3)
-surv.fit <- survfit(smod ~ c.final)
-p4 <- ggsurv(surv.fit,surv.col= c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), plot.cens=FALSE,main = " DPMM \n Kaplan Meier Estimators \n Training Set")+ ggplot2::guides(linetype = FALSE)+labs(subtitle = paste("P-value:",toString(round(pval,digits = 10))))
-p4
 
 ```
+**NOTE:**
+Since none of the p values were significant. The model was not trained.
 
-```{r PCA from training}
-############ Generating some Plots ##########################
-pc <- prcomp(Y)
-pc.pred <- predict(pc,newdata = Y)
-p5 <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.final))) + ggtitle("PCA after SBC Clustering \n Training Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
-p5
-```
-
-```{r Plot likelihood of burning}
-to_plot<-as.data.frame(likli.burnin)
-p7<-qplot(seq_along(to_plot$likli.burnin), to_plot$likli.burnin)
-p7
-```
-
-# Testing
-
-```{r PCA Scaled Y and Y.new}
-#Defining again Y and Y.new
-Y <- Y.pre.train[signature.sbc]
-Y.new <- Y.pre.test[signature.sbc]
-
-Y<-scale(Y, scale=TRUE,center= TRUE)
-Y.new<-scale(Y.new,scale=TRUE,center=TRUE)
-
-#PCA
-Y.big.unscaled<-rbind(Y,Y.new)
-pc.unscaled <- prcomp(Y.big.unscaled,center=TRUE,scale = TRUE)
-labels<-c.sbc
-for (i in 1:dim(Y.new)[1]){labels<-append(labels,5)}
-p8 <- ggplot(as.data.frame(pc.unscaled$x), aes(x=pc.unscaled$x[,1], y= pc.unscaled$x[,2], colour= as.factor(labels))) + ggtitle("PCA \n Training set with SBC labels and unlabeled test set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#B1B4B6"))
-p8
-```
-
-```{r Testing 2, eval=FALSE}
-######## Predict on New Data Set  BASED ON JUST THE MOLECULAR DATA #####################################
-smod.new <- Surv(time.new, censoring.new)
-source('predictCLASS.R')
-#What does this function do?: Outputs a matrix that has dimension number of test samples * number of MCMC samples
-#The output matrix is c.matrix.new
-predictCLASS(Y.new)
-## Check the predicted Rand Index
-
-#### Choose that configuration which has the highest difference in survival curves ####################
-lr <- c(0)
-for (j in 1:Nps){
-  lr[j] <-  1 - pchisq(unlist(survdiff(smod.new ~ c.matrix.new[,j]))$chisq,df=length(table(c.matrix.new[,j]))-1)
-}
-
-significant<-c()
-for (i in 1:Nps){
-  if(lr[i]<0.05 & length(table(c.matrix.new[,i]))==4){
-    significant<-append(significant,i)
-  }
-}
-
-if (length(significant)>0){
-  index<-significant[which.min(lr[significant])]
-  c.sbc.new <- c.matrix.new[,index]
-
-}else{
- print("There was no MCMC iteration that found 4 clusters and was statistically significant (p_value=0.05)")
- c.sbc.new <- c.matrix.new[,which.min(lr)]
-}
-
-###############################################################################
-################################# Other ways of obtaining predictions #########
-## If we fit cluster-specific models ###########################################
-
-pre.sbc <- c(0)
-for (q in unique(c.sbc.new)){
-  ind <- which(c.sbc == q)
-  ind.new <- which(c.sbc.new == q)
-
-  time.tmp <- time[ind]
-
-  Y.tmp <- Y[ind,]
-  Y.tmp.new <- Y.new[ind.new,]
-
-  reg <- cv.glmnet(x = Y.tmp, y = time.tmp, family = "gaussian")
-  if (class(Y.tmp.new)=="numeric"){ 
-    pre.sbc[ind.new] <- predict(object = reg, newx = t(matrix(Y.tmp.new)), s = "lambda.min")
-  }else{
-    pre.sbc[ind.new] <- predict(object = reg, newx = Y.tmp.new, s = "lambda.min")
-  }
-}
-predCIndex.sbc.aft  <<- as.numeric(concordance(smod.new ~ exp(-pre.sbc))[1])
-
-
-#### Use the adhoc-prediction algorithm ####################
-source('predictADHOCverhaak.R')
-
-source('predictTIME.R')
-predictchineseAFTtime(Y.new)
-
-```
-
-## Plot results from testing
-
-```{r Survival curves from testing}
-logrank.new <- survdiff(smod.new ~ c.sbc.new)
-#df= Degrees of freedom should be number of clusters-1
-pval.new<-1 - pchisq(unlist(logrank.new)$chisq,df =length(logrank.new$n)-1)
-surv.fit <- survfit(smod.new ~ c.sbc.new)
-p5.new <- ggsurv(surv.fit, surv.col=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"),plot.cens=FALSE,main = " DPMM \n Kaplan Meier Estimators \n Test Set")+ ggplot2::guides(linetype = FALSE)+labs(subtitle = paste("P-value:",toString(round(pval.new,digits = 5))))
-
-par(mfrow=c(2,1))
-p4
-p5.new
-
-```
-
-```{r PCA from testing}
-pc <- prcomp(Y.new,center=TRUE,scale = TRUE)
-pc.pred <- predict(pc,newdata = Y.new)
-p4.new <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(" PCA after SBC Clustering \n Test Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
-p4.new
-```
-
-
-```{r Consolidated clustering results for the training set}
-table(c.sbc) %>%
-  kable(caption = "Clusters for the training set") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
-```
-
-```{r Consolidated clustering results for the test set}
-table(c.sbc.new) %>%
-  kable(caption = "Clusters for the testing set") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
-```
-```{r Final table of SBC vs others}
-Methods<-c("Flexmix","K-Means + Penalized AFT","K-Means + Penalized Cox","AFT","Cox","SBC")
-recovCIndex<-round(c(recovCIndex.flx,recovCIndex.km.paft,recovCIndex.km.pcox,recovCIndex.na.aft,recovCIndex.na.cox,max(recovCIndex.sbc)),digits = 5)
-predCIndex<-c(predCIndex.flx,"NA",predCIndex.kk.pcox,predCIndex.na.aft,predCIndex.na.cox,max(predCIndex.sbc))
-sbc_and_comparisons<-as.data.frame(Methods)
-sbc_and_comparisons$recovCIndex<-recovCIndex
-sbc_and_comparisons$predCIndex<-predCIndex
-sbc_and_comparisons %>%
-  kable(caption = "SBC vs other methods") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"),full_width = T, position = "center")
-```
-
-```{r Save Results, include=FALSE,eval=FALSE}
-write.csv(c.sbc,paste0(params$output_folder,"c_sbc.csv"))
-write.csv(c.sbc.new,paste0(params$output_folder,"c_sbc_new.csv"))
-write.csv(signature.sbc,paste0(params$output_folder,"sbc_signature.csv"))
-```
 

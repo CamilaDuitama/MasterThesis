@@ -1,4 +1,6 @@
 base
+graphite
+GSVA
 nlme
 mgcv
 genefilter
@@ -80,4 +82,16 @@ kableExtra
 usethis
 devtools
 rmarkdown
-flexdashboard
+S4Vectors
+IRanges
+AnnotationDbi
+annotate
+graph
+GSEABase
+org.Hs.eg.db
+hgu95a.db
+GSVAdata
+tibble
+msigdbr
+multiMiR
+limma

@@ -324,4 +324,5 @@ result%>%
 
 ```
 
+**NOTE:**
 Since none of the p values were significant. The model was not trained.
