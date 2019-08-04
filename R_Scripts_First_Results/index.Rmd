@@ -15,13 +15,11 @@ output:
 ---
 Home {data-icon="fa-home"}
 =====================================     
-
-Row
--------------------------------------
     
 ### Chart 1
     
 ```{r Verhaak signature in TCGA-GBM}
+library(flexdashboard)
 valueBox(value = 1,caption = "Verhaak samples present on the TCGA-GBM Dataset",href="Preliminary_Results.html", color="#85C1E9")
 ```
  
