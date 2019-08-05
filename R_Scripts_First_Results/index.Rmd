@@ -117,7 +117,7 @@ valueBox(value = 11,caption = "HSIC-Lasso for feature selection using survival d
 ### Chart 12
 
 ```{r}
-valueBox(value = 11.1, caption= "Analysis of results 14",href="AnalysisOfResults1.html", color= "#CD5C5C")
+valueBox(value = 11.1, caption= "Analysis of results 11",href="AnalysisOfResults1.html", color= "#CD5C5C")
 ```
 
 

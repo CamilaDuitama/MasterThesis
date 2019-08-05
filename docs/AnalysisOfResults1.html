@@ -763,19 +763,23 @@ p.targets.test</code></pre>
 <h2>Differential expression</h2>
 <div id="training-set-5" class="section level3">
 <h3>Training set</h3>
+<div id="heatmap-1" class="section level4">
+<h4>Heatmap</h4>
 <pre class="r"><code>##### Load the SBC Labels
 cluster  &lt;- factor(c.sbc)
 ##### Create the design matrix with these labels
-mm &lt;- model.matrix( ~0+cluster)
+design&lt;- model.matrix( ~0+cluster)
+fit&lt;-lmFit(t(miRNA_TrainingSet) , design= design)
 
 ##### You can also define a contrast matrix which only looks at cluster specific contrasts
 cont.matrix &lt;- makeContrasts(Cluster1vsCluster2 = cluster1 - cluster2,Cluster1vsCluster3=cluster1 - cluster3,Cluster1vsCluster4=cluster1 - cluster4,Cluster2vsCluster3= cluster2 - cluster3,
-Cluster2vsCluster4=cluster2 - cluster4,Cluster3vsCluster4=cluster3 - cluster4,levels= mm)
+Cluster2vsCluster4=cluster2 - cluster4,Cluster3vsCluster4=cluster3 - cluster4,levels= design)
+
 ###### Fit limma model
-fit &lt;- lmFit(t(miRNA_TrainingSet), design = mm)
-efit &lt;- eBayes(fit)
+fit.2 &lt;- contrasts.fit(fit, contrasts = cont.matrix)
+fit.2 &lt;- eBayes(fit.2, trend= TRUE)
 ###### Look for DE table
-topmiRNA.train&lt;-rownames(topTable(efit,number=50,adjust.method=&quot;BH&quot;))
+topmiRNA.train&lt;-rownames(topTable(fit.2,number=50, p.val=0.1))
 
 miRNA.matrix.train&lt;-miRNA_TrainingSet[,topmiRNA.train]
 miRNA.matrix.train$sbc.labels&lt;-c.sbc
@@ -783,37 +787,63 @@ miRNA.matrix.train&lt;-miRNA.matrix.train[order(miRNA.matrix.train$sbc.labels),]
 ordered_labels&lt;-miRNA.matrix.train$sbc.labels
 miRNA.matrix.train$sbc.labels&lt;-NULL
 
+par(mar=c(1,1,1,1))
+
 hmcols&lt;-colorRampPalette(c(&quot;green&quot;,&quot;black&quot;,&quot;red&quot;))(256)
-heatmap.2(x = t(miRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;green&quot;,&quot;red&quot;,&quot;blue&quot;,&quot;orange&quot;)[ordered_labels], labRow = colnames(miRNA.matrix.train), labCol = NA, main = &#39; \n Training Set \n Differentially expressed miRNA transcripts&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+heatmap.2(x = t(miRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;green&quot;,&quot;red&quot;,&quot;blue&quot;,&quot;orange&quot;)[ordered_labels], labRow = colnames(miRNA.matrix.train), labCol = NA, main = &#39; \n Training Set \n Significant miRNA transcripts&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
 legend(&quot;topright&quot;, legend = c(&quot;Best&quot;,&quot;Good Moderate&quot;,&quot;Bad moderate&quot;,&quot;Worst&quot;),fill = c(&quot;Green&quot;,&quot;Blue&quot;,&quot;Orange&quot;,&quot;Red&quot;), cex = 0.4)</code></pre>
 <p><img src="AnalysisOfResults1_files/figure-html/miRNA%20differential%20expression%20%20of%20training%20set-1.png" width="960" /></p>
 </div>
+<div id="significant-features" class="section level4">
+<h4>Significant features</h4>
+<pre class="r"><code>par(mar=c(1,1,1,1))
+pairwise.miRNA.train&lt;-as.matrix(topTable(fit.2,number = 20,adjust.method=&quot;BH&quot;)[,1:6])
+#hmcols&lt;-colorRampPalette(c(&quot;green&quot;,&quot;black&quot;,&quot;red&quot;))(256)
+heatmap.2(x = pairwise.miRNA.train,Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;, labRow =rownames(pairwise.miRNA.train), labCol = colnames(pairwise.miRNA.train), main = &#39; \n Training Set \n Significant miRNA transcripts&#39;, col =hmcols, cexRow =0.40,cexCol = 0.4, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;, margins=c(6,10))</code></pre>
+<p><img src="AnalysisOfResults1_files/figure-html/Significant%20miRNA%20transcript%20in%20pairwise%20comparisons%20for%20training-1.png" width="960" /></p>
+</div>
+</div>
 <div id="test-set-5" class="section level3">
 <h3>Test set</h3>
+<div id="heatmap-2" class="section level4">
+<h4>Heatmap</h4>
 <pre class="r"><code>##### Load the SBC Labels
 cluster.new  &lt;- factor(c.sbc.new)
 ##### Create the design matrix with these labels
-mm.new &lt;- model.matrix( ~0+cluster.new)
+design.new&lt;- model.matrix( ~0+cluster.new)
+fit.new&lt;-lmFit(t(miRNA_TestSet) , design= design.new)
 
 ##### You can also define a contrast matrix which only looks at cluster specific contrasts
 cont.matrix &lt;- makeContrasts(Cluster1vsCluster2 = cluster1 - cluster2,Cluster1vsCluster3=cluster1 - cluster3,Cluster1vsCluster4=cluster1 - cluster4,Cluster2vsCluster3= cluster2 - cluster3,
-Cluster2vsCluster4=cluster2 - cluster4,Cluster3vsCluster4=cluster3 - cluster4,levels= mm)
+Cluster2vsCluster4=cluster2 - cluster4,Cluster3vsCluster4=cluster3 - cluster4,levels= design)
+
 ###### Fit limma model
-fit.new &lt;- lmFit(t(miRNA_TestSet), design = mm.new)
-efit.new &lt;- eBayes(fit.new)
+fit.2.new &lt;- contrasts.fit(fit.new, contrasts = cont.matrix)
+fit.2.new &lt;- eBayes(fit.2.new, trend= TRUE)
 ###### Look for DE table
-topmiRNA.test&lt;-rownames(topTable(efit.new,number=50,adjust.method=&quot;BH&quot;))
+topmiRNA.test&lt;-rownames(topTable(fit.2.new,number=50))
 
 miRNA.matrix.test&lt;-miRNA_TestSet[,topmiRNA.test]
 miRNA.matrix.test$sbc.labels&lt;-c.sbc.new
 miRNA.matrix.test&lt;-miRNA.matrix.test[order(miRNA.matrix.test$sbc.labels),]
-ordered_labels.new&lt;-miRNA.matrix.test$sbc.labels
+ordered_labels&lt;-miRNA.matrix.test$sbc.labels
 miRNA.matrix.test$sbc.labels&lt;-NULL
 
+par(mar=c(1,1,1,1))
+
 hmcols&lt;-colorRampPalette(c(&quot;green&quot;,&quot;black&quot;,&quot;red&quot;))(256)
-heatmap.2(x = t(miRNA.matrix.test),Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;green&quot;,&quot;red&quot;,&quot;blue&quot;,&quot;orange&quot;)[ordered_labels.new], labRow = colnames(miRNA.matrix.test), labCol = NA, main = &#39; \n Test Set \n Differentially expressed miRNA transcripts&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+heatmap.2(x = t(miRNA.matrix.test),Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;green&quot;,&quot;red&quot;,&quot;blue&quot;,&quot;orange&quot;)[ordered_labels], labRow = colnames(miRNA.matrix.test), labCol = NA, main = &#39; \n Test Set \n Significant miRNA transcripts&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
 legend(&quot;topright&quot;, legend = c(&quot;Best&quot;,&quot;Good Moderate&quot;,&quot;Bad moderate&quot;,&quot;Worst&quot;),fill = c(&quot;Green&quot;,&quot;Blue&quot;,&quot;Orange&quot;,&quot;Red&quot;), cex = 0.4)</code></pre>
-<p><img src="AnalysisOfResults1_files/figure-html/miRNA%20differential%20expression%20of%20test%20set-1.png" width="960" /></p>
+<p><img src="AnalysisOfResults1_files/figure-html/miRNA%20differential%20expression%20%20of%20test%20set-1.png" width="960" /></p>
+</div>
+<div id="significant-features-1" class="section level4">
+<h4>Significant features</h4>
+<pre class="r"><code>par(mar=c(1,1,1,1))
+pairwise.miRNA.test&lt;-as.matrix(topTable(fit.2.new,number = 20,adjust.method=&quot;BH&quot;)[,1:6])
+#hmcols&lt;-colorRampPalette(c(&quot;green&quot;,&quot;black&quot;,&quot;red&quot;))(256)
+heatmap.2(x = pairwise.miRNA.test,Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;, labRow =rownames(pairwise.miRNA.test), labCol = colnames(pairwise.miRNA.test), main = &#39; \n Test Set \n Significant miRNA transcripts&#39;, col =hmcols, cexRow =0.40,cexCol = 0.4, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;, margins=c(6,10))</code></pre>
+<p><img src="AnalysisOfResults1_files/figure-html/Significant%20miRNA%20transcript%20in%20pairwise%20comparisons%20for%20testing-1.png" width="960" /></p>
+</div>
 </div>
 </div>
 </div>
