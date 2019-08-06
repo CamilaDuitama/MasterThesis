@@ -15,7 +15,9 @@ output:
 ---
 Home {data-icon="fa-home"}
 =====================================     
-    
+ 
+Row
+-------------------------------------     
 ### Chart 1
     
 ```{r Verhaak signature in TCGA-GBM}

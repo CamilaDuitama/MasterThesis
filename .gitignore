@@ -36,6 +36,6 @@ vignettes/*.pdf
 rsconnect/
 .Rproj.user
 Bibliography/Registration_Master_Thesis_Camila.pdf
-Bibliography/Registration_Master_Thesis_Camila.pdf
 *.RData
-*.RData
+*.rdb
+*.rdx

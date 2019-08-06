@@ -796,8 +796,8 @@ heatmap.2(x = t(miRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot
 legend(&quot;topright&quot;, legend = c(&quot;Best&quot;,&quot;Good Moderate&quot;,&quot;Bad moderate&quot;,&quot;Worst&quot;),fill = c(&quot;Green&quot;,&quot;Blue&quot;,&quot;Orange&quot;,&quot;Red&quot;), cex = 0.4)</code></pre>
 <p><img src="AnalysisOfResults_files/figure-html/miRNA%20differential%20expression%20%20of%20training%20set-1.png" width="960" /></p>
 </div>
-<div id="significant-features" class="section level4">
-<h4>Significant features</h4>
+<div id="significant-features-of-the-sbc-model" class="section level4">
+<h4>Significant features of the SBC model</h4>
 <pre class="r"><code>par(mar=c(1,1,1,1))
 pairwise.miRNA.train&lt;-as.matrix(topTable(fit.2,number = 20,adjust.method=&quot;BH&quot;)[,1:6])
 #hmcols&lt;-colorRampPalette(c(&quot;green&quot;,&quot;black&quot;,&quot;red&quot;))(256)
@@ -838,12 +838,12 @@ heatmap.2(x = t(miRNA.matrix.test),Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;
 legend(&quot;topright&quot;, legend = c(&quot;Best&quot;,&quot;Good Moderate&quot;,&quot;Bad moderate&quot;,&quot;Worst&quot;),fill = c(&quot;Green&quot;,&quot;Blue&quot;,&quot;Orange&quot;,&quot;Red&quot;), cex = 0.4)</code></pre>
 <p><img src="AnalysisOfResults_files/figure-html/miRNA%20differential%20expression%20%20of%20test%20set-1.png" width="960" /></p>
 </div>
-<div id="significant-features-1" class="section level4">
+<div id="significant-features" class="section level4">
 <h4>Significant features</h4>
 <pre class="r"><code>par(mar=c(1,1,1,1))
 pairwise.miRNA.test&lt;-as.matrix(topTable(fit.2.new,number = 20,adjust.method=&quot;BH&quot;)[,1:6])
 #hmcols&lt;-colorRampPalette(c(&quot;green&quot;,&quot;black&quot;,&quot;red&quot;))(256)
-heatmap.2(x = pairwise.miRNA.test,Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;, labRow =rownames(pairwise.miRNA.test), labCol = colnames(pairwise.miRNA.test), main = &#39; \n Test Set \n Significant miRNA transcripts&#39;, col =hmcols, cexRow =0.40,cexCol = 0.4, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;, margins=c(6,10))</code></pre>
+heatmap.2(x = pairwise.miRNA.test,Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;, labRow =rownames(pairwise.miRNA.test), labCol = colnames(pairwise.miRNA.test), main = &#39; \n Test Set \n Significant miRNA transcripts&#39;, col =hmcols, cexRow =0.40,cexCol = 0.4, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;, margins=c(4,8))</code></pre>
 <p><img src="AnalysisOfResults_files/figure-html/Significant%20miRNA%20transcript%20in%20pairwise%20comparisons%20for%20testing-1.png" width="960" /> # Clinical Data</p>
 </div>
 </div>

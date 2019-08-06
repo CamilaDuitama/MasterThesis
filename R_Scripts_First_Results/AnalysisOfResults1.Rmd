@@ -1,23 +1,22 @@
 ---
 title: "Analysis of results: SBC on the GBM dataset from the whole Firebrowse Database(TCGA)."
-subtitle: "AFT on the Oncogenic Gene Set "
+subtitle: "Block HSIC-Lasso feature selection "
 author: "Camila Duitama (Based on Ashar Ahmad's code for the SBC model)"
 date: "30th July 2019"
 params:
-  model: "OncogenicGeneSets+PAFT.RData"
-  output_folder : "OncogenicGeneSets+PAFT_files/"
+  output_folder : "OncogenicGeneSets+HSIC-Lasso_files/"
 
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache=TRUE,include=TRUE,collapse=TRUE,warning=FALSE,message=FALSE, fig.width = 10, fig.height = 6)
 rm(list = ls(all.names = TRUE))
-load("/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/R_Scripts_First_Results/AnalysisOfResults.RData")
+load("/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/R_Scripts_First_Results/AnalysisOfResults1.RData")
 
 ```
 
 # Description
 
-This is the analysis of the SBC results after having fitting an AFT model the Oncogenic Gene Set downloaded from [MSigDB](http://software.broadinstitute.org/gsea/msigdb/genesets.jsp?collection=C6). A penalized AFT model was fit on the training data, and the linear predictors were then used as input features for the SBC model. This model (which was fit on the training data set) was then used to obtain linear predictor on the test set, which would be the test input features for the SBC.
+This is the analysis of the SBC results after having used Block HSIC-Lasso as feature selection method.
 
 # Loading of other datasets
 
@@ -43,7 +42,7 @@ for (i in names(CopyNumber_TrainingSet)){
   }
 }
 table.adj <- p.adjust(unlist(table), method = "fdr")
-CN_pval <- colnames(CopyNumber_TrainingSet)[(table.adj < 0.00000005)] 
+CN_pval <- names(table.adj[order(table.adj)[1:50]]) 
 CN_signature<-CopyNumber_TrainingSet[CN_pval]
 
 par(mar=c(1,1,1,1))
@@ -53,19 +52,19 @@ CN_signature<-CN_signature[order(CN_signature$sbc.labels),]
 ordered_labels<-CN_signature$sbc.labels
 CN_signature$sbc.labels<-NULL
 
-```
-```{r}
 
+
+```
+
+```{r}
 hmcols<-colorRampPalette(c("green","black","red"))(256)
 heatmap.2(x = t(CN_signature), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[ordered_labels], labRow = colnames(CN_signature), labCol = NA, main = ' \n Training Set \n Significant features for Copy Number Data', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
 legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fill = c("Green","Blue","Orange","Red"), cex = 0.4)
-
 ```
-
 
 ## Test set
 
-```{r Chi-Square test for test set, eval= FALSE}
+```{r Chi-Square test for test set, eval=FALSE}
 CopyNumber_TestSet$X1<-NULL
 CopyNumber_TestSet$sbc.labels<-c.sbc.new
 table.new<-list()
@@ -77,7 +76,7 @@ for (i in names(CopyNumber_TestSet)){
   }
 }
 table.adj.new <- p.adjust(unlist(table.new), method = "fdr")
-CN_pval.new <- colnames(CopyNumber_TestSet)[(table.adj.new < 0.00000005)] 
+CN_pval.new <- names(table.adj.new[order(table.adj.new)[1:50]]) 
 CN_signature.new<-CopyNumber_TestSet[CN_pval.new]
 
 par(mar=c(1,1,1,1))
@@ -89,6 +88,7 @@ CN_signature.new$sbc.labels<-NULL
 
 
 ```
+
 ```{r}
 hmcols<-colorRampPalette(c("green","black","red"))(256)
 heatmap.2(x = t(CN_signature.new), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[ordered_labels.new], labRow = colnames(CN_signature.new), labCol = NA, main = ' \n Test Set \n Significant features for Copy Number Data', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
@@ -180,7 +180,6 @@ legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fil
 ### Training set
 
 ```{r differential expression of training set}
-library(limma)
 ##### Load the SBC Labels
 cluster  <- factor(c.sbc)
 ##### Create the design matrix with these labels
@@ -323,6 +322,7 @@ miRNA.train.pca$SBC_labels<-c.sbc
 plotmiRNA.train <- ggplot(miRNA.train.pca, aes(x=miRNA.train.pca$PC1, y= miRNA.train.pca$PC2, colour= as.factor(SBC_labels))) + ggtitle("PCA \n Training set with SBC labels and unlabeled test set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "SBC_labels") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#858687"))
 plotmiRNA.train
 ```
+
 ```{r Loading miRNA testing, eval= FALSE}
 #Load data
 miRNA_TestSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/GitHub//Data/Second_data_split/TestSet/miRNA_TestSet.csv")
@@ -430,7 +430,6 @@ heatmap.2(x = pairwise.miRNA.train,Colv = FALSE, Rowv=TRUE, dendrogram= c("row")
 
 ```
 
-
 ### Test set
 
 #### Heatmap
@@ -470,9 +469,10 @@ legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fil
 par(mar=c(1,1,1,1))
 pairwise.miRNA.test<-as.matrix(topTable(fit.2.new,number = 20,adjust.method="BH")[,1:6])
 #hmcols<-colorRampPalette(c("green","black","red"))(256)
-heatmap.2(x = pairwise.miRNA.test,Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row", labRow =rownames(pairwise.miRNA.test), labCol = colnames(pairwise.miRNA.test), main = ' \n Test Set \n Significant miRNA transcripts', col =hmcols, cexRow =0.40,cexCol = 0.4, trace ="none", key.title = "Color Key", margins=c(4,8))
+heatmap.2(x = pairwise.miRNA.test,Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row", labRow =rownames(pairwise.miRNA.test), labCol = colnames(pairwise.miRNA.test), main = ' \n Test Set \n Significant miRNA transcripts', col =hmcols, cexRow =0.40,cexCol = 0.4, trace ="none", key.title = "Color Key", margins=c(6,10))
 
 ```
+
 # Clinical Data
 
 ## Training Set
