@@ -437,15 +437,22 @@ CN_pval &lt;- names(table.adj[order(table.adj)[1:50]])
 CN_signature&lt;-CopyNumber_TrainingSet[CN_pval]
 
 par(mar=c(1,1,1,1))
-
+</code></pre>
+<pre class="r"><code>
 CN_signature$sbc.labels&lt;-c.sbc
 CN_signature&lt;-CN_signature[order(CN_signature$sbc.labels),]
 ordered_labels&lt;-CN_signature$sbc.labels
 CN_signature$sbc.labels&lt;-NULL
-</code></pre>
-<pre class="r"><code>hmcols&lt;-colorRampPalette(c(&quot;green&quot;,&quot;black&quot;,&quot;red&quot;))(256)
-heatmap.2(x = t(CN_signature), Rowv =TRUE ,Colv = FALSE, dendrogram = c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;green&quot;,&quot;red&quot;,&quot;blue&quot;,&quot;orange&quot;)[ordered_labels], labRow = colnames(CN_signature), labCol = NA, main = &#39; \n Training Set \n Significant features for Copy Number Data&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
-legend(&quot;topright&quot;, legend = c(&quot;Best&quot;,&quot;Good Moderate&quot;,&quot;Bad moderate&quot;,&quot;Worst&quot;),fill = c(&quot;Green&quot;,&quot;Blue&quot;,&quot;Orange&quot;,&quot;Red&quot;), cex = 0.4)</code></pre>
+hmcols&lt;-brewer.pal(9,&quot;RdBu&quot;)
+pdf(file=&quot;AnalysisOfResults1_files/CopyNumber_TrainingSet.pdf&quot;,width=400,height=350)
+heatmap.2(x = t(CN_signature), Rowv =TRUE ,Colv = FALSE, dendrogram = c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;)[ordered_labels], labRow = colnames(CN_signature), labCol = NA, main = &#39; \n Training Set \n Significant features for Copy Number Data&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+legend(&quot;topright&quot;, legend = c(&quot;Good moderate&quot;,&quot;Bad moderate&quot;,&quot;Best&quot;,&quot;Worst&quot;),fill =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;), cex = 0.4)
+dev.off()
+## quartz_off_screen 
+##                14</code></pre>
+<pre class="r"><code>hmcols&lt;-brewer.pal(9,&quot;RdBu&quot;)
+heatmap.2(x = t(CN_signature), Rowv =TRUE ,Colv = FALSE, dendrogram = c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;)[ordered_labels], labRow = colnames(CN_signature), labCol = NA, main = &#39; \n Training Set \n Significant features for Copy Number Data&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+legend(&quot;topright&quot;, legend = c(&quot;Good moderate&quot;,&quot;Bad moderate&quot;,&quot;Best&quot;,&quot;Worst&quot;),fill =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;), cex = 0.4)</code></pre>
 <p><img src="AnalysisOfResults1_files/figure-html/unnamed-chunk-1-1.png" width="960" /></p>
 </div>
 <div id="test-set" class="section level2">
@@ -465,16 +472,15 @@ CN_pval.new &lt;- names(table.adj.new[order(table.adj.new)[1:50]])
 CN_signature.new&lt;-CopyNumber_TestSet[CN_pval.new]
 
 par(mar=c(1,1,1,1))
-
-CN_signature.new$sbc.labels&lt;-c.sbc.new
+</code></pre>
+<pre class="r"><code>CN_signature.new$sbc.labels&lt;-c.sbc.new
 CN_signature.new&lt;-CN_signature.new[order(CN_signature.new$sbc.labels),]
 ordered_labels.new&lt;-CN_signature.new$sbc.labels
 CN_signature.new$sbc.labels&lt;-NULL
-</code></pre>
-<pre class="r"><code>hmcols&lt;-colorRampPalette(c(&quot;green&quot;,&quot;black&quot;,&quot;red&quot;))(256)
-heatmap.2(x = t(CN_signature.new), Rowv =TRUE ,Colv = FALSE, dendrogram = c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;green&quot;,&quot;red&quot;,&quot;blue&quot;,&quot;orange&quot;)[ordered_labels.new], labRow = colnames(CN_signature.new), labCol = NA, main = &#39; \n Test Set \n Significant features for Copy Number Data&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
-legend(&quot;topright&quot;, legend = c(&quot;Best&quot;,&quot;Good Moderate&quot;,&quot;Bad moderate&quot;,&quot;Worst&quot;),fill = c(&quot;Green&quot;,&quot;Blue&quot;,&quot;Orange&quot;,&quot;Red&quot;), cex = 0.4)</code></pre>
-<p><img src="AnalysisOfResults1_files/figure-html/unnamed-chunk-2-1.png" width="960" /></p>
+hmcols&lt;-brewer.pal(9,&quot;RdBu&quot;)
+heatmap.2(x = t(CN_signature.new), Rowv =TRUE ,Colv = FALSE, dendrogram = c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;)[ordered_labels.new], labRow = colnames(CN_signature.new), labCol = NA, main = &#39; \n Test Set \n Significant features \n Copy Number Data&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+legend(&quot;topright&quot;, legend = c(&quot;Good moderate&quot;,&quot;Bad moderate&quot;,&quot;Best&quot;,&quot;Worst&quot;),fill =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;), cex = 0.4)</code></pre>
+<p><img src="AnalysisOfResults1_files/figure-html/heatmap%20of%20CN%20for%20test%20set-1.png" width="960" /></p>
 </div>
 </div>
 <div id="mrna-microarray-data" class="section level1">
@@ -511,11 +517,18 @@ c.final.order &lt;- c.final[order.train$ix]
 order.2 &lt;- c(which(c.final.order==1),which(c.final.order==3),which(c.final.order==4),which(c.final.order==2))
 Y.order.2 &lt;- Y.order[order.2,]
 c.final.order.2 &lt;- c.final.order[order.2]
-hmcols&lt;-colorRampPalette(c(&quot;green&quot;,&quot;black&quot;,&quot;red&quot;))(256)
 
-heatmap.2(x = t(Y.order.2), Rowv =TRUE ,Colv = FALSE, dendrogram = c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;green&quot;,&quot;red&quot;,&quot;blue&quot;,&quot;orange&quot;)[c.final.order.2], labRow = colnames(Y.order.2), labCol = NA, main = &#39; \n Training Set \n Gene Sets SBC Signature&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
-legend(&quot;topright&quot;, legend = c(&quot;Best&quot;,&quot;Good Moderate&quot;,&quot;Bad moderate&quot;,&quot;Worst&quot;),fill = c(&quot;Green&quot;,&quot;Blue&quot;,&quot;Orange&quot;,&quot;Red&quot;), cex = 0.4)</code></pre>
-<p><img src="AnalysisOfResults1_files/figure-html/Heatmap%20training%20set-1.png" width="960" /></p>
+hmcols&lt;-colorRampPalette(brewer.pal(11,&quot;RdBu&quot;))(256)
+pdf(file=&quot;AnalysisOfResults1_files/SBC_signature_TrainingSet.pdf&quot;,width=400,height=350)
+heatmap.2(x = t(Y.order.2), Rowv =TRUE ,Colv = FALSE, dendrogram = c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;)[c.final.order.2], labRow = colnames(Y.order.2), labCol = NA, main = &#39; \n Training Set \n Gene Sets SBC Signature&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+legend(&quot;topright&quot;, legend = c(&quot;Good moderate&quot;,&quot;Bad moderate&quot;,&quot;Best&quot;,&quot;Worst&quot;),fill =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;), cex = 0.4)
+dev.off()
+## quartz_off_screen 
+##                14</code></pre>
+<pre class="r"><code>hmcols&lt;-colorRampPalette(brewer.pal(11,&quot;RdBu&quot;))(256)
+heatmap.2(x = t(Y.order.2), Rowv =TRUE ,Colv = FALSE, dendrogram = c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;)[c.final.order.2], labRow = colnames(Y.order.2), labCol = NA, main = &#39; \n Training Set \n Gene Sets SBC Signature&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+legend(&quot;topright&quot;, legend = c(&quot;Good moderate&quot;,&quot;Bad moderate&quot;,&quot;Best&quot;,&quot;Worst&quot;),fill =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;), cex = 0.4)</code></pre>
+<p><img src="AnalysisOfResults1_files/figure-html/unnamed-chunk-2-1.png" width="960" /></p>
 </div>
 <div id="test-set-1" class="section level3">
 <h3>Test set</h3>
@@ -548,9 +561,9 @@ order.2.new &lt;- c(which(c.final.order.new==1),which(c.final.order.new==3),whic
 Y.order.2.new &lt;- Y.order.new[order.2.new,]
 c.final.order.2.new &lt;- c.final.order.new[order.2.new]
 
-hmcols&lt;-colorRampPalette(c(&quot;green&quot;,&quot;black&quot;,&quot;red&quot;))(256)
-heatmap.2(x = t(Y.order.2.new), Rowv =TRUE ,Colv = FALSE, dendrogram = c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;green&quot;,&quot;red&quot;,&quot;blue&quot;,&quot;orange&quot;)[c.final.order.2.new], labRow = colnames(Y.order.2.new), labCol = NA, main = &#39; \n Testing Set \n 47 Gene DPMM signature&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
-legend(&quot;topright&quot;, legend = c(&quot;Best&quot;,&quot;Good Moderate&quot;,&quot;Bad moderate&quot;,&quot;Worst&quot;),fill = c(&quot;Green&quot;,&quot;Blue&quot;,&quot;Orange&quot;,&quot;Red&quot;), cex = 0.4)</code></pre>
+hmcols&lt;-colorRampPalette(brewer.pal(11,&quot;RdBu&quot;))(256)
+heatmap.2(x = t(Y.order.2.new), Rowv =TRUE ,Colv = FALSE, dendrogram = c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;)[c.final.order.2.new], labRow = colnames(Y.order.2.new), labCol = NA, main = &#39; \n Testing Set \n 47 Gene DPMM signature&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+legend(&quot;topright&quot;, legend = c(&quot;Good moderate&quot;,&quot;Bad moderate&quot;,&quot;Best&quot;,&quot;Worst&quot;),fill =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;), cex = 0.4)</code></pre>
 <p><img src="AnalysisOfResults1_files/figure-html/unnamed-chunk-3-1.png" width="960" /></p>
 </div>
 </div>
@@ -558,6 +571,8 @@ legend(&quot;topright&quot;, legend = c(&quot;Best&quot;,&quot;Good Moderate&quo
 <h2>Differential expression</h2>
 <div id="training-set-2" class="section level3">
 <h3>Training set</h3>
+<div id="significant-mrna-overall" class="section level4">
+<h4>Significant mRNA overall</h4>
 <pre class="r"><code>##### Load the SBC Labels
 cluster  &lt;- factor(c.sbc)
 ##### Create the design matrix with these labels
@@ -578,9 +593,59 @@ mRNA.matrix.train&lt;-mRNA.matrix.train[order(mRNA.matrix.train$sbc.labels),]
 ordered_labels&lt;-mRNA.matrix.train$sbc.labels
 mRNA.matrix.train$sbc.labels&lt;-NULL
 
-heatmap.2(x = t(mRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;green&quot;,&quot;red&quot;,&quot;blue&quot;,&quot;orange&quot;)[ordered_labels], labRow = colnames(mRNA.matrix.train), labCol = NA, main = &#39; \n Training Set \n Differentially expressed mRNA transcripts&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
-legend(&quot;topright&quot;, legend = c(&quot;Best&quot;,&quot;Good Moderate&quot;,&quot;Bad moderate&quot;,&quot;Worst&quot;),fill = c(&quot;Green&quot;,&quot;Blue&quot;,&quot;Orange&quot;,&quot;Red&quot;), cex = 0.4)</code></pre>
-<p><img src="AnalysisOfResults1_files/figure-html/differential%20expression%20of%20training%20set-1.png" width="960" /></p>
+hmcols&lt;-colorRampPalette(brewer.pal(11,&quot;RdBu&quot;))(256)
+pdf(file=&quot;AnalysisOfResults1_files/DEmRNA_TrainingSet.pdf&quot;,width=400,height=350)
+heatmap.2(x = t(mRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;)[ordered_labels], labRow = colnames(mRNA.matrix.train), labCol = NA, main = &#39; \n Training Set \n DE mRNA transcripts&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+legend(&quot;topright&quot;, legend = c(&quot;Good moderate&quot;,&quot;Bad moderate&quot;,&quot;Best&quot;,&quot;Worst&quot;),fill =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;), cex = 0.4)
+dev.off()
+## quartz_off_screen 
+##                14</code></pre>
+<pre class="r"><code>heatmap.2(x = t(mRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;)[ordered_labels], labRow = colnames(mRNA.matrix.train), labCol = NA, main = &#39; \n Training Set \n DE mRNA transcripts&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+legend(&quot;topright&quot;, legend = c(&quot;Good moderate&quot;,&quot;Bad moderate&quot;,&quot;Best&quot;,&quot;Worst&quot;),fill =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;), cex = 0.4)</code></pre>
+<p><img src="AnalysisOfResults1_files/figure-html/unnamed-chunk-4-1.png" width="960" /></p>
+</div>
+<div id="comparison-between-de-mrna-transcripts-and-sbc-signature" class="section level4">
+<h4>Comparison between DE mRNA transcripts and SBC signature</h4>
+<pre class="r"><code>intersect(signature.sbc,topmRNA.train)
+## character(0)</code></pre>
+</div>
+<div id="significant-mrna-in-pairwise-cluster-comparison" class="section level4">
+<h4>Significant mRNA in pairwise cluster comparison</h4>
+<pre class="r"><code>##### Load the SBC Labels
+cluster  &lt;- factor(c.sbc)
+##### Create the design matrix with these labels
+design&lt;- model.matrix( ~0+cluster)
+fit&lt;-lmFit(t(mRNAArray_TrainingSet) , design= design)
+
+##### You can also define a contrast matrix which only looks at cluster specific contrasts
+cont.matrix &lt;- makeContrasts(Cluster1vsCluster2 = cluster1 - cluster2,Cluster1vsCluster3=cluster1 - cluster3,Cluster1vsCluster4=cluster1 - cluster4,Cluster2vsCluster3= cluster2 - cluster3,
+Cluster2vsCluster4=cluster2 - cluster4,Cluster3vsCluster4=cluster3 - cluster4,levels= design)
+
+###### Fit limma model
+fit.2 &lt;- contrasts.fit(fit, contrasts = cont.matrix)
+fit.2 &lt;- eBayes(fit.2, trend= TRUE)
+###### Look for DE table
+topmRNA.train&lt;-rownames(topTable(fit.2,number=50, p.val=0.05))
+
+mRNA.matrix.train&lt;-mRNAArray_TrainingSet[,topmRNA.train]
+mRNA.matrix.train$sbc.labels&lt;-c.sbc
+mRNA.matrix.train&lt;-mRNA.matrix.train[order(mRNA.matrix.train$sbc.labels),]
+ordered_labels&lt;-mRNA.matrix.train$sbc.labels
+mRNA.matrix.train$sbc.labels&lt;-NULL
+
+#### Significant mRNA in pairwise cluster comparison
+par(mar=c(1,1,1,1))
+pairwise.mRNA.train&lt;-as.matrix(topTable(fit.2,number = 20,adjust.method=&quot;BH&quot;)[,1:6])
+hmcols&lt;-colorRampPalette(brewer.pal(11,&quot;RdBu&quot;))(256)
+pdf(file=&quot;AnalysisOfResults1_files/DEmRNA_pairwise_TrainingSet.pdf&quot;,width=400,height=350)
+heatmap.2(x = pairwise.mRNA.train,Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;, labRow =rownames(pairwise.mRNA.train), labCol = colnames(pairwise.mRNA.train), main = &#39; \n Pairwise cluster comparison \n Significant mRNA for the Training Set&#39;, col =hmcols, cexRow =0.40,cexCol = 0.7, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;, margins=c(6,10))
+dev.off()
+## quartz_off_screen 
+##                14</code></pre>
+<pre class="r"><code>hmcols&lt;-colorRampPalette(brewer.pal(11,&quot;RdBu&quot;))(256)
+heatmap.2(x = pairwise.mRNA.train,Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;, labRow =rownames(pairwise.mRNA.train), labCol = colnames(pairwise.mRNA.train), main = &#39; \n Pairwise cluster comparison \n Significant mRNA for the Training Set&#39;, col =hmcols, cexRow =0.40,cexCol = 0.7, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;, margins=c(6,10))</code></pre>
+<p><img src="AnalysisOfResults1_files/figure-html/unnamed-chunk-5-1.png" width="960" /></p>
+</div>
 </div>
 <div id="test-set-2" class="section level3">
 <h3>Test set</h3>
@@ -604,14 +669,20 @@ mRNA.matrix.test&lt;-mRNA.matrix.test[order(mRNA.matrix.test$sbc.labels),]
 ordered_labels.new&lt;-mRNA.matrix.test$sbc.labels
 mRNA.matrix.test$sbc.labels&lt;-NULL
 
-heatmap.2(x = t(mRNA.matrix.test),Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;green&quot;,&quot;red&quot;,&quot;blue&quot;,&quot;orange&quot;)[ordered_labels.new], labRow = colnames(mRNA.matrix.test), labCol = NA, main = &#39; \n Test Set \n Differentially expressed mRNA transcripts&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
-legend(&quot;topright&quot;, legend = c(&quot;Best&quot;,&quot;Good Moderate&quot;,&quot;Bad moderate&quot;,&quot;Worst&quot;),fill = c(&quot;Green&quot;,&quot;Blue&quot;,&quot;Orange&quot;,&quot;Red&quot;), cex = 0.4)</code></pre>
+hmcols&lt;-colorRampPalette(brewer.pal(11,&quot;RdBu&quot;))(256)
+heatmap.2(x = t(mRNA.matrix.test),Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;)[ordered_labels.new], labRow = colnames(mRNA.matrix.test), labCol = NA, main = &#39; \n Test Set \n Differentially expressed mRNA transcripts&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+legend(&quot;topright&quot;, legend = c(&quot;Good moderate&quot;,&quot;Bad moderate&quot;,&quot;Best&quot;,&quot;Worst&quot;),fill =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;), cex = 0.4)</code></pre>
 <p><img src="AnalysisOfResults1_files/figure-html/differential%20expression%20of%20test%20set-1.png" width="960" /></p>
+<div id="comparison-between-de-mrna-transcripts-and-sbc-signature-1" class="section level4">
+<h4>Comparison between DE mRNA transcripts and SBC signature</h4>
+<pre class="r"><code>intersect(signature.sbc,topmRNA.test)
+## character(0)</code></pre>
 </div>
 </div>
 </div>
-<div id="feature-importance" class="section level1">
-<h1>Feature Importance</h1>
+</div>
+<div id="sbc-feature-importance" class="section level1">
+<h1>SBC Feature Importance</h1>
 <pre class="r"><code>range01 &lt;- function(x){(x-min(x))/(max(x)-min(x))}
 
 ##### Visualization of the Results ###############################
@@ -663,14 +734,23 @@ sum.diff24.sc &lt;- (1/Nps) * (sum.diff24)/(diag(W))
 cluste24 &lt;- range01(sum.diff24.sc)
 
 ####################### Feature Signficance matrix
-
+pdf(file=&quot;AnalysisOfResults1_files/FeatureImportance_TrainingSet.pdf&quot;,width=400,height=350)
 cluste &lt;- cbind(cluste12,cluste23,cluste34, cluste41, cluste13, cluste24)
 heatmapdata &lt;- cluste
 rownames(heatmapdata) &lt;-  colnames(Y)
 colnames(heatmapdata) &lt;- c(&quot;1 v s2&quot;,&quot;2 vs 3&quot;,&quot;3 v s4&quot;,&quot;4 vs 1&quot;,&quot;1 vs 3&quot;,&quot;2 vs 4&quot;)
 hmcols&lt;-colorRampPalette(c(&quot;white&quot;,&quot;black&quot;))(128)
+heatmap.2(heatmapdata , margins=c(6,10),col = hmcols, main = &quot;SBC signature \n Feature Importance \n GBM &quot;, cexCol = 0.85, cexRow = 0.7, Rowv = TRUE, Colv = TRUE, trace = &quot;none&quot;, xlab = &quot;Clusters&quot;) 
+dev.off()
+## quartz_off_screen 
+##                14</code></pre>
+<pre class="r"><code>cluste &lt;- cbind(cluste12,cluste23,cluste34, cluste41, cluste13, cluste24)
+heatmapdata &lt;- cluste
+rownames(heatmapdata) &lt;-  colnames(Y)
+colnames(heatmapdata) &lt;- c(&quot;1 v s2&quot;,&quot;2 vs 3&quot;,&quot;3 v s4&quot;,&quot;4 vs 1&quot;,&quot;1 vs 3&quot;,&quot;2 vs 4&quot;)
+hmcols&lt;-colorRampPalette(c(&quot;white&quot;,&quot;black&quot;))(128)
 heatmap.2(heatmapdata , margins=c(6,10),col = hmcols, main = &quot;SBC signature \n Feature Importance \n GBM &quot;, cexCol = 0.85, cexRow = 0.7, Rowv = TRUE, Colv = TRUE, trace = &quot;none&quot;, xlab = &quot;Clusters&quot;) </code></pre>
-<p><img src="AnalysisOfResults1_files/figure-html/Feature%20importance-1.png" width="960" /></p>
+<p><img src="AnalysisOfResults1_files/figure-html/unnamed-chunk-6-1.png" width="960" /></p>
 </div>
 <div id="association-between-verhaak-labels-and-sbc-labels" class="section level1">
 <h1>Association between Verhaak labels and SBC labels</h1>
@@ -709,8 +789,7 @@ plotmiRNA.train</code></pre>
 <p><img src="AnalysisOfResults1_files/figure-html/PCA%20of%20miRNA%20data%20for%20training-1.png" width="960" /></p>
 <pre class="r"><code>#Load data
 miRNA_TestSet &lt;- read_csv(&quot;/Volumes/GoogleDrive/My Drive/Documents/GitHub//Data/Second_data_split/TestSet/miRNA_TestSet.csv&quot;)
-miRNA_TestSet$X1&lt;-NULL
-</code></pre>
+miRNA_TestSet$X1&lt;-NULL</code></pre>
 </div>
 <div id="test-set-3" class="section level3">
 <h3>Test set</h3>
@@ -763,8 +842,8 @@ p.targets.test</code></pre>
 <h2>Differential expression</h2>
 <div id="training-set-5" class="section level3">
 <h3>Training set</h3>
-<div id="heatmap-1" class="section level4">
-<h4>Heatmap</h4>
+<div id="significant-mirna-overall" class="section level4">
+<h4>Significant miRNA overall</h4>
 <pre class="r"><code>##### Load the SBC Labels
 cluster  &lt;- factor(c.sbc)
 ##### Create the design matrix with these labels
@@ -779,7 +858,7 @@ Cluster2vsCluster4=cluster2 - cluster4,Cluster3vsCluster4=cluster3 - cluster4,le
 fit.2 &lt;- contrasts.fit(fit, contrasts = cont.matrix)
 fit.2 &lt;- eBayes(fit.2, trend= TRUE)
 ###### Look for DE table
-topmiRNA.train&lt;-rownames(topTable(fit.2,number=50, p.val=0.1))
+topmiRNA.train&lt;-rownames(topTable(fit.2,number=50, p.val=0.05))
 
 miRNA.matrix.train&lt;-miRNA_TrainingSet[,topmiRNA.train]
 miRNA.matrix.train$sbc.labels&lt;-c.sbc
@@ -789,24 +868,62 @@ miRNA.matrix.train$sbc.labels&lt;-NULL
 
 par(mar=c(1,1,1,1))
 
-hmcols&lt;-colorRampPalette(c(&quot;green&quot;,&quot;black&quot;,&quot;red&quot;))(256)
-heatmap.2(x = t(miRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;green&quot;,&quot;red&quot;,&quot;blue&quot;,&quot;orange&quot;)[ordered_labels], labRow = colnames(miRNA.matrix.train), labCol = NA, main = &#39; \n Training Set \n Significant miRNA transcripts&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
-legend(&quot;topright&quot;, legend = c(&quot;Best&quot;,&quot;Good Moderate&quot;,&quot;Bad moderate&quot;,&quot;Worst&quot;),fill = c(&quot;Green&quot;,&quot;Blue&quot;,&quot;Orange&quot;,&quot;Red&quot;), cex = 0.4)</code></pre>
-<p><img src="AnalysisOfResults1_files/figure-html/miRNA%20differential%20expression%20%20of%20training%20set-1.png" width="960" /></p>
+pdf(file=&quot;AnalysisOfResults1_files/DEmiRNA_TrainingSet.pdf&quot;,width=400,height=350)
+hmcols&lt;-colorRampPalette(brewer.pal(11,&quot;RdBu&quot;))(256)
+heatmap.2(x = t(miRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;)[ordered_labels], labRow = colnames(miRNA.matrix.train), labCol = NA, main = &#39; \n Training Set \n Significant miRNA transcripts&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+legend(&quot;topright&quot;, legend = c(&quot;Good moderate&quot;,&quot;Bad moderate&quot;,&quot;Best&quot;,&quot;Worst&quot;),fill =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;), cex = 0.4)
+dev.off
+## function (which = dev.cur()) 
+## {
+##     if (which == 1) 
+##         stop(&quot;cannot shut down device 1 (the null device)&quot;)
+##     .External(C_devoff, as.integer(which))
+##     dev.cur()
+## }
+## &lt;bytecode: 0x107201080&gt;
+## &lt;environment: namespace:grDevices&gt;</code></pre>
+<pre class="r"><code>
+hmcols&lt;-colorRampPalette(brewer.pal(11,&quot;RdBu&quot;))(256)
+heatmap.2(x = t(miRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;)[ordered_labels], labRow = colnames(miRNA.matrix.train), labCol = NA, main = &#39; \n Training Set \n Significant miRNA transcripts&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+legend(&quot;topright&quot;, legend = c(&quot;Good moderate&quot;,&quot;Bad moderate&quot;,&quot;Best&quot;,&quot;Worst&quot;),fill =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;), cex = 0.4)</code></pre>
+<p><img src="AnalysisOfResults1_files/figure-html/unnamed-chunk-7-1.png" width="960" /></p>
 </div>
-<div id="significant-features-of-the-sbc-model" class="section level4">
-<h4>Significant features of the SBC model</h4>
+<div id="significant-mirna-in-pairwise-cluster-comparison" class="section level4">
+<h4>Significant miRNA in pairwise cluster comparison</h4>
 <pre class="r"><code>par(mar=c(1,1,1,1))
 pairwise.miRNA.train&lt;-as.matrix(topTable(fit.2,number = 20,adjust.method=&quot;BH&quot;)[,1:6])
-#hmcols&lt;-colorRampPalette(c(&quot;green&quot;,&quot;black&quot;,&quot;red&quot;))(256)
-heatmap.2(x = pairwise.miRNA.train,Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;, labRow =rownames(pairwise.miRNA.train), labCol = colnames(pairwise.miRNA.train), main = &#39; \n Training Set \n Significant miRNA transcripts&#39;, col =hmcols, cexRow =0.40,cexCol = 0.4, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;, margins=c(6,10))</code></pre>
-<p><img src="AnalysisOfResults1_files/figure-html/Significant%20miRNA%20transcript%20in%20pairwise%20comparisons%20for%20training-1.png" width="960" /></p>
+pdf(file=&quot;AnalysisOfResults1_files/DEmiRNA_pairwise_TrainingSet.pdf&quot;,width=400,height=350)
+hmcols&lt;-colorRampPalette(brewer.pal(11,&quot;RdBu&quot;))(256)
+heatmap.2(x = pairwise.miRNA.train,Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;, labRow =rownames(pairwise.miRNA.train), labCol = colnames(pairwise.miRNA.train), main = &#39; \n Pairwise cluster comparison \n Significant miRNA for the Training Set&#39;, col =hmcols, cexRow =0.40,cexCol = 0.7, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;, margins=c(6,10))
+dev.off()
+## quartz_off_screen 
+##                14</code></pre>
+<pre class="r"><code>hmcols&lt;-colorRampPalette(brewer.pal(11,&quot;RdBu&quot;))(256)
+heatmap.2(x = pairwise.miRNA.train,Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;, labRow =rownames(pairwise.miRNA.train), labCol = colnames(pairwise.miRNA.train), main = &#39; \n Pairwise cluster comparison \n Significant miRNA for the Training Set&#39;, col =hmcols, cexRow =0.40,cexCol = 0.7, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;, margins=c(6,10))</code></pre>
+<p><img src="AnalysisOfResults1_files/figure-html/unnamed-chunk-8-1.png" width="960" /></p>
+</div>
+<div id="pca-of-differentially-expressed-mirna-targets" class="section level4">
+<h4>PCA of differentially expressed miRNA targets</h4>
+<pre class="r"><code>#Find all the validated targets
+result.de.train&lt;-list()
+try(example2 &lt;- get_multimir(mirna = topmiRNA.train, summary = TRUE))
+## Searching mirecords ...
+## Searching mirtarbase ...
+## Searching tarbase ...
+result.de.train &lt;- unlist(unique(example2@data$target_symbol))
+
+tokeep&lt;-colnames(mRNAArray_TrainingSet)[colnames(mRNAArray_TrainingSet) %in% result.de.train]
+DEtargets.train.pca&lt;-as.data.frame(prcomp(mRNAArray_TrainingSet[,tokeep],scale=TRUE, center= TRUE)$x[,1:2])
+DEtargets.train.pca$SBC_labels&lt;-c.sbc
+plotDEtargets.train &lt;- ggplot(miRNA.train.pca, aes(x=DEtargets.train.pca$PC1, y= DEtargets.train.pca$PC2, colour= as.factor(SBC_labels))) + ggtitle(&quot;PCA \n Validated DE miRNA targets \n Training Set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;SBC_labels&quot;) +scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;,&quot;#858687&quot;))
+plotDEtargets.train</code></pre>
+<p><img src="AnalysisOfResults1_files/figure-html/PCA%20of%20differentially%20expressed%20miRNA%20for%20the%20training-1.png" width="960" /></p>
 </div>
 </div>
 <div id="test-set-5" class="section level3">
 <h3>Test set</h3>
-<div id="heatmap-2" class="section level4">
-<h4>Heatmap</h4>
+<div id="significant-mirna-overall-1" class="section level4">
+<h4>Significant miRNA overall</h4>
 <pre class="r"><code>##### Load the SBC Labels
 cluster.new  &lt;- factor(c.sbc.new)
 ##### Create the design matrix with these labels
@@ -831,25 +948,116 @@ miRNA.matrix.test$sbc.labels&lt;-NULL
 
 par(mar=c(1,1,1,1))
 
-hmcols&lt;-colorRampPalette(c(&quot;green&quot;,&quot;black&quot;,&quot;red&quot;))(256)
-heatmap.2(x = t(miRNA.matrix.test),Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;green&quot;,&quot;red&quot;,&quot;blue&quot;,&quot;orange&quot;)[ordered_labels], labRow = colnames(miRNA.matrix.test), labCol = NA, main = &#39; \n Test Set \n Significant miRNA transcripts&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
-legend(&quot;topright&quot;, legend = c(&quot;Best&quot;,&quot;Good Moderate&quot;,&quot;Bad moderate&quot;,&quot;Worst&quot;),fill = c(&quot;Green&quot;,&quot;Blue&quot;,&quot;Orange&quot;,&quot;Red&quot;), cex = 0.4)</code></pre>
+hmcols&lt;-colorRampPalette(brewer.pal(11,&quot;RdBu&quot;))(256)
+heatmap.2(x = t(miRNA.matrix.test),Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;)[ordered_labels], labRow = colnames(miRNA.matrix.test), labCol = NA, main = &#39; \n Test Set \n Significant miRNA transcripts&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+legend(&quot;topright&quot;, legend = c(&quot;Good moderate&quot;,&quot;Bad moderate&quot;,&quot;Best&quot;,&quot;Worst&quot;),fill =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;), cex = 0.4)</code></pre>
 <p><img src="AnalysisOfResults1_files/figure-html/miRNA%20differential%20expression%20%20of%20test%20set-1.png" width="960" /></p>
 </div>
-<div id="significant-features" class="section level4">
-<h4>Significant features</h4>
+<div id="significant-mirna-in-pairwise-cluster-comparison-1" class="section level4">
+<h4>Significant miRNA in pairwise cluster comparison</h4>
 <pre class="r"><code>par(mar=c(1,1,1,1))
 pairwise.miRNA.test&lt;-as.matrix(topTable(fit.2.new,number = 20,adjust.method=&quot;BH&quot;)[,1:6])
-#hmcols&lt;-colorRampPalette(c(&quot;green&quot;,&quot;black&quot;,&quot;red&quot;))(256)
-heatmap.2(x = pairwise.miRNA.test,Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;, labRow =rownames(pairwise.miRNA.test), labCol = colnames(pairwise.miRNA.test), main = &#39; \n Test Set \n Significant miRNA transcripts&#39;, col =hmcols, cexRow =0.40,cexCol = 0.4, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;, margins=c(6,10))</code></pre>
+hmcols&lt;-colorRampPalette(brewer.pal(11,&quot;RdBu&quot;))(256)
+pdf(file=&quot;AnalysisOfResults1_files/DEmiRNA_pairwise_TestSet.pdf&quot;,width=400,height=350)
+heatmap.2(x = pairwise.miRNA.test,Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;, labRow =rownames(pairwise.miRNA.test), labCol = colnames(pairwise.miRNA.test), main = &#39; \n Pairwise cluster comparison \n Significant miRNA for the Test Set&#39;, col =hmcols, cexRow =0.40,cexCol = 0.7, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;, margins=c(6,10))
+dev.off()
+## quartz_off_screen 
+##                14
+heatmap.2(x = pairwise.miRNA.test,Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;, labRow =rownames(pairwise.miRNA.test), labCol = colnames(pairwise.miRNA.test), main = &#39; \n Pairwise cluster comparison \n Significant miRNA for the Test Set&#39;, col =hmcols, cexRow =0.40,cexCol = 0.7, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;, margins=c(6,10))</code></pre>
 <p><img src="AnalysisOfResults1_files/figure-html/Significant%20miRNA%20transcript%20in%20pairwise%20comparisons%20for%20testing-1.png" width="960" /></p>
 </div>
+<div id="pca-of-differentially-expressed-mirna-targets-1" class="section level4">
+<h4>PCA of differentially expressed miRNA targets</h4>
+<pre class="r"><code>#Find all the validated targets
+result.de.test&lt;-list()
+try(example2 &lt;- get_multimir(mirna = topmiRNA.test, summary = TRUE))
+## Searching mirecords ...
+## Searching mirtarbase ...
+## Searching tarbase ...
+result.de.test &lt;- unlist(unique(example2@data$target_symbol))
+
+tokeep&lt;-colnames(mRNAArray_TestSet)[colnames(mRNAArray_TestSet) %in% result.de.test]
+DEtargets.test.pca&lt;-as.data.frame(prcomp(mRNAArray_TestSet[,tokeep],scale=TRUE, center= TRUE)$x[,1:2])
+DEtargets.test.pca$SBC_labels&lt;-c.sbc.new
+plotDEtargets.test &lt;- ggplot(miRNA.test.pca, aes(x=DEtargets.test.pca$PC1, y= DEtargets.test.pca$PC2, colour= as.factor(SBC_labels))) + ggtitle(&quot;PCA \n Validated DE miRNA targets \n Test Set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;SBC_labels&quot;) +scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;,&quot;#858687&quot;))
+plotDEtargets.test</code></pre>
+<p><img src="AnalysisOfResults1_files/figure-html/PCA%20of%20differentially%20expressed%20miRNA%20for%20the%20test-1.png" width="960" /></p>
 </div>
+</div>
+</div>
+</div>
+<div id="somatic-mutation" class="section level1">
+<h1>Somatic Mutation</h1>
+<pre class="r"><code>SomaticMutation_TrainingSet &lt;- read_csv(&quot;/Volumes/GoogleDrive/My Drive/Documents/GitHub/Data/Second_data_split/TrainingSet/SomaticMutation_TrainingSet.csv&quot;)
+SomaticMutation_TestSet &lt;- read_csv(&quot;/Volumes/GoogleDrive/My Drive/Documents/GitHub/Data/Second_data_split/TestSet/SomaticMutation_TestSet.csv&quot;)</code></pre>
+<div id="training-set-6" class="section level2">
+<h2>Training set</h2>
+<pre class="r"><code>available.train&lt;-Clinical_TrainingSet$X1 %in% SomaticMutation_TrainingSet$X1
+SomaticMutation_TrainingSet$X1&lt;-NULL
+SM.c.sbc&lt;-c.sbc[available.train]
+SomaticMutation_TrainingSet$sbc.labels&lt;-SM.c.sbc
+table.SM&lt;-list()
+for (i in names(SomaticMutation_TrainingSet)){
+  if (i==&quot;sbc.labels&quot; | length(table(SomaticMutation_TrainingSet[[i]]))&lt;3){
+    next
+  }else{
+  table.SM[[i]]&lt;-chisq.test(table(SomaticMutation_TrainingSet$sbc.labels,SomaticMutation_TrainingSet[[i]]))$p.value
+  }
+}
+tableSM.adj &lt;- p.adjust(unlist(table.SM), method = &quot;BH&quot;)
+SM_pval &lt;- names(tableSM.adj[order(tableSM.adj)[1:19]]) 
+SM_signature&lt;-SomaticMutation_TrainingSet[SM_pval]
+
+par(mar=c(1,1,1,1))
+
+SM_signature$sbc.labels&lt;-SM.c.sbc
+SM_signature&lt;-SM_signature[order(SM_signature$sbc.labels),]
+ordered_labels&lt;-SM_signature$sbc.labels
+SM_signature$sbc.labels&lt;-NULL</code></pre>
+<pre class="r"><code>hmcols&lt;-colorRampPalette(brewer.pal(11,&quot;RdBu&quot;))(13)
+pdf(file=&quot;AnalysisOfResults1_files/CopyNumber_TrainingSet.pdf&quot;,width=400,height=350)
+heatmap.2(x = t(SM_signature), Rowv =TRUE ,Colv = FALSE, dendrogram = c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;)[ordered_labels], labRow = colnames(SM_signature), labCol = NA, main = &#39; \n Training Set \n Significant features \n for Copy Number Data&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+legend(&quot;topright&quot;, legend = c(&quot;Good moderate&quot;,&quot;Bad moderate&quot;,&quot;Best&quot;,&quot;Worst&quot;),fill =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;), cex = 0.4)
+dev.off()
+## quartz_off_screen 
+##                14</code></pre>
+<pre class="r"><code>heatmap.2(x = t(SM_signature), Rowv =TRUE ,Colv = FALSE, dendrogram = c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;)[ordered_labels], labRow = colnames(SM_signature), labCol = NA, main = &#39; \n Training Set \n Significant features \n for Copy Number Data&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+legend(&quot;topright&quot;, legend = c(&quot;Good moderate&quot;,&quot;Bad moderate&quot;,&quot;Best&quot;,&quot;Worst&quot;),fill =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;), cex = 0.4)</code></pre>
+<p><img src="AnalysisOfResults1_files/figure-html/unnamed-chunk-9-1.png" width="960" /></p>
+</div>
+<div id="test-set-6" class="section level2">
+<h2>Test set</h2>
+<pre class="r"><code>available.test&lt;-Clinical_TestSet$X1 %in% SomaticMutation_TestSet$X1
+SomaticMutation_TestSet$X1&lt;-NULL
+SM.c.sbc.new&lt;-c.sbc.new[available.test]
+SomaticMutation_TestSet$sbc.labels&lt;-SM.c.sbc.new
+table.SM.new&lt;-list()
+for (i in names(SomaticMutation_TestSet)){
+  if (i==&quot;sbc.labels&quot; | length(table(SomaticMutation_TestSet[[i]]))&lt;3){
+    next
+  }else{
+  table.SM.new[[i]]&lt;-chisq.test(table(SomaticMutation_TestSet$sbc.labels,SomaticMutation_TestSet[[i]]))$p.value
+  }
+}
+tableSM.adj.new &lt;- p.adjust(unlist(table.SM.new), method = &quot;BH&quot;)
+SM_pval.new &lt;- names(tableSM.adj.new[order(tableSM.adj.new)[1:50]]) 
+SM_signature.new&lt;-SomaticMutation_TestSet[SM_pval.new]
+
+par(mar=c(1,1,1,1))
+
+SM_signature.new$sbc.labels&lt;-SM.c.sbc.new
+SM_signature.new&lt;-SM_signature.new[order(SM_signature.new$sbc.labels),]
+ordered_labels.new&lt;-SM_signature.new$sbc.labels
+SM_signature.new$sbc.labels&lt;-NULL</code></pre>
+<pre class="r"><code>hmcols&lt;-colorRampPalette(brewer.pal(11,&quot;RdBu&quot;))(13)
+heatmap.2(x = t(SM_signature.new), Rowv =TRUE ,Colv = FALSE, dendrogram = c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;)[ordered_labels.new], labRow = colnames(SM_signature.new), labCol = NA, main = &#39; \n Test Set \n Significant features \n for Copy Number Data&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+legend(&quot;topright&quot;, legend = c(&quot;Good moderate&quot;,&quot;Bad moderate&quot;,&quot;Best&quot;,&quot;Worst&quot;),fill =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;), cex = 0.4)</code></pre>
+<p><img src="AnalysisOfResults1_files/figure-html/heatmap%20test%20set%20SM-1.png" width="960" /></p>
 </div>
 </div>
 <div id="clinical-data" class="section level1">
 <h1>Clinical Data</h1>
-<div id="training-set-6" class="section level2">
+<div id="training-set-7" class="section level2">
 <h2>Training Set</h2>
 <pre class="r"><code>Clinical_TrainingSet$sbc.labels&lt;-c.sbc
 for (i in colnames(Clinical_TrainingSet)){
@@ -905,7 +1113,7 @@ for (i in colnames(Clinical_TrainingSet)){
 ## data:  table(Clinical_TrainingSet[[i]], Clinical_TrainingSet$sbc.labels)
 ## X-squared = 41.136, df = 9, p-value = 4.725e-06</code></pre>
 </div>
-<div id="test-set-6" class="section level2">
+<div id="test-set-7" class="section level2">
 <h2>Test Set</h2>
 <pre class="r"><code>Clinical_TestSet$sbc.labels&lt;-c.sbc.new
 for (i in colnames(Clinical_TestSet)){
@@ -954,6 +1162,20 @@ for (i in colnames(Clinical_TestSet)){
 ## data:  table(Clinical_TestSet[[i]], Clinical_TestSet$sbc.labels)
 ## X-squared = 17.159, df = 6, p-value = 0.008718</code></pre>
 </div>
+</div>
+<div id="posterior-probability-plot" class="section level1">
+<h1>Posterior probability plot</h1>
+<pre class="r"><code>pdf(file=&quot;AnalysisOfResults1_files/PosteriorProbability.pdf&quot;,width=400,height=350)
+par(mar=c(1,1,1,1))
+heatmapdata &lt;- as.data.frame(final.betahat)
+heatmap.2(t(as.matrix(heatmapdata)),dendrogram=&quot;none&quot;, margins=c(6,10), main = &quot;Posterior prob. \n for Selection \n &quot;, cexCol = 0.85, cexRow = 0.7, Rowv = FALSE)
+dev.off()
+## quartz_off_screen 
+##                14</code></pre>
+<pre class="r"><code>par(mar=c(1,1,1,1))
+heatmapdata &lt;- as.data.frame(final.betahat)
+heatmap.2(t(as.matrix(heatmapdata)),dendrogram=&quot;none&quot;, margins=c(6,10), main = &quot;Posterior prob. \n for Selection \n &quot;, cexCol = 0.85, cexRow = 0.7, Rowv = FALSE)</code></pre>
+<p><img src="AnalysisOfResults1_files/figure-html/unnamed-chunk-11-1.png" width="960" /></p>
 </div>
 
 

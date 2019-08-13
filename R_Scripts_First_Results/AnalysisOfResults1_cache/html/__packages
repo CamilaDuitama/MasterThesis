@@ -83,6 +83,11 @@ devtools
 rmarkdown
 tibble
 msigdbr
-flexdashboard
+RColorBrewer
 limma
 multiMiR
+S4Vectors
+IRanges
+AnnotationDbi
+Category
+flexdashboard

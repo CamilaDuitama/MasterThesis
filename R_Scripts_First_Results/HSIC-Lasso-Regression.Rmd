@@ -20,7 +20,7 @@ load("/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/R_Scripts_Firs
 ```
 # Description
 
-HSIC-Lasso feature selection on the mRNA microArray data using the survival data (days_to_death and days_to_last_followup)
+HSIC-Lasso feature selection on the mRNA microArray data using censoring data
 
 # Loading of libraries
 
@@ -208,6 +208,12 @@ p1 <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the
 p1
 
 ```
+```{r}
+png(file="HSIC-Lasso-Regression_files/PCA_Train&Test.pdf",width=400,height=350)
+p1
+dev.off()
+```
+
 
 #Signature calculation
 
@@ -276,6 +282,11 @@ p3 <- ggsurv(surv.fit, plot.cens=FALSE,main = " DPMM \n Kaplan Meier curves for 
 p3
 ```
 
+```{r}
+png(file="HSIC-Lasso-Regression_files/KMC_Train&Test.pdf",width=400,height=350)
+p3
+dev.off()
+```
 ## PCA of the signature genes
 
 ```{r PCA of the signature}
@@ -291,6 +302,12 @@ mRNA.signature.pca$Classes<-classes
 p6 <- ggplot(mRNA.signature.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n SBC Signature mRNAArray Data of GBM") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
 p6
 ```
+```{r}
+png(file="HSIC-Lasso-Regression_files/PCASignature_Train&Test.pdf",width=400,height=350)
+p6
+dev.off()
+```
+
 
 #Training
 
@@ -395,6 +412,11 @@ p4 <- ggsurv(surv.fit,surv.col=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"),plot.c
 p4
 
 ```
+```{r}
+png(file="HSIC-Lasso-Regression_files/KMC_Training.pdf",width=400,height=350)
+p4
+dev.off()
+```
 
 ```{r PCA from training}
 ############ Generating some Plots ##########################
@@ -405,10 +427,22 @@ p5 <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= 
 p5
 ```
 
+```{r}
+png(file="HSIC-Lasso-Regression_files/PCA_Train.pdf",width=400,height=350)
+p5
+dev.off()
+```
+
 ```{r Plot likelihood of burning}
 to_plot<-as.data.frame(likli.burnin)
 p7<-qplot(seq_along(to_plot$likli.burnin), to_plot$likli.burnin)
 p7
+```
+
+```{r}
+png(file="HSIC-Lasso-Regression_files/likburn_Train.pdf",width=400,height=350)
+p7
+dev.off()
 ```
 
 # Testing
@@ -429,7 +463,6 @@ for (i in 1:dim(Y.new)[1]){labels<-append(labels,5)}
 p8 <- ggplot(as.data.frame(pc.unscaled$x), aes(x=pc.unscaled$x[,1], y= pc.unscaled$x[,2], colour= as.factor(labels))) + ggtitle("PCA \n Training set with SBC labels and unlabeled test set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes")+scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#BDBDBF"))
 p8
 ```
-
 
 
 ```{r Testing 2, eval=FALSE}
@@ -513,6 +546,12 @@ p5.new
 
 ```
 
+```{r}
+png(file="HSIC-Lasso-Regression_files/KMC_Test.pdf",width=400,height=350)
+p5.new
+dev.off()
+```
+
 ```{r PCA from testing}
 pc <- prcomp(Y.new,center=TRUE,scale = TRUE)
 pc.pred <- predict(pc,newdata = Y.new)
@@ -520,6 +559,11 @@ p4.new <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colo
 p4.new
 ```
 
+```{r}
+png(file="HSIC-Lasso-Regression_files/PCA_Test.pdf",width=400,height=350)
+p4.new
+dev.off()
+```
 
 ```{r Consolidated clustering results training}
 table(c.sbc) %>%

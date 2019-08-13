@@ -5,7 +5,7 @@ author: "Camila Duitama (Based on Ashar Ahmad's code for the SBC model)"
 date: "30th July 2019"
 params:
   model: "OncogenicGeneSets+PAFT.RData"
-  output_folder : "OncogenicGeneSets+PAFT_files/"
+  output_folder : "AnalysisOfResults_files/"
 
 ---
 ```{r setup, include=FALSE}
@@ -43,29 +43,35 @@ for (i in names(CopyNumber_TrainingSet)){
   }
 }
 table.adj <- p.adjust(unlist(table), method = "fdr")
-CN_pval <- colnames(CopyNumber_TrainingSet)[(table.adj < 0.00000005)] 
+CN_pval <- names(table.adj[order(table.adj)[1:50]]) 
 CN_signature<-CopyNumber_TrainingSet[CN_pval]
 
 par(mar=c(1,1,1,1))
+
+```
+
+```{r heatmap training set copy number data}
 
 CN_signature$sbc.labels<-c.sbc
 CN_signature<-CN_signature[order(CN_signature$sbc.labels),]
 ordered_labels<-CN_signature$sbc.labels
 CN_signature$sbc.labels<-NULL
-
+hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(7)
+pdf(file="AnalysisOfResults_files/CopyNumber_TrainingSet.pdf",width=400,height=350)
+heatmap.2(x = t(CN_signature), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels], labRow = colnames(CN_signature), labCol = NA, main = ' \n Training Set \n Significant features for Copy Number Data', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Good moderate","Bad moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
+dev.off()
 ```
+
 ```{r}
-
-hmcols<-colorRampPalette(c("green","black","red"))(256)
-heatmap.2(x = t(CN_signature), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[ordered_labels], labRow = colnames(CN_signature), labCol = NA, main = ' \n Training Set \n Significant features for Copy Number Data', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
-legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fill = c("Green","Blue","Orange","Red"), cex = 0.4)
-
+hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(7)
+heatmap.2(x = t(CN_signature), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels], labRow = colnames(CN_signature), labCol = NA, main = ' \n Training Set \n Significant features for Copy Number Data', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Good moderate","Bad moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
 ```
-
 
 ## Test set
 
-```{r Chi-Square test for test set, eval= FALSE}
+```{r Chi-Square test for test set, eval=FALSE}
 CopyNumber_TestSet$X1<-NULL
 CopyNumber_TestSet$sbc.labels<-c.sbc.new
 table.new<-list()
@@ -77,22 +83,21 @@ for (i in names(CopyNumber_TestSet)){
   }
 }
 table.adj.new <- p.adjust(unlist(table.new), method = "fdr")
-CN_pval.new <- colnames(CopyNumber_TestSet)[(table.adj.new < 0.00000005)] 
+CN_pval.new <- names(table.adj.new[order(table.adj.new)[1:50]]) 
 CN_signature.new<-CopyNumber_TestSet[CN_pval.new]
 
 par(mar=c(1,1,1,1))
 
+```
+
+```{r heatmap of CN for test set}
 CN_signature.new$sbc.labels<-c.sbc.new
 CN_signature.new<-CN_signature.new[order(CN_signature.new$sbc.labels),]
 ordered_labels.new<-CN_signature.new$sbc.labels
 CN_signature.new$sbc.labels<-NULL
-
-
-```
-```{r}
-hmcols<-colorRampPalette(c("green","black","red"))(256)
-heatmap.2(x = t(CN_signature.new), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[ordered_labels.new], labRow = colnames(CN_signature.new), labCol = NA, main = ' \n Test Set \n Significant features for Copy Number Data', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
-legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fill = c("Green","Blue","Orange","Red"), cex = 0.4)
+hmcols<-brewer.pal(9,"RdBu")
+heatmap.2(x = t(CN_signature.new), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels.new], labRow = colnames(CN_signature.new), labCol = NA, main = ' \n Test Set \n Significant features \n Copy Number Data', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Good moderate","Bad moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
 ```
 
 # mRNA MicroArray Data
@@ -130,11 +135,19 @@ c.final.order <- c.final[order.train$ix]
 order.2 <- c(which(c.final.order==1),which(c.final.order==3),which(c.final.order==4),which(c.final.order==2))
 Y.order.2 <- Y.order[order.2,]
 c.final.order.2 <- c.final.order[order.2]
-hmcols<-colorRampPalette(c("green","black","red"))(256)
 
-heatmap.2(x = t(Y.order.2), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[c.final.order.2], labRow = colnames(Y.order.2), labCol = NA, main = ' \n Training Set \n Gene Sets SBC Signature', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
-legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fill = c("Green","Blue","Orange","Red"), cex = 0.4)
+hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(256)
+pdf(file="AnalysisOfResults_files/SBC_signature_TrainingSet.pdf",width=400,height=350)
+heatmap.2(x = t(Y.order.2), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[c.final.order.2], labRow = colnames(Y.order.2), labCol = NA, main = ' \n Training Set \n Gene Sets SBC Signature', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Good moderate","Bad moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
+dev.off()
 
+```
+
+```{r}
+hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(256)
+heatmap.2(x = t(Y.order.2), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[c.final.order.2], labRow = colnames(Y.order.2), labCol = NA, main = ' \n Training Set \n Gene Sets SBC Signature', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Good moderate","Bad moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
 ```
 
 ### Test set
@@ -169,9 +182,9 @@ order.2.new <- c(which(c.final.order.new==1),which(c.final.order.new==3),which(c
 Y.order.2.new <- Y.order.new[order.2.new,]
 c.final.order.2.new <- c.final.order.new[order.2.new]
 
-hmcols<-colorRampPalette(c("green","black","red"))(256)
-heatmap.2(x = t(Y.order.2.new), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[c.final.order.2.new], labRow = colnames(Y.order.2.new), labCol = NA, main = ' \n Testing Set \n 47 Gene DPMM signature', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
-legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fill = c("Green","Blue","Orange","Red"), cex = 0.4)
+hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(256)
+heatmap.2(x = t(Y.order.2.new), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[c.final.order.2.new], labRow = colnames(Y.order.2.new), labCol = NA, main = ' \n Testing Set \n 47 Gene DPMM signature', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Good moderate","Bad moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
 
 ```
 
@@ -179,8 +192,8 @@ legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fil
 
 ### Training set
 
+#### Significant mRNA overall
 ```{r differential expression of training set}
-library(limma)
 ##### Load the SBC Labels
 cluster  <- factor(c.sbc)
 ##### Create the design matrix with these labels
@@ -201,9 +214,65 @@ mRNA.matrix.train<-mRNA.matrix.train[order(mRNA.matrix.train$sbc.labels),]
 ordered_labels<-mRNA.matrix.train$sbc.labels
 mRNA.matrix.train$sbc.labels<-NULL
 
-heatmap.2(x = t(mRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[ordered_labels], labRow = colnames(mRNA.matrix.train), labCol = NA, main = ' \n Training Set \n Differentially expressed mRNA transcripts', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
-legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fill = c("Green","Blue","Orange","Red"), cex = 0.4)
+hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(256)
+pdf(file="AnalysisOfResults_files/DEmRNA_TrainingSet.pdf",width=400,height=350)
+heatmap.2(x = t(mRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels], labRow = colnames(mRNA.matrix.train), labCol = NA, main = ' \n Training Set \n DE mRNA transcripts', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Good moderate","Bad moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
+dev.off()
+
 ```
+
+```{r}
+heatmap.2(x = t(mRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels], labRow = colnames(mRNA.matrix.train), labCol = NA, main = ' \n Training Set \n DE mRNA transcripts', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Good moderate","Bad moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
+```
+
+#### Comparison between DE mRNA transcripts and SBC signature
+
+```{r Comparsion between DE mRNA and SBC signature for the training}
+intersect(signature.sbc,topmRNA.train)
+```
+
+#### Significant mRNA in pairwise cluster comparison
+```{r significant mrna pairwise  of training set}
+##### Load the SBC Labels
+cluster  <- factor(c.sbc)
+##### Create the design matrix with these labels
+design<- model.matrix( ~0+cluster)
+fit<-lmFit(t(mRNAArray_TrainingSet) , design= design)
+
+##### You can also define a contrast matrix which only looks at cluster specific contrasts
+cont.matrix <- makeContrasts(Cluster1vsCluster2 = cluster1 - cluster2,Cluster1vsCluster3=cluster1 - cluster3,Cluster1vsCluster4=cluster1 - cluster4,Cluster2vsCluster3= cluster2 - cluster3,
+Cluster2vsCluster4=cluster2 - cluster4,Cluster3vsCluster4=cluster3 - cluster4,levels= design)
+
+###### Fit limma model
+fit.2 <- contrasts.fit(fit, contrasts = cont.matrix)
+fit.2 <- eBayes(fit.2, trend= TRUE)
+###### Look for DE table
+topmRNA.train<-rownames(topTable(fit.2,number=50, p.val=0.05))
+
+mRNA.matrix.train<-mRNAArray_TrainingSet[,topmRNA.train]
+mRNA.matrix.train$sbc.labels<-c.sbc
+mRNA.matrix.train<-mRNA.matrix.train[order(mRNA.matrix.train$sbc.labels),]
+ordered_labels<-mRNA.matrix.train$sbc.labels
+mRNA.matrix.train$sbc.labels<-NULL
+
+#### Significant mRNA in pairwise cluster comparison
+par(mar=c(1,1,1,1))
+pairwise.mRNA.train<-as.matrix(topTable(fit.2,number = 20,adjust.method="BH")[,1:6])
+hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(256)
+pdf(file="AnalysisOfResults_files/DEmRNA_pairwise_TrainingSet.pdf",width=400,height=350)
+heatmap.2(x = pairwise.mRNA.train,Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row", labRow =rownames(pairwise.mRNA.train), labCol = colnames(pairwise.mRNA.train), main = ' \n Pairwise cluster comparison \n Significant mRNA for the Training Set', col =hmcols, cexRow =0.40,cexCol = 0.7, trace ="none", key.title = "Color Key", margins=c(6,10))
+dev.off()
+
+```
+```{r}
+hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(256)
+heatmap.2(x = pairwise.mRNA.train,Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row", labRow =rownames(pairwise.mRNA.train), labCol = colnames(pairwise.mRNA.train), main = ' \n Pairwise cluster comparison \n Significant mRNA for the Training Set', col =hmcols, cexRow =0.40,cexCol = 0.7, trace ="none", key.title = "Color Key", margins=c(6,10))
+```
+
+
+
 
 ### Test set
 
@@ -228,11 +297,18 @@ mRNA.matrix.test<-mRNA.matrix.test[order(mRNA.matrix.test$sbc.labels),]
 ordered_labels.new<-mRNA.matrix.test$sbc.labels
 mRNA.matrix.test$sbc.labels<-NULL
 
-heatmap.2(x = t(mRNA.matrix.test),Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[ordered_labels.new], labRow = colnames(mRNA.matrix.test), labCol = NA, main = ' \n Test Set \n Differentially expressed mRNA transcripts', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
-legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fill = c("Green","Blue","Orange","Red"), cex = 0.4)
+hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(256)
+heatmap.2(x = t(mRNA.matrix.test),Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels.new], labRow = colnames(mRNA.matrix.test), labCol = NA, main = ' \n Test Set \n Differentially expressed mRNA transcripts', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Good moderate","Bad moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
 ```
 
-# Feature Importance
+#### Comparison between DE mRNA transcripts and SBC signature
+
+```{r Comparsion between DE mRNA and SBC signature for the test}
+intersect(signature.sbc,topmRNA.test)
+```
+
+# SBC Feature Importance
 
 ```{r Feature importance}
 range01 <- function(x){(x-min(x))/(max(x)-min(x))}
@@ -286,7 +362,17 @@ sum.diff24.sc <- (1/Nps) * (sum.diff24)/(diag(W))
 cluste24 <- range01(sum.diff24.sc)
 
 ####################### Feature Signficance matrix
+pdf(file="AnalysisOfResults_files/FeatureImportance_TrainingSet.pdf",width=400,height=350)
+cluste <- cbind(cluste12,cluste23,cluste34, cluste41, cluste13, cluste24)
+heatmapdata <- cluste
+rownames(heatmapdata) <-  colnames(Y)
+colnames(heatmapdata) <- c("1 v s2","2 vs 3","3 v s4","4 vs 1","1 vs 3","2 vs 4")
+hmcols<-colorRampPalette(c("white","black"))(128)
+heatmap.2(heatmapdata , margins=c(6,10),col = hmcols, main = "SBC signature \n Feature Importance \n GBM ", cexCol = 0.85, cexRow = 0.7, Rowv = TRUE, Colv = TRUE, trace = "none", xlab = "Clusters") 
+dev.off()
+```
 
+```{r}
 cluste <- cbind(cluste12,cluste23,cluste34, cluste41, cluste13, cluste24)
 heatmapdata <- cluste
 rownames(heatmapdata) <-  colnames(Y)
@@ -294,6 +380,7 @@ colnames(heatmapdata) <- c("1 v s2","2 vs 3","3 v s4","4 vs 1","1 vs 3","2 vs 4"
 hmcols<-colorRampPalette(c("white","black"))(128)
 heatmap.2(heatmapdata , margins=c(6,10),col = hmcols, main = "SBC signature \n Feature Importance \n GBM ", cexCol = 0.85, cexRow = 0.7, Rowv = TRUE, Colv = TRUE, trace = "none", xlab = "Clusters") 
 ```
+
 
 # Association between Verhaak labels and SBC labels
 
@@ -323,11 +410,11 @@ miRNA.train.pca$SBC_labels<-c.sbc
 plotmiRNA.train <- ggplot(miRNA.train.pca, aes(x=miRNA.train.pca$PC1, y= miRNA.train.pca$PC2, colour= as.factor(SBC_labels))) + ggtitle("PCA \n Training set with SBC labels and unlabeled test set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "SBC_labels") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#858687"))
 plotmiRNA.train
 ```
+
 ```{r Loading miRNA testing, eval= FALSE}
 #Load data
 miRNA_TestSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/GitHub//Data/Second_data_split/TestSet/miRNA_TestSet.csv")
 miRNA_TestSet$X1<-NULL
-
 ```
 
 
@@ -389,7 +476,7 @@ p.targets.test
 
 ### Training set
 
-#### Heatmap
+#### Significant miRNA overall
 ```{r miRNA differential expression  of training set}
 ##### Load the SBC Labels
 cluster  <- factor(c.sbc)
@@ -405,7 +492,7 @@ Cluster2vsCluster4=cluster2 - cluster4,Cluster3vsCluster4=cluster3 - cluster4,le
 fit.2 <- contrasts.fit(fit, contrasts = cont.matrix)
 fit.2 <- eBayes(fit.2, trend= TRUE)
 ###### Look for DE table
-topmiRNA.train<-rownames(topTable(fit.2,number=50, p.val=0.1))
+topmiRNA.train<-rownames(topTable(fit.2,number=50))
 
 miRNA.matrix.train<-miRNA_TrainingSet[,topmiRNA.train]
 miRNA.matrix.train$sbc.labels<-c.sbc
@@ -415,25 +502,56 @@ miRNA.matrix.train$sbc.labels<-NULL
 
 par(mar=c(1,1,1,1))
 
-hmcols<-colorRampPalette(c("green","black","red"))(256)
-heatmap.2(x = t(miRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[ordered_labels], labRow = colnames(miRNA.matrix.train), labCol = NA, main = ' \n Training Set \n Significant miRNA transcripts', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
-legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fill = c("Green","Blue","Orange","Red"), cex = 0.4)
+pdf(file="AnalysisOfResults_files/DEmiRNA_TrainingSet.pdf",width=400,height=350)
+hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(256)
+heatmap.2(x = t(miRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels], labRow = colnames(miRNA.matrix.train), labCol = NA, main = ' \n Training Set \n Significant miRNA transcripts', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Good moderate","Bad moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
+dev.off
+
 ```
 
+```{r}
 
-#### Significant features of the SBC model
+hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(256)
+heatmap.2(x = t(miRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels], labRow = colnames(miRNA.matrix.train), labCol = NA, main = ' \n Training Set \n Significant miRNA transcripts', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Good moderate","Bad moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
+```
+
+#### Significant miRNA in pairwise cluster comparison
+
 ```{r Significant miRNA transcript in pairwise comparisons for training}
 par(mar=c(1,1,1,1))
 pairwise.miRNA.train<-as.matrix(topTable(fit.2,number = 20,adjust.method="BH")[,1:6])
-#hmcols<-colorRampPalette(c("green","black","red"))(256)
-heatmap.2(x = pairwise.miRNA.train,Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row", labRow =rownames(pairwise.miRNA.train), labCol = colnames(pairwise.miRNA.train), main = ' \n Training Set \n Significant miRNA transcripts', col =hmcols, cexRow =0.40,cexCol = 0.4, trace ="none", key.title = "Color Key", margins=c(6,10))
-
+pdf(file="AnalysisOfResults_files/DEmiRNA_pairwise_TrainingSet.pdf",width=400,height=350)
+hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(256)
+heatmap.2(x = pairwise.miRNA.train,Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row", labRow =rownames(pairwise.miRNA.train), labCol = colnames(pairwise.miRNA.train), main = ' \n Pairwise cluster comparison \n Significant miRNA for the Training Set', col =hmcols, cexRow =0.40,cexCol = 0.7, trace ="none", key.title = "Color Key", margins=c(6,10))
+dev.off()
 ```
 
+```{r}
+hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(256)
+heatmap.2(x = pairwise.miRNA.train,Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row", labRow =rownames(pairwise.miRNA.train), labCol = colnames(pairwise.miRNA.train), main = ' \n Pairwise cluster comparison \n Significant miRNA for the Training Set', col =hmcols, cexRow =0.40,cexCol = 0.7, trace ="none", key.title = "Color Key", margins=c(6,10))
+```
+
+#### PCA of differentially expressed miRNA targets
+
+```{r PCA of differentially expressed miRNA for the training}
+#Find all the validated targets
+result.de.train<-list()
+try(example2 <- get_multimir(mirna = topmiRNA.train, summary = TRUE))
+result.de.train <- unlist(unique(example2@data$target_symbol))
+
+tokeep<-colnames(mRNAArray_TrainingSet)[colnames(mRNAArray_TrainingSet) %in% result.de.train]
+DEtargets.train.pca<-as.data.frame(prcomp(mRNAArray_TrainingSet[,tokeep],scale=TRUE, center= TRUE)$x[,1:2])
+DEtargets.train.pca$SBC_labels<-c.sbc
+plotDEtargets.train <- ggplot(miRNA.train.pca, aes(x=DEtargets.train.pca$PC1, y= DEtargets.train.pca$PC2, colour= as.factor(SBC_labels))) + ggtitle("PCA \n Validated DE miRNA targets \n Training Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "SBC_labels") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#858687"))
+plotDEtargets.train
+```
 
 ### Test set
 
-#### Heatmap
+#### Significant miRNA overall
+
 ```{r miRNA differential expression  of test set}
 ##### Load the SBC Labels
 cluster.new  <- factor(c.sbc.new)
@@ -459,20 +577,120 @@ miRNA.matrix.test$sbc.labels<-NULL
 
 par(mar=c(1,1,1,1))
 
-hmcols<-colorRampPalette(c("green","black","red"))(256)
-heatmap.2(x = t(miRNA.matrix.test),Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row",ColSideColors =c("green","red","blue","orange")[ordered_labels], labRow = colnames(miRNA.matrix.test), labCol = NA, main = ' \n Test Set \n Significant miRNA transcripts', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
-legend("topright", legend = c("Best","Good Moderate","Bad moderate","Worst"),fill = c("Green","Blue","Orange","Red"), cex = 0.4)
+hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(256)
+heatmap.2(x = t(miRNA.matrix.test),Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels], labRow = colnames(miRNA.matrix.test), labCol = NA, main = ' \n Test Set \n Significant miRNA transcripts', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Good moderate","Bad moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
 ```
 
+#### Significant miRNA in pairwise cluster comparison
 
-#### Significant features
 ```{r Significant miRNA transcript in pairwise comparisons for testing}
 par(mar=c(1,1,1,1))
 pairwise.miRNA.test<-as.matrix(topTable(fit.2.new,number = 20,adjust.method="BH")[,1:6])
-#hmcols<-colorRampPalette(c("green","black","red"))(256)
-heatmap.2(x = pairwise.miRNA.test,Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row", labRow =rownames(pairwise.miRNA.test), labCol = colnames(pairwise.miRNA.test), main = ' \n Test Set \n Significant miRNA transcripts', col =hmcols, cexRow =0.40,cexCol = 0.4, trace ="none", key.title = "Color Key", margins=c(4,8))
+hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(256)
+pdf(file="AnalysisOfResults_files/DEmiRNA_pairwise_TestSet.pdf",width=400,height=350)
+heatmap.2(x = pairwise.miRNA.test,Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row", labRow =rownames(pairwise.miRNA.test), labCol = colnames(pairwise.miRNA.test), main = ' \n Pairwise cluster comparison \n Significant miRNA for the Test Set', col =hmcols, cexRow =0.40,cexCol = 0.7, trace ="none", key.title = "Color Key", margins=c(6,10))
+dev.off()
+heatmap.2(x = pairwise.miRNA.test,Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row", labRow =rownames(pairwise.miRNA.test), labCol = colnames(pairwise.miRNA.test), main = ' \n Pairwise cluster comparison \n Significant miRNA for the Test Set', col =hmcols, cexRow =0.40,cexCol = 0.7, trace ="none", key.title = "Color Key", margins=c(6,10))
+```
+
+#### PCA of differentially expressed miRNA targets
+
+```{r PCA of differentially expressed miRNA for the test}
+#Find all the validated targets
+result.de.test<-list()
+try(example2 <- get_multimir(mirna = topmiRNA.test, summary = TRUE))
+result.de.test <- unlist(unique(example2@data$target_symbol))
+
+tokeep<-colnames(mRNAArray_TestSet)[colnames(mRNAArray_TestSet) %in% result.de.test]
+DEtargets.test.pca<-as.data.frame(prcomp(mRNAArray_TestSet[,tokeep],scale=TRUE, center= TRUE)$x[,1:2])
+DEtargets.test.pca$SBC_labels<-c.sbc.new
+plotDEtargets.test <- ggplot(miRNA.test.pca, aes(x=DEtargets.test.pca$PC1, y= DEtargets.test.pca$PC2, colour= as.factor(SBC_labels))) + ggtitle("PCA \n Validated DE miRNA targets \n Test Set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "SBC_labels") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3","#858687"))
+plotDEtargets.test
+```
+
+# Somatic Mutation
+
+```{r upload files, eval=FALSE}
+SomaticMutation_TrainingSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/GitHub/Data/Second_data_split/TrainingSet/SomaticMutation_TrainingSet.csv")
+SomaticMutation_TestSet <- read_csv("/Volumes/GoogleDrive/My Drive/Documents/GitHub/Data/Second_data_split/TestSet/SomaticMutation_TestSet.csv")
+```
+
+## Training set
+```{r Chi-Square test for training set SM}
+available.train<-Clinical_TrainingSet$X1 %in% SomaticMutation_TrainingSet$X1
+SomaticMutation_TrainingSet$X1<-NULL
+SM.c.sbc<-c.sbc[available.train]
+SomaticMutation_TrainingSet$sbc.labels<-SM.c.sbc
+table.SM<-list()
+for (i in names(SomaticMutation_TrainingSet)){
+  if (i=="sbc.labels" | length(table(SomaticMutation_TrainingSet[[i]]))<3){
+    next
+  }else{
+  table.SM[[i]]<-chisq.test(table(SomaticMutation_TrainingSet$sbc.labels,SomaticMutation_TrainingSet[[i]]))$p.value
+  }
+}
+tableSM.adj <- p.adjust(unlist(table.SM), method = "BH")
+SM_pval <- names(tableSM.adj[order(tableSM.adj)[1:19]]) 
+SM_signature<-SomaticMutation_TrainingSet[SM_pval]
+
+par(mar=c(1,1,1,1))
+
+SM_signature$sbc.labels<-SM.c.sbc
+SM_signature<-SM_signature[order(SM_signature$sbc.labels),]
+ordered_labels<-SM_signature$sbc.labels
+SM_signature$sbc.labels<-NULL
 
 ```
+
+```{r heatmap training set SM}
+hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(13)
+pdf(file="AnalysisOfResults_files/CopyNumber_TrainingSet.pdf",width=400,height=350)
+heatmap.2(x = t(SM_signature), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels], labRow = colnames(SM_signature), labCol = NA, main = ' \n Training Set \n Significant features \n for Copy Number Data', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Good moderate","Bad moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
+dev.off()
+
+```
+
+```{r}
+heatmap.2(x = t(SM_signature), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels], labRow = colnames(SM_signature), labCol = NA, main = ' \n Training Set \n Significant features \n for Copy Number Data', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Good moderate","Bad moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
+```
+
+
+## Test set
+```{r Chi-Square test for test set SM}
+available.test<-Clinical_TestSet$X1 %in% SomaticMutation_TestSet$X1
+SomaticMutation_TestSet$X1<-NULL
+SM.c.sbc.new<-c.sbc.new[available.test]
+SomaticMutation_TestSet$sbc.labels<-SM.c.sbc.new
+table.SM.new<-list()
+for (i in names(SomaticMutation_TestSet)){
+  if (i=="sbc.labels" | length(table(SomaticMutation_TestSet[[i]]))<3){
+    next
+  }else{
+  table.SM.new[[i]]<-chisq.test(table(SomaticMutation_TestSet$sbc.labels,SomaticMutation_TestSet[[i]]))$p.value
+  }
+}
+tableSM.adj.new <- p.adjust(unlist(table.SM.new), method = "BH")
+SM_pval.new <- names(tableSM.adj.new[order(tableSM.adj.new)[1:50]]) 
+SM_signature.new<-SomaticMutation_TestSet[SM_pval.new]
+
+par(mar=c(1,1,1,1))
+
+SM_signature.new$sbc.labels<-SM.c.sbc.new
+SM_signature.new<-SM_signature.new[order(SM_signature.new$sbc.labels),]
+ordered_labels.new<-SM_signature.new$sbc.labels
+SM_signature.new$sbc.labels<-NULL
+
+```
+
+```{r heatmap test set SM}
+hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(13)
+heatmap.2(x = t(SM_signature.new), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels.new], labRow = colnames(SM_signature.new), labCol = NA, main = ' \n Test Set \n Significant features \n for Copy Number Data', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+legend("topright", legend = c("Good moderate","Bad moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
+```
+
 # Clinical Data
 
 ## Training Set
@@ -506,5 +724,21 @@ for (i in colnames(Clinical_TestSet)){
     }
   }
 }
+```
+
+# Posterior probability plot
+
+```{r}
+pdf(file="AnalysisOfResults_files/PosteriorProbability.pdf",width=400,height=350)
+par(mar=c(1,1,1,1))
+heatmapdata <- as.data.frame(final.betahat)
+heatmap.2(t(as.matrix(heatmapdata)),dendrogram="none", margins=c(6,10), main = "Posterior prob. \n for Selection \n ", cexCol = 0.85, cexRow = 0.7, Rowv = FALSE)
+dev.off()
+```
+
+```{r}
+par(mar=c(1,1,1,1))
+heatmapdata <- as.data.frame(final.betahat)
+heatmap.2(t(as.matrix(heatmapdata)),dendrogram="none", margins=c(6,10), main = "Posterior prob. \n for Selection \n ", cexCol = 0.85, cexRow = 0.7, Rowv = FALSE)
 ```
 
