@@ -275,6 +275,11 @@ p1
 
 ```
 
+```{r}
+pdf(file="OncogenicGeneSets+PAFT_files/PCA_Train&Test.pdf")
+p1
+dev.off()
+```
 #Signature calculation
 
 This chunk calculates  SBC gene signature
@@ -342,6 +347,12 @@ p3 <- ggsurv(surv.fit, plot.cens=FALSE,main = " DPMM \n Kaplan Meier curves for 
 p3
 ```
 
+```{r}
+pdf(file="OncogenicGeneSets+PAFT_files/KMC_Train&Test.pdf")
+p3
+dev.off()
+```
+
 ## PCA of the signature genes
 
 ```{r PCA of the signature}
@@ -356,6 +367,12 @@ mRNA.signature.pca<-as.data.frame(prcomp(mRNA.signature,scale=TRUE, center= TRUE
 mRNA.signature.pca$Classes<-classes
 p6 <- ggplot(mRNA.signature.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n SBC Signature mRNAArray Data of GBM") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
 p6
+```
+
+```{r}
+pdf(file="OncogenicGeneSets+PAFT_files/PCA_Signature.pdf")
+p6
+dev.off()
 ```
 
 #Training
@@ -462,6 +479,12 @@ p4
 
 ```
 
+```{r}
+pdf(file="OncogenicGeneSets+PAFT_files/KMC_Training.pdf")
+p4
+dev.off()
+```
+
 ```{r PCA from training}
 ############ Generating some Plots ##########################
 Y<-Y.pre.train[,signature.sbc]
@@ -471,12 +494,23 @@ p5 <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= 
 p5
 ```
 
+```{r}
+pdf(file="OncogenicGeneSets+PAFT_files/PCA_Training.pdf")
+p5
+dev.off()
+```
+
 ```{r Plot likelihood of burning}
 to_plot<-as.data.frame(likli.burnin)
 p7<-qplot(seq_along(to_plot$likli.burnin), to_plot$likli.burnin)
 p7
 ```
 
+```{r}
+pdf(file="OncogenicGeneSets+PAFT_files/LikBurn.pdf")
+p7
+dev.off()
+```
 # Testing
 
 ```{r PCA Scaled Y and Y.new}
@@ -579,11 +613,30 @@ p5.new
 
 ```
 
+```{r}
+pdf(file="OncogenicGeneSets+PAFT_files/KMC_Test.pdf")
+p5.new
+dev.off()
+```
+
 ```{r PCA from testing}
 pc <- prcomp(Y.new,center=TRUE,scale = TRUE)
 pc.pred <- predict(pc,newdata = Y.new)
 p4.new <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(" PCA after SBC Clustering \n Test set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
 p4.new
+```
+
+```{r}
+pdf(file="OncogenicGeneSets+PAFT_files/PCA_Test.pdf")
+p4.new
+dev.off()
+```
+
+```{r}
+pdf(file="OncogenicGeneSets+PAFT_files/PosteriorProbability.pdf")
+heatmapdata <- as.data.frame(final.betahat)
+heatmap.2(t(as.matrix(heatmapdata)),dendrogram="none", margins=c(6,10), main = "Posterior probability \n for Selection \n ", cexCol = 0.85, cexRow = 0.7, Rowv = FALSE)
+dev.off()
 ```
 
 

@@ -91,3 +91,10 @@ IRanges
 AnnotationDbi
 Category
 flexdashboard
+DiagrammeR
+DiagrammeRsvg
+rsvg
+htmltools
+webshot
+plotly
+processx

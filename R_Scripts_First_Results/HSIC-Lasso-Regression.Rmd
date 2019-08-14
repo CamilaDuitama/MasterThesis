@@ -209,7 +209,7 @@ p1
 
 ```
 ```{r}
-png(file="HSIC-Lasso-Regression_files/PCA_Train&Test.pdf",width=400,height=350)
+png(file="HSIC-Lasso-Regression_files/PCA_Train&Test.pdf")
 p1
 dev.off()
 ```
@@ -283,7 +283,7 @@ p3
 ```
 
 ```{r}
-png(file="HSIC-Lasso-Regression_files/KMC_Train&Test.pdf",width=400,height=350)
+png(file="HSIC-Lasso-Regression_files/KMC_Train&Test.pdf")
 p3
 dev.off()
 ```
@@ -303,7 +303,7 @@ p6 <- ggplot(mRNA.signature.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" 
 p6
 ```
 ```{r}
-png(file="HSIC-Lasso-Regression_files/PCASignature_Train&Test.pdf",width=400,height=350)
+png(file="HSIC-Lasso-Regression_files/PCASignature_Train&Test.pdf")
 p6
 dev.off()
 ```
@@ -413,7 +413,7 @@ p4
 
 ```
 ```{r}
-png(file="HSIC-Lasso-Regression_files/KMC_Training.pdf",width=400,height=350)
+png(file="HSIC-Lasso-Regression_files/KMC_Training.pdf")
 p4
 dev.off()
 ```
@@ -428,7 +428,7 @@ p5
 ```
 
 ```{r}
-png(file="HSIC-Lasso-Regression_files/PCA_Train.pdf",width=400,height=350)
+png(file="HSIC-Lasso-Regression_files/PCA_Train.pdf")
 p5
 dev.off()
 ```
@@ -440,7 +440,7 @@ p7
 ```
 
 ```{r}
-png(file="HSIC-Lasso-Regression_files/likburn_Train.pdf",width=400,height=350)
+png(file="HSIC-Lasso-Regression_files/likburn_Train.pdf")
 p7
 dev.off()
 ```
@@ -547,7 +547,7 @@ p5.new
 ```
 
 ```{r}
-png(file="HSIC-Lasso-Regression_files/KMC_Test.pdf",width=400,height=350)
+png(file="HSIC-Lasso-Regression_files/KMC_Test.pdf")
 p5.new
 dev.off()
 ```
@@ -560,8 +560,15 @@ p4.new
 ```
 
 ```{r}
-png(file="HSIC-Lasso-Regression_files/PCA_Test.pdf",width=400,height=350)
+png(file="HSIC-Lasso-Regression_files/PCA_Test.pdf")
 p4.new
+dev.off()
+```
+
+```{r}
+pdf(file="HSIC-Lasso-Regression_files/PosteriorProbability.pdf")
+heatmapdata <- as.data.frame(final.betahat)
+heatmap.2(t(as.matrix(heatmapdata)),dendrogram="none", margins=c(6,10), main = "Posterior probability \n for Selection \n ", cexCol = 0.85, cexRow = 0.7, Rowv = FALSE)
 dev.off()
 ```
 
