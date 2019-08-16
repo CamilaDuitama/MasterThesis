@@ -503,7 +503,7 @@ par(mar=c(1,1,1,1))
 
 pdf(file="AnalysisOfResults1_files/DEmiRNA_TrainingSet.pdf")
 hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(256)
-heatmap.2(x = t(miRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels], labRow = colnames(miRNA.matrix.train), labCol = NA, main = ' \n Training Set \n Significant miRNA transcripts', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+heatmap.2(x = t(miRNA.matrix.train),Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels], labRow = colnames(miRNA.matrix.train), labCol = NA, main = ' \n Training Set \n DE miRNA transcripts', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
 legend("topright", legend = c("Good moderate","Bad moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
 dev.off()
 
@@ -523,7 +523,7 @@ par(mar=c(1,1,1,1))
 pairwise.miRNA.train<-as.matrix(topTable(fit.2,number = 20,adjust.method="BH")[,1:6])
 pdf(file="AnalysisOfResults1_files/DEmiRNA_pairwise_TrainingSet.pdf")
 hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(256)
-heatmap.2(x = pairwise.miRNA.train,Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row", labRow =rownames(pairwise.miRNA.train), labCol = colnames(pairwise.miRNA.train), main = ' \n Pairwise cluster comparison \n Significant miRNA for the Training Set', col =hmcols, cexRow =0.40,cexCol = 0.7, trace ="none", key.title = "Color Key", margins=c(6,10))
+heatmap.2(x = pairwise.miRNA.train,Colv = FALSE, Rowv=TRUE, dendrogram= c("row"), scale ="row", labRow =rownames(pairwise.miRNA.train), labCol = colnames(pairwise.miRNA.train), main = ' \n Training set \n Pairwise cluster comparison \n of DE mRNA' ,col =hmcols, cexRow =0.40,cexCol = 0.7, trace ="none", key.title = "Color Key", margins=c(6,10))
 dev.off()
 ```
 
@@ -644,8 +644,8 @@ SM_signature$sbc.labels<-NULL
 
 ```{r heatmap training set SM}
 hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(13)
-pdf(file="AnalysisOfResults1_files/CopyNumber_TrainingSet.pdf")
-heatmap.2(x = t(SM_signature), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels], labRow = colnames(SM_signature), labCol = NA, main = ' \n Training Set \n Significant features \n for Copy Number Data', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+pdf(file="AnalysisOfResults1_files/SomaticMutation_TrainingSet.pdf")
+heatmap.2(x = t(SM_signature), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels], labRow = colnames(SM_signature), labCol = NA, main = ' \n Training Set \n Significant features \n for Somatic Mutation', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
 legend("topright", legend = c("Good moderate","Bad moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
 dev.off()
 
@@ -686,7 +686,7 @@ SM_signature.new$sbc.labels<-NULL
 
 ```{r heatmap test set SM}
 hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(13)
-heatmap.2(x = t(SM_signature.new), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels.new], labRow = colnames(SM_signature.new), labCol = NA, main = ' \n Test Set \n Significant features \n for Copy Number Data', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+heatmap.2(x = t(SM_signature.new), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels.new], labRow = colnames(SM_signature.new), labCol = NA, main = ' \n Test Set \n Significant features \n for Somatic Mutation Data', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
 legend("topright", legend = c("Good moderate","Bad moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
 ```
 

@@ -13,7 +13,7 @@ params:
 
 ---
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache=TRUE,include=TRUE,collapse=TRUE,warning=FALSE,message=FALSE)
+knitr::opts_chunk$set(cache=TRUE,include=TRUE,eval=FALSE,collapse=TRUE,warning=FALSE,message=FALSE)
 rm(list = ls(all.names = TRUE))
 load("/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/R_Scripts_First_Results/Karnofsky_corrected_results.RData")
 ```

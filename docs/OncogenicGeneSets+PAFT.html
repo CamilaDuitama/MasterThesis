@@ -849,6 +849,11 @@ mRNA.pca$Classes&lt;-classes
 p1 &lt;- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PCA of the training and testing set \n GBM-TCGA Data set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
 p1</code></pre>
 <p><img src="OncogenicGeneSets+PAFT_files/figure-html/PCA-1.png" width="960" /></p>
+<pre class="r"><code>pdf(file=&quot;OncogenicGeneSets+PAFT_files/PCA_Train&amp;Test.pdf&quot;)
+p1
+dev.off()
+## quartz_off_screen 
+##                 2</code></pre>
 </div>
 </div>
 </div>
@@ -1170,6 +1175,11 @@ MEK_UP.V1_DN
 p3 &lt;- ggsurv(surv.fit, plot.cens=FALSE,main = &quot; DPMM \n Kaplan Meier curves for training and test set&quot;)+ ggplot2::guides(linetype = FALSE)
 p3</code></pre>
 <p><img src="OncogenicGeneSets+PAFT_files/figure-html/Survival%20curves%20for%20both%20training%20and%20testing%20set-1.png" width="960" /></p>
+<pre class="r"><code>pdf(file=&quot;OncogenicGeneSets+PAFT_files/KMC_Train&amp;Test.pdf&quot;)
+p3
+dev.off()
+## quartz_off_screen 
+##                 2</code></pre>
 </div>
 <div id="pca-of-the-signature-genes" class="section level2">
 <h2>PCA of the signature genes</h2>
@@ -1185,6 +1195,11 @@ mRNA.signature.pca$Classes&lt;-classes
 p6 &lt;- ggplot(mRNA.signature.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PCA of the training and testing set \n SBC Signature mRNAArray Data of GBM&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
 p6</code></pre>
 <p><img src="OncogenicGeneSets+PAFT_files/figure-html/PCA%20of%20the%20signature-1.png" width="960" /></p>
+<pre class="r"><code>pdf(file=&quot;OncogenicGeneSets+PAFT_files/PCA_Signature.pdf&quot;)
+p6
+dev.off()
+## quartz_off_screen 
+##                 2</code></pre>
 </div>
 </div>
 <div id="training" class="section level1">
@@ -1283,6 +1298,11 @@ surv.fit &lt;- survfit(smod ~ c.final)
 p4 &lt;- ggsurv(surv.fit,surv.col=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;),plot.cens=FALSE,main = &quot; DPMM \n Kaplan Meier Estimators \n Training Set&quot;)+ ggplot2::guides(linetype = FALSE)+labs(subtitle = paste(&quot;P-value:&quot;,toString(round(pval,digits = 10))))
 p4</code></pre>
 <p><img src="OncogenicGeneSets+PAFT_files/figure-html/Survival%20curves%20from%20training-1.png" width="960" /></p>
+<pre class="r"><code>pdf(file=&quot;OncogenicGeneSets+PAFT_files/KMC_Training.pdf&quot;)
+p4
+dev.off()
+## quartz_off_screen 
+##                 2</code></pre>
 <pre class="r"><code>############ Generating some Plots ##########################
 Y&lt;-Y.pre.train[,signature.sbc]
 pc &lt;- prcomp(Y)
@@ -1290,10 +1310,20 @@ pc.pred &lt;- predict(pc,newdata = Y)
 p5 &lt;- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.final))) + ggtitle(&quot;PCA after SBC Clustering \n Training Set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;)+scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;,&quot;#C70039&quot;))
 p5</code></pre>
 <p><img src="OncogenicGeneSets+PAFT_files/figure-html/PCA%20from%20training-1.png" width="960" /></p>
+<pre class="r"><code>pdf(file=&quot;OncogenicGeneSets+PAFT_files/PCA_Training.pdf&quot;)
+p5
+dev.off()
+## quartz_off_screen 
+##                 2</code></pre>
 <pre class="r"><code>to_plot&lt;-as.data.frame(likli.burnin)
 p7&lt;-qplot(seq_along(to_plot$likli.burnin), to_plot$likli.burnin)
 p7</code></pre>
 <p><img src="OncogenicGeneSets+PAFT_files/figure-html/Plot%20likelihood%20of%20burning-1.png" width="960" /></p>
+<pre class="r"><code>pdf(file=&quot;OncogenicGeneSets+PAFT_files/LikBurn.pdf&quot;)
+p7
+dev.off()
+## quartz_off_screen 
+##                 2</code></pre>
 </div>
 </div>
 <div id="testing" class="section level1">
@@ -1389,11 +1419,27 @@ p4</code></pre>
 <p><img src="OncogenicGeneSets+PAFT_files/figure-html/Survival%20curves%20from%20testing-1.png" width="960" /></p>
 <pre class="r"><code>p5.new</code></pre>
 <p><img src="OncogenicGeneSets+PAFT_files/figure-html/Survival%20curves%20from%20testing-2.png" width="960" /></p>
+<pre class="r"><code>pdf(file=&quot;OncogenicGeneSets+PAFT_files/KMC_Test.pdf&quot;)
+p5.new
+dev.off()
+## quartz_off_screen 
+##                 2</code></pre>
 <pre class="r"><code>pc &lt;- prcomp(Y.new,center=TRUE,scale = TRUE)
 pc.pred &lt;- predict(pc,newdata = Y.new)
 p4.new &lt;- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(&quot; PCA after SBC Clustering \n Test set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) +scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;))
 p4.new</code></pre>
 <p><img src="OncogenicGeneSets+PAFT_files/figure-html/PCA%20from%20testing-1.png" width="960" /></p>
+<pre class="r"><code>pdf(file=&quot;OncogenicGeneSets+PAFT_files/PCA_Test.pdf&quot;)
+p4.new
+dev.off()
+## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code>pdf(file=&quot;OncogenicGeneSets+PAFT_files/PosteriorProbability.pdf&quot;)
+heatmapdata &lt;- as.data.frame(final.betahat)
+heatmap.2(t(as.matrix(heatmapdata)),dendrogram=&quot;none&quot;, margins=c(6,10), main = &quot;Posterior probability \n for Selection \n &quot;, cexCol = 0.85, cexRow = 0.7, Rowv = FALSE)
+dev.off()
+## quartz_off_screen 
+##                 2</code></pre>
 <pre class="r"><code>table(c.sbc) %&gt;%
   kable(caption = &quot;Clusters for the training set&quot;) %&gt;%
   kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)</code></pre>

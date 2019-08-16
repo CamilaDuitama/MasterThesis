@@ -18,7 +18,7 @@ params:
 After downloading the Gene Sets from the NCI Pathways, we calculated the Zscore, ssGSEA and GSVA scores. Since none of the results had a significant P-value, the model wasn't trained on any of the aforementioned pathway score aggregation methods
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache=TRUE,include=TRUE,collapse=TRUE,warning=FALSE,message=FALSE, fig.width = 10, fig.height = 6)
+knitr::opts_chunk$set(cache=TRUE,include=TRUE,collapse=TRUE,warning=FALSE,message=FALSE,eval=FALSE, fig.width = 10, fig.height = 6)
 rm(list = ls(all.names = TRUE))
 load("/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/R_Scripts_First_Results/NCI.RData")
 

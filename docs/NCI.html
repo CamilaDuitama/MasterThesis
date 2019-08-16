@@ -28,7 +28,6 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -522,9 +521,7 @@ mRNAArray_TestSet$X1&lt;-NULL
 Y.pre.test&lt;-mRNAArray_TestSet
 </code></pre>
 <pre class="r"><code>print(paste0(&quot;Number of patients in training set: &quot;,as.character(n)))
-## [1] &quot;Number of patients in training set: 160&quot;
-print(paste0(&quot;Number of patients in test set: &quot;,as.character(n.new)))
-## [1] &quot;Number of patients in test set: 261&quot;</code></pre>
+print(paste0(&quot;Number of patients in test set: &quot;,as.character(n.new)))</code></pre>
 </div>
 <div id="oncogene-set-paft-fitting-of-model" class="section level1">
 <h1>Oncogene set PAFT fitting of model</h1>
@@ -557,76 +554,12 @@ Y.pre.test.ssgsea &lt;-t(gsva(t(Y.pre.test), pathwaysets, method=&quot;ssgsea&qu
 <h3>Censoring information</h3>
 <pre class="r"><code>table(censoring) %&gt;%  
   kable(caption = &quot;Censoring frequency for the training set&quot;) %&gt;%
-  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)</code></pre>
-<table class="table table-striped table-hover table-responsive" style="margin-left: auto; margin-right: auto;">
-<caption>
-Censoring frequency for the training set
-</caption>
-<thead>
-<tr>
-<th style="text-align:left;">
-censoring
-</th>
-<th style="text-align:right;">
-Freq
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-0
-</td>
-<td style="text-align:right;">
-6
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:right;">
-154
-</td>
-</tr>
-</tbody>
-</table>
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)
+</code></pre>
 <pre class="r"><code>table(censoring.new) %&gt;%
   kable(caption = &quot;Censoring frequency for the testing set&quot;) %&gt;%
-  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)</code></pre>
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
-<caption>
-Censoring frequency for the testing set
-</caption>
-<thead>
-<tr>
-<th style="text-align:left;">
-censoring.new
-</th>
-<th style="text-align:right;">
-Freq
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-0
-</td>
-<td style="text-align:right;">
-48
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:right;">
-213
-</td>
-</tr>
-</tbody>
-</table>
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,&quot;responsive&quot;),full_width = T, position = &quot;center&quot;)
+</code></pre>
 </div>
 <div id="pca-zscore" class="section level3">
 <h3>PCA Zscore</h3>
@@ -642,8 +575,8 @@ for (i in 1:length(Clinical_TestSet$days_to_death)){
 
 mRNA.pca$Classes&lt;-classes
 p1 &lt;- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PCA of the training and testing set \n Zscores of the GBM-TCGA Data set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
-p1</code></pre>
-<p><img src="NCI_files/figure-html/PCA%20Zscore-1.png" width="960" /></p>
+p1
+</code></pre>
 </div>
 <div id="pca-ssgsea" class="section level3">
 <h3>PCA ssGSEA</h3>
@@ -659,8 +592,8 @@ for (i in 1:length(Clinical_TestSet$days_to_death)){
 
 mRNA.pca$Classes&lt;-classes
 p1 &lt;- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PCA of the training and testing set \n ssGSEA scores of the GBM-TCGA Data set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
-p1</code></pre>
-<p><img src="NCI_files/figure-html/PCA%20ssGSEA-1.png" width="960" /></p>
+p1
+</code></pre>
 </div>
 <div id="pca-gsva" class="section level3">
 <h3>PCA GSVA</h3>
@@ -676,8 +609,13 @@ for (i in 1:length(Clinical_TestSet$days_to_death)){
 
 mRNA.pca$Classes&lt;-classes
 p1 &lt;- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PCA of the training and testing set \n GSVA scores of the GBM-TCGA Data set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
-p1</code></pre>
-<p><img src="NCI_files/figure-html/PCA%20GSVA-1.png" width="960" /> #Signature calculation</p>
+p1
+</code></pre>
+</div>
+</div>
+</div>
+<div id="signature-calculation" class="section level1">
+<h1>Signature calculation</h1>
 <p>This chunk calculates SBC gene signature It’s based on the idea of Univariate testing of Survival Data features</p>
 <pre class="r"><code>######## Prefiltering of the Genes ############################### ###########################
 ######## Using Univariate Cox&#39;s Model for Ranking of the Survival Power of the Genes ########
@@ -722,8 +660,6 @@ for (i in (1:3)){
 
   </code></pre>
 </div>
-</div>
-</div>
 <div id="selection-of-gse-method" class="section level1">
 <h1>Selection of GSE method</h1>
 <pre class="r"><code>mean&lt;-list()
@@ -745,89 +681,11 @@ result$Max&lt;-max
 result%&gt;%
      kable(caption = &quot;Results of the 4 Pathway scoring methods&quot;) %&gt;%
      kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;,&quot;responsive&quot;),full_width = F, position = &quot;center&quot;)%&gt;%
-     scroll_box(width = &quot;500px&quot;, height = &quot;200px&quot;)</code></pre>
-<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:500px; ">
-<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<caption>
-Results of the 4 Pathway scoring methods
-</caption>
-<thead>
-<tr>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-Method
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-Mean
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-SD
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-Min
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-Max
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-Zscore
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ssGSEA
-</td>
-<td style="text-align:left;">
-0.1995
-</td>
-<td style="text-align:left;">
-0.0517
-</td>
-<td style="text-align:left;">
-0.1023
-</td>
-<td style="text-align:left;">
-0.3236
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-GSVA
-</td>
-<td style="text-align:left;">
-0.6262
-</td>
-<td style="text-align:left;">
-0.1757
-</td>
-<td style="text-align:left;">
-0.3861
-</td>
-<td style="text-align:left;">
-0.8035
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<pre class="r"><code>
+     scroll_box(width = &quot;500px&quot;, height = &quot;200px&quot;)
+
   ### Take the top 25 genes ####
-  signature.sbc &lt;- names(output[[3]][1:25])</code></pre>
+  signature.sbc &lt;- names(output[[3]][1:25])
+</code></pre>
 <p><strong>NOTE:</strong> Since none of the p values were significant. The model was not trained.</p>
 </div>
 

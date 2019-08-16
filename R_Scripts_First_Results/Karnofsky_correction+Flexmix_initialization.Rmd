@@ -18,7 +18,7 @@ params:
 After the Karnosfky Index correction, we wanted to try a different initialization method from the standard used in the SBC model. Therefore we tried a Flexmix initialization. This are the results of the SBC model applied to a Karnofsky corrected dataset and with a Flexmix initialization.
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache=TRUE,include=TRUE,collapse=TRUE,warning=FALSE,message=FALSE, fig.width = 10, fig.height = 6)
+knitr::opts_chunk$set(cache=TRUE,eval=FALSE,include=TRUE,collapse=TRUE,warning=FALSE,message=FALSE, fig.width = 10, fig.height = 6)
 rm(list = ls(all.names = TRUE))
 load("/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/R_Scripts_First_Results/Karnofsky_correction+Flexmix_initialization.RData")
 
