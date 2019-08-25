@@ -719,7 +719,7 @@ dev.off()
 ```{r}
 par(mar=c(1,1,1,1))
 hmcols<-colorRampPalette(brewer.pal(11,"RdBu"))(5)
-heatmap.2(x = t(SM_signature), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels], labRow = colnames(SM_signature), labCol = NA, main = ' \n Training Set \n Significant features \n for Copy Number Data', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
+heatmap.2(x = t(SM_signature), Rowv =TRUE ,Colv = FALSE, dendrogram = c("row"), scale ="row",ColSideColors =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3")[ordered_labels], labRow = colnames(SM_signature), labCol = NA, main = ' \n Training Set \n Significant features \n for Somatic Mutation Data', col =hmcols, cexRow =0.40, trace ="none", key.title = "Color Key")
 legend("topright", legend = c("Bad moderate","Good moderate","Best","Worst"),fill =c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"), cex = 0.4)
 ```
 

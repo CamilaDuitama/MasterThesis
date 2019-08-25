@@ -107,9 +107,9 @@ Consolidated results {data-icon="fa-table"}
 ```{r, fig.width=10, fig.height=15}
 
 rownames<-c(1,2,3,4,5,6,7,8)
-description<-c("Verhaak samples present on the TCGA-GBM","All samples in the TCGA-GBM","GSE methods on KEGG pathways as feature selection","GSE methods on Oncogenic gene sets as feature selection","GSVA on the Canonical Pathways","Linear predictor of PCox model on the Oncogenic gene sets","Linear predictor of GLM using time-to-event data only on the Oncogenic gene sets","HSIC-Lasso for feature selection using survival data (Regression)")
+description<-c("Verhaak samples present on the TCGA-GBM","All samples in the TCGA-GBM","GSE methods on KEGG pathways as feature selection","GSE methods on Oncogenic gene sets as feature selection","GSVA on the Canonical Pathways","Linear predictor of PCox model on the Oncogenic gene sets","PAFT on the Oncogenic gene sets","HSIC-Lasso for feature selection using survival data (Regression)")
 initialization<-c("K-means","K-means","K-means","K-means","K-means","K-means","K-means","K-means")
-corrections<-c("None","None","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction")
+corrections<-c("None","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction")
 
 trainsize<-list()
 testsize<-list()
@@ -120,7 +120,7 @@ test_pval<-list()
 pCIndex<-list()
 rCIndex<-list()
 
-datasets<-c("Results.RData","Karnofsky_corrected_results.RData","GSVA-KEGG.RData","GSVA-Oncogenic_Signature.RData","GSVA.RData","OncogenicGeneSets+Pcox.RData","OncogenicGeneSets+PAFT.RData","HSIC-Lasso-Regression.RData")
+datasets<-c("Preliminary_Results.RData","Karnofsky_corrected_results.RData","GSVA-KEGG.RData","GSVA-Oncogenic_Signature.RData","GSVA.RData","OncogenicGeneSets+Pcox.RData","OncogenicGeneSets+PAFT.RData","HSIC-Lasso-Regression.RData")
 root<-"/Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/R_Scripts_First_Results/"
     
 for (i in datasets){

@@ -1072,7 +1072,7 @@ dev.off()
 ##                 2</code></pre>
 <pre class="r"><code>par(mar=c(1,1,1,1))
 hmcols&lt;-colorRampPalette(brewer.pal(11,&quot;RdBu&quot;))(5)
-heatmap.2(x = t(SM_signature), Rowv =TRUE ,Colv = FALSE, dendrogram = c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;)[ordered_labels], labRow = colnames(SM_signature), labCol = NA, main = &#39; \n Training Set \n Significant features \n for Copy Number Data&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
+heatmap.2(x = t(SM_signature), Rowv =TRUE ,Colv = FALSE, dendrogram = c(&quot;row&quot;), scale =&quot;row&quot;,ColSideColors =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;)[ordered_labels], labRow = colnames(SM_signature), labCol = NA, main = &#39; \n Training Set \n Significant features \n for Somatic Mutation Data&#39;, col =hmcols, cexRow =0.40, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;)
 legend(&quot;topright&quot;, legend = c(&quot;Bad moderate&quot;,&quot;Good moderate&quot;,&quot;Best&quot;,&quot;Worst&quot;),fill =c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;), cex = 0.4)</code></pre>
 <p><img src="AnalysisOfResults1_files/figure-html/unnamed-chunk-10-1.png" width="960" /></p>
 </div>
