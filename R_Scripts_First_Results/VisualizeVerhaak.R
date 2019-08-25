@@ -165,12 +165,12 @@ library("org.Hs.eg.db")
 xx <- as.list(org.Hs.egALIAS2EG)
 entrez.signature <- list(0)
 
-for ( i in 1:length(signature.dpmm)){
-  entrez.signature[[i]] <- xx[[signature.dpmm[i]]]   
+for ( i in 1:length(signature.sbc)){
+  entrez.signature[[i]] <- xx[[signature.sbc[i]]]   
 }
 entre <- unlist(entrez.signature)
 
-names.universe <- rownames(Y.train.prelim)
+names.universe <- rownames(Y.train)
 entrez.universe <- list(0)
 
 for ( i in 1:length(names.universe)){
