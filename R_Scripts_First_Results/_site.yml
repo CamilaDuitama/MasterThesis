@@ -1,5 +1,5 @@
 name: "Master Thesis"
-output_dir: "../docs"
+output_dir: "Volumes/GoogleDrive/My Drive/Documents/GitHub/MasterThesis/docs"
 navbar:
   title: "External validation and characterization of cancer subtypes using SBC"
   left:
