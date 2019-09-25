@@ -175,7 +175,7 @@ table(censoring.new) %>%
 ### PCA of training and test set
 
 ```{r PCA of the whole mRNA dataset, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-totalmRNA<-rbind(mRNAArray_TrainingSet,mRNAArray_TestSet)
+totalmRNA<-rbind(Y.pre.train,Y.pre.test)
 mRNA.pca<-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
 classes<-c()
 for (i in 1:length(Clinical_TrainingSet$days_to_death)){
