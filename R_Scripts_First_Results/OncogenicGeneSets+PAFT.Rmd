@@ -266,11 +266,11 @@ for (i in 1:length(Clinical_TrainingSet$days_to_death)){
     classes<-append(classes,"Training")
   }
 for (i in 1:length(Clinical_TestSet$days_to_death)){
-    classes<-append(classes,"Testing")
+    classes<-append(classes,"Validation")
   }
 
 mRNA.pca$Classes<-classes
-p1 <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n GBM-TCGA Data set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p1 <- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and validation set \n GBM-TCGA Data set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
 p1
 
 ```
@@ -343,7 +343,7 @@ The SBC signature on the dataset looks like this
 
 ```{r Survival curves for both training and testing set}
 surv.fit <- survfit(Surv(total_time,append(Clinical_TrainingSet$vital_status,Clinical_TestSet$vital_status))~ classes)
-p3 <- ggsurv(surv.fit, plot.cens=FALSE,main = " DPMM \n Kaplan Meier curves for training and test set")+ ggplot2::guides(linetype = FALSE)
+p3 <- ggsurv(surv.fit, plot.cens=FALSE,main = " DPMM \n Kaplan Meier curves for training and validation set")+ ggplot2::guides(linetype = FALSE)
 p3
 ```
 
@@ -365,7 +365,7 @@ Y.new<-scale(Y.new,scale=TRUE,center=TRUE)
 mRNA.signature<-rbind(Y,Y.new)
 mRNA.signature.pca<-as.data.frame(prcomp(mRNA.signature,scale=TRUE, center= TRUE)$x[,1:2])
 mRNA.signature.pca$Classes<-classes
-p6 <- ggplot(mRNA.signature.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and testing set \n SBC Signature mRNAArray Data of GBM") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
+p6 <- ggplot(mRNA.signature.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(" PCA of the training and validation set \n SBC Signature mRNAArray Data of GBM") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") 
 p6
 ```
 
@@ -605,7 +605,7 @@ logrank.new <- survdiff(smod.new ~ c.sbc.new)
 #df= Degrees of freedom should be number of clusters-1
 pval.new<-1 - pchisq(unlist(logrank.new)$chisq,df =length(logrank.new$n)-1)
 surv.fit <- survfit(smod.new ~ c.sbc.new)
-p5.new <- ggsurv(surv.fit, surv.col=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"),plot.cens=FALSE,main = " DPMM \n Kaplan Meier Estimators \n Test Set")+ ggplot2::guides(linetype = FALSE)+labs(subtitle = paste("P-value:",toString(round(pval.new,digits = 5))))
+p5.new <- ggsurv(surv.fit, surv.col=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"),plot.cens=FALSE,main = " DPMM \n Kaplan Meier Estimators \n Validation Set")+ ggplot2::guides(linetype = FALSE)+labs(subtitle = paste("P-value:",toString(round(pval.new,digits = 5))))
 
 par(mfrow=c(2,1))
 p4
@@ -622,7 +622,7 @@ dev.off()
 ```{r PCA from testing}
 pc <- prcomp(Y.new,center=TRUE,scale = TRUE)
 pc.pred <- predict(pc,newdata = Y.new)
-p4.new <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(" PCA after SBC Clustering \n Test set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
+p4.new <- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(" PCA after SBC Clustering \n Validation set") + geom_point(shape=19) + labs(y = "PC1", x = "PC2", colour = "Classes") +scale_color_manual(values=c("#b16ed3","#d37f6e","#90d36e","#6ec2d3"))
 p4.new
 ```
 
