@@ -345,7 +345,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">External validation and characterization of cancer subtypes using SBC</a>
+      <a class="navbar-brand" href="index.html">External validation and characterisation of cancer subtypes using SBC</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -545,7 +545,7 @@ table(censoring) %&gt;%
 </div>
 <div id="pca-of-training-and-test-set" class="section level3">
 <h3>PCA of training and test set</h3>
-<pre class="r"><code>totalmRNA&lt;-rbind(mRNAArray_TrainingSet,mRNAArray_TestSet)
+<pre class="r"><code>totalmRNA&lt;-rbind(Y.pre.train,Y.pre.test)
 mRNA.pca&lt;-as.data.frame(prcomp(totalmRNA,scale=TRUE, center= TRUE)$x[,1:2])
 classes&lt;-c()
 for (i in 1:length(Clinical_TrainingSet$days_to_death)){

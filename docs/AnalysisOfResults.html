@@ -345,7 +345,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">External validation and characterization of cancer subtypes using SBC</a>
+      <a class="navbar-brand" href="index.html">External validation and characterisation of cancer subtypes using SBC</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -952,23 +952,6 @@ dev.off()
 ##                 2
 heatmap.2(x = pairwise.miRNA.test,Colv = FALSE, Rowv=TRUE, dendrogram= c(&quot;row&quot;), scale =&quot;row&quot;, labRow =rownames(pairwise.miRNA.test), labCol = colnames(pairwise.miRNA.test), main = &#39; \n Pairwise cluster comparison \n Significant miRNA for the Test Set&#39;, col =hmcols, cexRow =0.40,cexCol = 0.7, trace =&quot;none&quot;, key.title = &quot;Color Key&quot;, margins=c(6,10))</code></pre>
 <p><img src="AnalysisOfResults_files/figure-html/Significant%20miRNA%20transcript%20in%20pairwise%20comparisons%20for%20testing-1.png" width="960" /></p>
-</div>
-<div id="pca-of-differentially-expressed-mirna-targets-1" class="section level4">
-<h4>PCA of differentially expressed miRNA targets</h4>
-<pre class="r"><code>#Find all the validated targets
-result.de.test&lt;-list()
-try(example2 &lt;- get_multimir(mirna = topmiRNA.test, summary = TRUE))
-## Searching mirecords ...
-## Searching mirtarbase ...
-## Searching tarbase ...
-result.de.test &lt;- unlist(unique(example2@data$target_symbol))
-
-tokeep&lt;-colnames(mRNAArray_TestSet)[colnames(mRNAArray_TestSet) %in% result.de.test]
-DEtargets.test.pca&lt;-as.data.frame(prcomp(mRNAArray_TestSet[,tokeep],scale=TRUE, center= TRUE)$x[,1:2])
-DEtargets.test.pca$SBC_labels&lt;-c.sbc.new
-plotDEtargets.test &lt;- ggplot(miRNA.test.pca, aes(x=DEtargets.test.pca$PC1, y= DEtargets.test.pca$PC2, colour= as.factor(SBC_labels))) + ggtitle(&quot;PCA \n Validated DE miRNA targets \n Test Set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;SBC_labels&quot;) +scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;,&quot;#858687&quot;))
-plotDEtargets.test</code></pre>
-<p><img src="AnalysisOfResults_files/figure-html/PCA%20of%20differentially%20expressed%20miRNA%20for%20the%20test-1.png" width="960" /></p>
 </div>
 </div>
 </div>

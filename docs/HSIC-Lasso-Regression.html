@@ -346,7 +346,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">External validation and characterization of cancer subtypes using SBC</a>
+      <a class="navbar-brand" href="index.html">External validation and characterisation of cancer subtypes using SBC</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -461,8 +461,8 @@ Y.pre.test&lt;-mRNAArray_TestSet
 </code></pre>
 <pre class="r"><code>print(paste0(&quot;Number of patients in training set: &quot;,as.character(n)))
 ## [1] &quot;Number of patients in training set: 160&quot;
-print(paste0(&quot;Number of patients in test set: &quot;,as.character(n.new)))
-## [1] &quot;Number of patients in test set: 261&quot;</code></pre>
+print(paste0(&quot;Number of patients in Validation set: &quot;,as.character(n.new)))
+## [1] &quot;Number of patients in Validation set: 261&quot;</code></pre>
 </div>
 <div id="hsic-lasso-feature-selection" class="section level1">
 <h1>HSIC-Lasso feature selection</h1>
@@ -780,8 +780,8 @@ H1F0
 </tbody>
 </table>
 </div>
-<div id="pca-of-training-and-test-set" class="section level3">
-<h3>PCA of training and test set</h3>
+<div id="pca-of-training-and-validation-set" class="section level3">
+<h3>PCA of training and Validation set</h3>
 <pre class="r"><code>          
 Y.pre.train&lt;-scale(Y.pre.train,scale=TRUE,center=TRUE)
 Y.pre.test&lt;-scale(Y.pre.test,scale=TRUE,center=TRUE)
@@ -794,11 +794,11 @@ for (i in 1:length(Clinical_TrainingSet$days_to_death)){
     classes&lt;-append(classes,&quot;Training&quot;)
   }
 for (i in 1:length(Clinical_TestSet$days_to_death)){
-    classes&lt;-append(classes,&quot;Testing&quot;)
+    classes&lt;-append(classes,&quot;Validation&quot;)
   }
 
 mRNA.pca$Classes&lt;-classes
-p1 &lt;- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PCA of the training and testing set \n GBM-TCGA Data set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
+p1 &lt;- ggplot(mRNA.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PCA of the training and validation set \n GBM-TCGA Data set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
 p1</code></pre>
 <p><img src="HSIC-Lasso-Regression_files/figure-html/PCA-1.png" width="960" /></p>
 <pre class="r"><code>png(file=&quot;HSIC-Lasso-Regression_files/PCA_Train&amp;Test.pdf&quot;)
@@ -1124,7 +1124,7 @@ PLAT
 <div id="survival-curves-for-both-training-and-testing-set" class="section level2">
 <h2>Survival curves for both training and testing set</h2>
 <pre class="r"><code>surv.fit &lt;- survfit(Surv(total_time,append(Clinical_TrainingSet$vital_status,Clinical_TestSet$vital_status))~ classes)
-p3 &lt;- ggsurv(surv.fit, plot.cens=FALSE,main = &quot; DPMM \n Kaplan Meier curves for training and test set&quot;)+ ggplot2::guides(linetype = FALSE)
+p3 &lt;- ggsurv(surv.fit, plot.cens=FALSE,main = &quot; DPMM \n Kaplan Meier curves for training and validation set&quot;)+ ggplot2::guides(linetype = FALSE)
 p3</code></pre>
 <p><img src="HSIC-Lasso-Regression_files/figure-html/Survival%20curves%20for%20both%20training%20and%20testing%20set-1.png" width="960" /></p>
 <pre class="r"><code>png(file=&quot;HSIC-Lasso-Regression_files/KMC_Train&amp;Test.pdf&quot;)
@@ -1144,7 +1144,7 @@ Y.new&lt;-scale(Y.new,scale=TRUE,center=TRUE)
 mRNA.signature&lt;-rbind(Y,Y.new)
 mRNA.signature.pca&lt;-as.data.frame(prcomp(mRNA.signature,scale=TRUE, center= TRUE)$x[,1:2])
 mRNA.signature.pca$Classes&lt;-classes
-p6 &lt;- ggplot(mRNA.signature.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PCA of the training and testing set \n SBC Signature mRNAArray Data of GBM&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
+p6 &lt;- ggplot(mRNA.signature.pca, aes(x=PC1, y=PC2, colour=Classes)) + ggtitle(&quot; PCA of the training and validation set \n SBC Signature mRNAArray Data of GBM&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) 
 p6</code></pre>
 <p><img src="HSIC-Lasso-Regression_files/figure-html/PCA%20of%20the%20signature-1.png" width="960" /></p>
 <pre class="r"><code>png(file=&quot;HSIC-Lasso-Regression_files/PCASignature_Train&amp;Test.pdf&quot;)
@@ -1292,7 +1292,7 @@ Y.big.unscaled&lt;-rbind(Y,Y.new)
 pc.unscaled &lt;- prcomp(Y.big.unscaled,center=TRUE,scale = TRUE)
 labels&lt;-c.sbc
 for (i in 1:dim(Y.new)[1]){labels&lt;-append(labels,5)}
-p8 &lt;- ggplot(as.data.frame(pc.unscaled$x), aes(x=pc.unscaled$x[,1], y= pc.unscaled$x[,2], colour= as.factor(labels))) + ggtitle(&quot;PCA \n Training set with SBC labels and unlabeled test set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;)+scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;,&quot;#BDBDBF&quot;))
+p8 &lt;- ggplot(as.data.frame(pc.unscaled$x), aes(x=pc.unscaled$x[,1], y= pc.unscaled$x[,2], colour= as.factor(labels))) + ggtitle(&quot;PCA \n Training set with SBC labels and unlabeled Validation set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;)+scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;,&quot;#BDBDBF&quot;))
 p8</code></pre>
 <p><img src="HSIC-Lasso-Regression_files/figure-html/PCA%20Scaled%20Y%20and%20Y.new-1.png" width="960" /></p>
 <pre class="r"><code>######## Predict on New Data Set  BASED ON JUST THE MOLECULAR DATA #####################################
@@ -1364,7 +1364,7 @@ predictchineseAFTtime(Y.new)
 #df= Degrees of freedom should be number of clusters-1
 pval.new&lt;-1 - pchisq(unlist(logrank.new)$chisq,df =length(logrank.new$n)-1)
 surv.fit &lt;- survfit(smod.new ~ c.sbc.new)
-p5.new &lt;- ggsurv(surv.fit, surv.col=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;),plot.cens=FALSE,main = &quot; DPMM \n Kaplan Meier Estimators \n Test Set&quot;)+ ggplot2::guides(linetype = FALSE)+labs(subtitle = paste(&quot;P-value:&quot;,toString(round(pval.new,digits = 5))))
+p5.new &lt;- ggsurv(surv.fit, surv.col=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;),plot.cens=FALSE,main = &quot; DPMM \n Kaplan Meier Estimators \n Validation Set&quot;)+ ggplot2::guides(linetype = FALSE)+labs(subtitle = paste(&quot;P-value:&quot;,toString(round(pval.new,digits = 5))))
 
 par(mfrow=c(2,1))
 p4</code></pre>
@@ -1378,7 +1378,7 @@ dev.off()
 ##                 2</code></pre>
 <pre class="r"><code>pc &lt;- prcomp(Y.new,center=TRUE,scale = TRUE)
 pc.pred &lt;- predict(pc,newdata = Y.new)
-p4.new &lt;- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(&quot; PCA after SBC Clustering \n Test set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) +scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;))
+p4.new &lt;- ggplot(as.data.frame(pc.pred), aes(x=pc.pred[,1], y= pc.pred[,2], colour= as.factor(c.sbc.new))) + ggtitle(&quot; PCA after SBC Clustering \n Validation set&quot;) + geom_point(shape=19) + labs(y = &quot;PC1&quot;, x = &quot;PC2&quot;, colour = &quot;Classes&quot;) +scale_color_manual(values=c(&quot;#b16ed3&quot;,&quot;#d37f6e&quot;,&quot;#90d36e&quot;,&quot;#6ec2d3&quot;))
 p4.new</code></pre>
 <p><img src="HSIC-Lasso-Regression_files/figure-html/PCA%20from%20testing-1.png" width="960" /></p>
 <pre class="r"><code>png(file=&quot;HSIC-Lasso-Regression_files/PCA_Test.pdf&quot;)

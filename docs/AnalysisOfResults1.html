@@ -345,7 +345,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">External validation and characterization of cancer subtypes using SBC</a>
+      <a class="navbar-brand" href="index.html">External validation and characterisation of cancer subtypes using SBC</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -578,9 +578,6 @@ cluster  &lt;- factor(c.sbc)
 ##### Create the design matrix with these labels
 mm &lt;- model.matrix( ~0+cluster)
 
-##### You can also define a contrast matrix which only looks at cluster specific contrasts
-cont.matrix &lt;- makeContrasts(Cluster1vsCluster2 = cluster1 - cluster2,Cluster1vsCluster3=cluster1 - cluster3,Cluster1vsCluster4=cluster1 - cluster4,Cluster2vsCluster3= cluster2 - cluster3,
-Cluster2vsCluster4=cluster2 - cluster4,Cluster3vsCluster4=cluster3 - cluster4,levels= mm)
 ###### Fit limma model
 fit &lt;- lmFit(t(mRNAArray_TrainingSet), design = mm)
 efit &lt;- eBayes(fit)
