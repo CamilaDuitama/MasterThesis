@@ -1,5 +1,4 @@
 base
-GSVA
 nlme
 mgcv
 genefilter
@@ -81,12 +80,11 @@ kableExtra
 usethis
 devtools
 rmarkdown
-tibble
-msigdbr
-multiMiR
 RColorBrewer
 limma
+multiMiR
 S4Vectors
 IRanges
 AnnotationDbi
 Category
+flexdashboard

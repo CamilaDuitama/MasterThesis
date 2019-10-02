@@ -31,7 +31,7 @@ Row
 ### Chart 2
     
 ```{r}
-valueBox(value = 2,caption = "Original SBC implementation",href="Results.html",color = "#85C1E9")
+valueBox(value = 2,caption = "Original SBC implementation in the TCGA-GBM data set",href="Results.html",color = "#85C1E9")
 ``` 
 
 Row
@@ -107,7 +107,7 @@ Consolidated results {data-icon="fa-table"}
 ```{r, fig.width=10, fig.height=15}
 
 rownames<-c(1,2,3,4,5,6,7,8)
-description<-c("Verhaak samples present on the TCGA-GBM","All samples in the TCGA-GBM","GSE methods on KEGG pathways as feature selection","GSE methods on Oncogenic gene sets as feature selection","GSVA on the Canonical Pathways","Linear predictor of PCox model on the Oncogenic gene sets","PAFT on the Oncogenic gene sets","HSIC-Lasso for feature selection using survival data (Regression)")
+description<-c("Original SBC implementation in the Verhaak samples present in the TCGA-GBM data set","Original SBC implementation in the TCGA-GBM dataset","ssGSEA on KEGG pathways for feature engineering","ssGSEA Oncogenic gene sets for feature engineering","ssGSEA on the Canonical Pathways for feature engineering","Penalised Cox model on the Oncogenic gene sets for feature engineering","PAFT the Oncogenic gene sets for feature engineering","Block HSIC-Lasso for feature selection")
 initialization<-c("K-means","K-means","K-means","K-means","K-means","K-means","K-means","K-means")
 corrections<-c("None","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction","Karnofsky Index correction")
 

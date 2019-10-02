@@ -5,7 +5,9 @@
 
 This is the website were I present the results of my master thesis.
 
-The background of this project is the **SBC (Survival based Bayesian Clustering)**, a model that infers clinically relevant cancer subtypes, by jointly clustering molecular data along with survival datain a semi-supervised manner. The original paper and the supplementary material are [here](https://github.com/CamilaDuitama/MasterThesis/tree/master/papers). A graphical representation of the model is this:
+The background of this project is the **SBC (Survival based Bayesian Clustering)**, a model that infers clinically relevant cancer subtypes, by jointly clustering molecular data along with survival datain a semi-supervised manner. The original paper and the supplementary material are [here](https://github.com/CamilaDuitama/MasterThesis/tree/master/papers). 
+
+The overall parameters to model the joint distribution of molecular data and survival times are assumed to be drawn from a Dirichlet Process Mixture Models prior. Individually, the molecular data is modelled using a Hierarchical Gaussian Model, survival data is modelled using a \acrlong{PAFT} model.  Model fitting is done using Gibbs sampling. Model predictions and extraction of feature importance are further described in the original paper. A graphical representation of the model can be seen in the following figure:
 
 
 ![Graphical model SBC](../images/Graphical_model_SBC.png) 
