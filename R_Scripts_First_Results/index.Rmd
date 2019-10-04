@@ -23,7 +23,7 @@ Row
     
 ```{r Verhaak signature in TCGA-GBM}
 library(flexdashboard)
-valueBox(value = 1,caption = "Original SBC implementation in the Verhaak samples present in the TCGA-GBM data set",href="Preliminary_Results.html", color="#85C1E9")
+valueBox(value = 1,caption = "Original SBC implementation in the Verhaak samples present in the TCGA-GBM data set",href="Preliminary_Results.html", color="#2E4053")
 ```
  
 Row
@@ -31,7 +31,7 @@ Row
 ### Chart 2
     
 ```{r}
-valueBox(value = 2,caption = "Original SBC implementation in the TCGA-GBM data set",href="Results.html",color = "#85C1E9")
+valueBox(value = 2,caption = "Original SBC implementation in the TCGA-GBM data set",href="Results.html",color = "#2E4053")
 ``` 
 
 Row
@@ -40,7 +40,7 @@ Row
 
     
 ```{r}
-valueBox(value = 3,caption = "ssGSEA on KEGG pathways for feature engineering",href="GSVA-KEGG.html",color= "#85C1E9")
+valueBox(value = 3,caption = "ssGSEA on KEGG pathways for feature engineering",href="GSVA-KEGG.html",color= "#2E4053")
 ```
 
 Row
@@ -48,7 +48,7 @@ Row
 ### Chart 4
 
 ```{r}
-valueBox(value = 4,caption = "ssGSEA Oncogenic gene sets for feature engineering",href="GSVA-Oncogenic_Signature.html",color= "#85C1E9")
+valueBox(value = 4,caption = "ssGSEA Oncogenic gene sets for feature engineering",href="GSVA-Oncogenic_Signature.html",color= "#2E4053")
 ```
 
 Row
@@ -56,7 +56,7 @@ Row
 ### Chart 5
 
 ```{r}
-valueBox(value = 5,caption = "ssGSEA on the Canonical Pathways for feature engineering",href="GSVA.html",color= "#85C1E9")
+valueBox(value = 5,caption = "ssGSEA on the Canonical Pathways for feature engineering",href="GSVA.html",color= "#2E4053")
 ```
 
 Row
@@ -65,7 +65,7 @@ Row
 ### Chart 6
     
 ```{r}
-valueBox(value = 6,caption = "Penalised Cox model on the Oncogenic gene sets for feature engineering",href="OncogenicGeneSets+Pcox.html", color= "#85C1E9")
+valueBox(value = 6,caption = "Penalised Cox model on the Oncogenic gene sets for feature engineering",href="OncogenicGeneSets+Pcox.html", color= "#2E4053")
 ```
     
 Row
@@ -73,13 +73,13 @@ Row
 ### Chart 7
 
 ```{r}
-valueBox(value = 7,caption = "PAFT the Oncogenic gene sets for feature engineering ",href="OncogenicGeneSets+PAFT.html", color= "#85C1E9")
+valueBox(value = 7,caption = "PAFT the Oncogenic gene sets for feature engineering ",href="OncogenicGeneSets+PAFT.html", color= "#2E4053")
 ```
 
 ### Chart 8
 
 ```{r}
-valueBox(value = 7.1, caption="Analysis of results 11",href="AnalysisOfResults.html", color= "#FFDAB9")
+valueBox(value = 7.1, caption="Analysis of results 11",href="AnalysisOfResults.html", color= "#5DADE2")
 ```
 
 Row
@@ -88,13 +88,13 @@ Row
 ### Chart 9
 
 ```{r}
-valueBox(value = 8,caption = "Block HSIC-Lasso for feature selection",href="HSIC-Lasso-Regression.html", color= "#85C1E9")
+valueBox(value = 8,caption = "Block HSIC-Lasso for feature selection",href="HSIC-Lasso-Regression.html", color= "#2E4053")
 ```
 
 ### Chart 9
 
 ```{r}
-valueBox(value = 8.1, caption= "Analysis of results 11",href="AnalysisOfResults1.html", color= "#FFDAB9")
+valueBox(value = 8.1, caption= "Analysis of results 11",href="AnalysisOfResults1.html", color= "#5DADE2")
 ```
 
 
