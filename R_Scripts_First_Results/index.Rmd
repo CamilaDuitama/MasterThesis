@@ -40,7 +40,7 @@ Row
 
     
 ```{r}
-valueBox(value = 3,caption = "ssGSEA on KEGG pathways for feature engineering",href="GSVA-KEGG.html",color= "#2E86C1")
+valueBox(value = 3,caption = "ssGSEA on KEGG pathways for feature engineering",href="GSVA-KEGG.html",color= "#85C1E9")
 ```
 
 Row
@@ -48,7 +48,7 @@ Row
 ### Chart 4
 
 ```{r}
-valueBox(value = 4,caption = "ssGSEA Oncogenic gene sets for feature engineering",href="GSVA-Oncogenic_Signature.html",color= "#2E86C1")
+valueBox(value = 4,caption = "ssGSEA Oncogenic gene sets for feature engineering",href="GSVA-Oncogenic_Signature.html",color= "#85C1E9")
 ```
 
 Row
@@ -56,7 +56,7 @@ Row
 ### Chart 5
 
 ```{r}
-valueBox(value = 5,caption = "ssGSEA on the Canonical Pathways for feature engineering",href="GSVA.html",color= "#2E86C1")
+valueBox(value = 5,caption = "ssGSEA on the Canonical Pathways for feature engineering",href="GSVA.html",color= "#85C1E9")
 ```
 
 Row
@@ -65,7 +65,7 @@ Row
 ### Chart 6
     
 ```{r}
-valueBox(value = 6,caption = "Penalised Cox model on the Oncogenic gene sets for feature engineering",href="OncogenicGeneSets+Pcox.html", color= "#21618C")
+valueBox(value = 6,caption = "Penalised Cox model on the Oncogenic gene sets for feature engineering",href="OncogenicGeneSets+Pcox.html", color= "#85C1E9")
 ```
     
 Row
@@ -73,13 +73,13 @@ Row
 ### Chart 7
 
 ```{r}
-valueBox(value = 7,caption = "PAFT the Oncogenic gene sets for feature engineering ",href="OncogenicGeneSets+PAFT.html", color= "#21618C")
+valueBox(value = 7,caption = "PAFT the Oncogenic gene sets for feature engineering ",href="OncogenicGeneSets+PAFT.html", color= "#85C1E9")
 ```
 
 ### Chart 8
 
 ```{r}
-valueBox(value = 7.1, caption="Analysis of results 11",href="AnalysisOfResults.html", color= "#FA8072")
+valueBox(value = 7.1, caption="Analysis of results 11",href="AnalysisOfResults.html", color= "#FFDAB9")
 ```
 
 Row
@@ -88,13 +88,13 @@ Row
 ### Chart 9
 
 ```{r}
-valueBox(value = 8,caption = "Block HSIC-Lasso for feature selection",href="HSIC-Lasso-Regression.html", color= "#1B4F72")
+valueBox(value = 8,caption = "Block HSIC-Lasso for feature selection",href="HSIC-Lasso-Regression.html", color= "#85C1E9")
 ```
 
 ### Chart 9
 
 ```{r}
-valueBox(value = 8.1, caption= "Analysis of results 11",href="AnalysisOfResults1.html", color= "#CD5C5C")
+valueBox(value = 8.1, caption= "Analysis of results 11",href="AnalysisOfResults1.html", color= "#FFDAB9")
 ```
 
 
