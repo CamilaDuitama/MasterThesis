@@ -435,7 +435,7 @@ dev.off()
 
 ```{r Plot likelihood of burning}
 to_plot<-as.data.frame(likli.burnin)
-p7<-qplot(seq_along(to_plot$likli.burnin), to_plot$likli.burnin)
+p7<-qplot(seq_along(to_plot$likli.burnin), to_plot$likli.burnin)+labs(title="Log-likelihood trace plot",y ="Log-likelihood",x="Iteration")
 p7
 ```
 
@@ -534,6 +534,7 @@ predictchineseAFTtime(Y.new)
 ## Plot results from testing
 
 ```{r Survival curves from testing}
+smod.new <- Surv(exp(time.new), censoring.new)
 logrank.new <- survdiff(smod.new ~ c.sbc.new)
 #df= Degrees of freedom should be number of clusters-1
 pval.new<-1 - pchisq(unlist(logrank.new)$chisq,df =length(logrank.new$n)-1)
@@ -568,7 +569,8 @@ dev.off()
 ```{r}
 pdf(file="HSIC-Lasso-Regression_files/PosteriorProbability.pdf")
 heatmapdata <- as.data.frame(final.betahat)
-heatmap.2(t(as.matrix(heatmapdata)),dendrogram="none", margins=c(6,10), main = "Posterior probability \n for Selection \n ", cexCol = 0.85, cexRow = 0.7, Rowv = FALSE)
+names(heatmapdata)<-signature.sbc
+heatmap.2(t(as.matrix(heatmapdata)),dendrogram="none", margins=c(6,10), main = "Posterior probability \n selection \n ", cexCol = 0.85, cexRow = 0.7, Rowv = FALSE)
 dev.off()
 ```
 

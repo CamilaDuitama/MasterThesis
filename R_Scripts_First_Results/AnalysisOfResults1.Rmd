@@ -764,9 +764,11 @@ for (i in colnames(Clinical_TrainingSet)){
     next
   }else{
     dummie<-chisq.test(table(Clinical_TrainingSet[[i]],Clinical_TrainingSet$sbc.labels))
-    if (is.nan(dummie$p.value)==FALSE && dummie$p.value<0.05){
+    if (is.nan(dummie$p.value)==FALSE && p.adjust(dummie$p.value,method="fdr")<0.05){
       print(i)
       print(dummie)
+      print("FDR")
+      print(p.adjust(unlist(dummie$p.value), method = "fdr"))
     }
   }
 }
